@@ -1,6 +1,7 @@
 {
   "domain": "g90",
   "name": "g90",
+  "version": "0.0.0",
   "config_flow": true,
   "documentation": "https://www.home-assistant.io/integrations/g90",
   "requirements": [],
