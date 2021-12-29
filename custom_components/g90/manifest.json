@@ -4,7 +4,9 @@
   "version": "0.0.0",
   "config_flow": true,
   "documentation": "https://www.home-assistant.io/integrations/g90",
-  "requirements": [],
+  "requirements": [
+    "pyg90alarm>=1.0.0"
+  ],
   "dependencies": [],
   "codeowners": [
     "@hostcc"

@@ -2,5 +2,4 @@
 
 # Custom Home Assistant integration for G90 security systems
 
-The is a very early preview version. Currently depends on not yet published
-`pyg90alarm` Python package.
+The is a very early preview version.
