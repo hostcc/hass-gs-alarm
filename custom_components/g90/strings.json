@@ -1,0 +1,19 @@
+{
+  "config": {
+    "step": {
+      "confirm": {
+        "description": "[%key:common::config_flow::description::confirm_setup%]"
+      },
+      "custom_host": {
+        "description": "No devices have been discovered, please proceed to manual setup",
+        "data": {
+          "ip_addr": "[%key:common::config_flow::data::ip%]"
+        }
+      }
+    },
+    "abort": {
+      "single_instance_allowed": "[%key:common::config_flow::abort::single_instance_allowed%]",
+      "no_devices_found": "[%key:common::config_flow::abort::no_devices_found%]"
+    }
+  }
+}

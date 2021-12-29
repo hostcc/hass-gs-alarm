@@ -1,0 +1,12 @@
+{
+  "domain": "g90",
+  "name": "g90",
+  "config_flow": true,
+  "documentation": "https://www.home-assistant.io/integrations/g90",
+  "requirements": [],
+  "dependencies": [],
+  "codeowners": [
+    "@hostcc"
+  ],
+  "iot_class": "local_polling"
+}

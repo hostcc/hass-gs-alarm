@@ -1,0 +1,19 @@
+{
+    "config": {
+        "abort": {
+            "no_devices_found": "No devices found on the network",
+            "single_instance_allowed": "Already configured. Only a single configuration possible."
+        },
+        "step": {
+            "custom_host": {
+                "data": {
+                    "ip_addr": "IP Address"
+                },
+                "description": "No devices have been discovered, please proceed to manual setup"
+            },
+            "confirm": {
+                "description": "Do you want to start set up?"
+            }
+        }
+    }
+}
