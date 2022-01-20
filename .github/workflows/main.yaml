@@ -1,0 +1,28 @@
+---
+name: main
+
+on:
+  pull_request:
+  release:
+    types: [published]
+
+jobs:
+  validate-hassfest:
+    name: Validate with hassfest
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout the code
+        uses: actions/checkout@v2
+      - name: Check the code with hassfest
+        uses: home-assistant/actions/hassfest@master
+
+  validate-hacs:
+    name: Validate with hacs
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout the code
+        uses: actions/checkout@v2
+      - name: Check the code with hacs
+        uses: "hacs/action@main"
+        with:
+          category: integration
