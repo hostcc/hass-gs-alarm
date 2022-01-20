@@ -26,3 +26,5 @@ jobs:
         uses: "hacs/action@main"
         with:
           category: integration
+          # FIXME: Pending brand logo submission
+          ignore: brands
