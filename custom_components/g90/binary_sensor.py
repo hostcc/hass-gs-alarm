@@ -82,7 +82,7 @@ class G90Sensor(BinarySensorEntity):
     def __init__(self, sensor: object, g90_client: object, g90_device: object, g90_guid: str) -> None:
         self._sensor = sensor
         self._g90_client = g90_client
-        self._attr_unique_id = f'{g90_guid}_motion_{sensor.index}'
+        self._attr_unique_id = f'{g90_guid}_sensor_{sensor.index}'
         self._attr_name = sensor.name
         hass_sensor_type = HASS_SENSOR_TYPES_MAPPING.get(sensor.type, None)
         if hass_sensor_type:
@@ -90,7 +90,7 @@ class G90Sensor(BinarySensorEntity):
         sensor.state_callback = self.state_callback
         self._attr_device_info = g90_device
 
-    async def state_callback(self, value):
+    def state_callback(self, value):
         _LOGGER.debug(f'{self.unique_id}: Received state callback: {value}')
         self.schedule_update_ha_state()
 
