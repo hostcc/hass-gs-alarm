@@ -18,9 +18,19 @@ from homeassistant.const import (
 )
 
 from .const import DOMAIN
+from pyg90alarm.const import G90ArmDisarmTypes
 
 import logging
 _LOGGER = logging.getLogger(__name__)
+
+
+# Mapping between `pyg90alarm` states for the panel and ones for HomeAssitant
+STATE_MAPPING = {
+    G90ArmDisarmTypes.ARM_AWAY: STATE_ALARM_ARMED_AWAY,
+    G90ArmDisarmTypes.ARM_HOME: STATE_ALARM_ARMED_HOME,
+    G90ArmDisarmTypes.DISARM: STATE_ALARM_DISARMED,
+    G90ArmDisarmTypes.ALARMED: STATE_ALARM_TRIGGERED,
+}
 
 
 async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry,
@@ -30,13 +40,6 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry,
     g90_device = hass.data[DOMAIN][entry.entry_id]['device']
     g90_guid = hass.data[DOMAIN][entry.entry_id]['guid']
     async_add_entities([G90AlarmPanel(g90_client, g90_device, g90_guid)])
-
-STATE_MAPPING = {
-    1: STATE_ALARM_ARMED_AWAY,
-    2: STATE_ALARM_ARMED_HOME,
-    3: STATE_ALARM_DISARMED,
-    4: STATE_ALARM_TRIGGERED,
-}
 
 
 class G90AlarmPanel(AlarmControlPanelEntity):
@@ -50,11 +53,18 @@ class G90AlarmPanel(AlarmControlPanelEntity):
         self._state = None
         self._g90_client.armdisarm_callback = self.armdisarm_callback
 
+    async def add_to_platform_finish(self) -> None:
+        # Read the state of the alarm panel upon entry is added to the
+        # platform, but before its state is persisted. This helps HomeAssistant
+        # to reflect the panel state right upon startup, not delaying to next
+        # poll cycle
+        await self.async_update()
+        await super().add_to_platform_finish()
+
     def armdisarm_callback(self, state):
-        _LOGGER.debug(f'Received arm/disarm callback: {state}')
-        # Schedule updating HA since the panel state has changed. Note we don't
-        # process the state here - `async_update` will fetch it from the
-        # device, reflecting the actual status
+        _LOGGER.debug('Received arm/disarm callback: %s', state)
+        self._state = STATE_MAPPING[state]
+        # Schedule updating HA since the panel state has changed
         self.schedule_update_ha_state()
 
     async def async_update(self):
