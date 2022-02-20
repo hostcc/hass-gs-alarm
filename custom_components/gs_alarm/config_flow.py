@@ -62,7 +62,7 @@ class ConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
         if not user_input.get('ip_addr', None):
             errors['base'] = 'ip_addr_required'
         else:
-            return self.async_create_entry(title='g90', data=user_input)
+            return self.async_create_entry(title=DOMAIN, data=user_input)
 
         return self.async_show_form(
             step_id="custom_host", data_schema=STEP_USER_DATA_SCHEMA, errors=errors
