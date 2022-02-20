@@ -1,4 +1,4 @@
-"""Config flow for g90."""
+"""Config flow for gs_alarm."""
 
 from __future__ import annotations
 
@@ -25,7 +25,7 @@ STEP_USER_DATA_SCHEMA = vol.Schema(
 
 
 class ConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
-    """Handle a config flow for G90."""
+    """Handle a config flow for gs_alarm."""
 
     VERSION = 1
 
@@ -41,7 +41,7 @@ class ConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
             return await self.async_step_custom_host(None)
         # FIXME: Handle multiple devices
         for device in devices:
-            res = self.async_create_entry(title='g90', data={'ip_addr': device['host']})
+            res = self.async_create_entry(title=DOMAIN, data={'ip_addr': device['host']})
         return res
 
     async def async_step_user(

@@ -1,4 +1,4 @@
-"""The g90 integration."""
+"""The gs_alarm integration."""
 from __future__ import annotations
 
 from pyg90alarm import G90Alarm
@@ -13,7 +13,7 @@ PLATFORMS = ["alarm_control_panel", "switch", "binary_sensor"]
 
 
 async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry) -> bool:
-    """Set up g90 from a config entry."""
+    """Set up gs_alarm from a config entry."""
     hass.data.setdefault(DOMAIN, {})
     g90_client = G90Alarm(host=entry.data.get('ip_addr', None))
     host_info = await g90_client.host_info

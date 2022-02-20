@@ -1,13 +1,14 @@
 [![hacs_badge](https://img.shields.io/badge/HACS-Custom-41BDF5.svg)](https://github.com/hacs/integration)
-[![Latest release](https://img.shields.io/github/v/release/hostcc/hass-g90)](https://github.com/hostcc/hass-g90/releases/latest)
+[![Latest release](https://img.shields.io/github/v/release/hostcc/hass-gs-alarm)](https://github.com/hostcc/hass-gs-alarm/releases/latest)
 
 # Custom Home Assistant integration for G90 security systems
 
 ## Description
 
 The integration supports G90-based security systems might be distributed under
-different vendors - Golden Security, Kerui etc. Those having G90 in the model
-name has a good chance to be supported - please give it a try and report back.
+different vendors - Golden Security, PST, Kerui etc. Those having G90 in the
+model name has a good chance to be supported - please give it a try and report
+back.
 
 Actual interface with the security system is implemented via
 [pyg90alarm](https://pypi.org/project/pyg90alarm/) Python package.
@@ -22,11 +23,11 @@ state changes and sensor activity the device should have its IP address set to
 
 * Install HACS by following [Setup](https://hacs.xyz/docs/setup/prerequisites)
   and [Configuration](https://hacs.xyz/docs/configuration/basic) steps
-* Add `https://github.com/hostcc/hass-g90/` as custom repository of
+* Add `https://github.com/hostcc/hass-gs-alarm/` as custom repository of
   `Integration` type, as per [Custom
   repositories](https://hacs.xyz/docs/faq/custom_repositories) instructions for
   HACS
-* Add the `g90` integration in HomeAssistant
+* Add the `gs_alarm` integration in HomeAssistant
 
 
 ## Troubleshooting
@@ -44,6 +45,6 @@ logger:
   default: info
   logs:
     pyg90alarm: debug
-    homeassistant.g90: debug
-    custom_components.g90: debug
+    homeassistant.gs_alarm: debug
+    custom_components.gs_alarm: debug
 ```
