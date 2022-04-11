@@ -15,5 +15,14 @@
                 "description": "Do you want to start set up?"
             }
         }
+    },
+    "options": {
+        "step": {
+            "init": {
+                "data": {
+                    "sms_alert_when_armed": "Configure SMS alerts only when device is armed"
+                }
+            }
+        }
     }
 }
