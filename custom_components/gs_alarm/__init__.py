@@ -11,6 +11,13 @@ import logging
 _LOGGER = logging.getLogger(__name__)
 PLATFORMS = ["alarm_control_panel", "switch", "binary_sensor"]
 
+async def options_update_listener(hass, entry):
+    """ Handle options update. """
+    g90_client = hass.data[DOMAIN][entry.entry_id]['client']
+    g90_client.sms_alert_when_armed = entry.options.get(
+        'sms_alert_when_armed', False
+    )
+
 
 async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry) -> bool:
     """Set up gs_alarm from a config entry."""
@@ -33,6 +40,10 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry) -> bool:
     }
     hass.config_entries.async_setup_platforms(entry, PLATFORMS)
     await g90_client.listen_device_notifications()
+
+    entry.async_on_unload(entry.add_update_listener(options_update_listener))
+    # Force setting options upon entry added
+    await options_update_listener(hass, entry)
 
     return True
 
