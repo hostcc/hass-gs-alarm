@@ -3,7 +3,9 @@ from __future__ import annotations
 from homeassistant.config_entries import ConfigEntry
 from homeassistant.core import HomeAssistant
 
-from homeassistant.components.alarm_control_panel import AlarmControlPanelEntity
+from homeassistant.components.alarm_control_panel import (
+    AlarmControlPanelEntity,
+)
 from homeassistant.helpers.entity_platform import AddEntitiesCallback
 from homeassistant.components.alarm_control_panel.const import (
     SUPPORT_ALARM_ARM_AWAY,
@@ -36,22 +38,21 @@ STATE_MAPPING = {
 async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry,
                             async_add_entities: AddEntitiesCallback) -> None:
     """Set up a config entry."""
-    g90_client = hass.data[DOMAIN][entry.entry_id]['client']
-    g90_device = hass.data[DOMAIN][entry.entry_id]['device']
-    g90_guid = hass.data[DOMAIN][entry.entry_id]['guid']
-    async_add_entities([G90AlarmPanel(g90_client, g90_device, g90_guid)])
+    async_add_entities([G90AlarmPanel(hass.data[DOMAIN][entry.entry_id])])
 
 
 class G90AlarmPanel(AlarmControlPanelEntity):
 
-    def __init__(self, g90_client: object, g90_device: object, g90_guid: str) -> None:
-        self._g90_client = g90_client
-        self._attr_unique_id = g90_guid
-        self._attr_supported_features = SUPPORT_ALARM_ARM_AWAY | SUPPORT_ALARM_ARM_HOME
-        self._attr_name = g90_guid
-        self._attr_device_info = g90_device
+    def __init__(self, hass_data: object) -> None:
+        self._attr_unique_id = hass_data['guid']
+        self._attr_supported_features = (
+            SUPPORT_ALARM_ARM_AWAY | SUPPORT_ALARM_ARM_HOME
+        )
+        self._attr_name = hass_data['guid']
+        self._attr_device_info = hass_data['device']
         self._state = None
-        self._g90_client.armdisarm_callback = self.armdisarm_callback
+        self._hass_data = hass_data
+        self._hass_data['client'].armdisarm_callback = self.armdisarm_callback
 
     async def add_to_platform_finish(self) -> None:
         # Read the state of the alarm panel upon entry is added to the
@@ -69,9 +70,15 @@ class G90AlarmPanel(AlarmControlPanelEntity):
 
     async def async_update(self):
         _LOGGER.debug('Updating state')
-        host_status = await self._g90_client.host_status
+        host_status = await self._hass_data['client'].host_status
         host_state = host_status.host_status
         self._state = STATE_MAPPING[host_state]
+        # Store alarm panel information (GSM/WiFi status/signal level etc.) so
+        # a sensor could use the data w/o duplicate access to `host_info`
+        # property of `G90Alarm`, which issues a device call internally
+        self._hass_data['host_info'] = (
+            await self._hass_data['client'].host_info
+        )
 
     @property
     def state(self):
@@ -79,12 +86,12 @@ class G90AlarmPanel(AlarmControlPanelEntity):
 
     async def async_alarm_disarm(self, code: str | None = None) -> None:
         """Send disarm command."""
-        await self._g90_client.disarm()
+        await self._hass_data['client'].disarm()
 
     async def async_alarm_arm_home(self, code: str | None = None) -> None:
         """Send arm home command."""
-        await self._g90_client.arm_home()
+        await self._hass_data['client'].arm_home()
 
     async def async_alarm_arm_away(self, code: str | None = None) -> None:
         """Send arm away command."""
-        await self._g90_client.arm_away()
+        await self._hass_data['client'].arm_away()
