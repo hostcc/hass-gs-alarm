@@ -9,7 +9,8 @@ from .const import DOMAIN
 import logging
 
 _LOGGER = logging.getLogger(__name__)
-PLATFORMS = ["alarm_control_panel", "switch", "binary_sensor"]
+PLATFORMS = ["alarm_control_panel", "switch", "binary_sensor", "sensor"]
+
 
 async def options_update_listener(hass, entry):
     """ Handle options update. """
@@ -27,6 +28,8 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry) -> bool:
     hass.data[DOMAIN][entry.entry_id] = {
         'client': g90_client,
         'guid': host_info.host_guid,
+        # Will periodically be updated by `G90AlarmPanel`
+        'host_info': host_info,
         'device': {
             'name': f'{DOMAIN}:{host_info.host_guid}',
             'model': host_info.product_name,
@@ -50,9 +53,12 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry) -> bool:
 
 async def async_unload_entry(hass: HomeAssistant, entry: ConfigEntry) -> bool:
     """Unload a config entry."""
-    unload_ok = await hass.config_entries.async_unload_platforms(entry, PLATFORMS)
+    unload_ok = (
+        await hass.config_entries.async_unload_platforms(entry, PLATFORMS)
+    )
     if unload_ok:
-        hass.data[DOMAIN][entry.entry_id]['client'].close_device_notifications()
+        g90_client = hass.data[DOMAIN][entry.entry_id]['client']
+        g90_client.close_device_notifications()
         hass.data[DOMAIN].pop(entry.entry_id)
 
     return unload_ok

@@ -42,7 +42,9 @@ class ConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
             return await self.async_step_custom_host(None)
         # FIXME: Handle multiple devices
         for device in devices:
-            res = self.async_create_entry(title=DOMAIN, data={'ip_addr': device['host']})
+            res = self.async_create_entry(
+                title=DOMAIN, data={'ip_addr': device['host']}
+            )
         return res
 
     async def async_step_user(
@@ -66,7 +68,8 @@ class ConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
             return self.async_create_entry(title=DOMAIN, data=user_input)
 
         return self.async_show_form(
-            step_id="custom_host", data_schema=STEP_USER_DATA_SCHEMA, errors=errors
+            step_id="custom_host", data_schema=STEP_USER_DATA_SCHEMA,
+            errors=errors
         )
 
     @staticmethod
@@ -91,7 +94,9 @@ class OptionsFlowHandler(config_entries.OptionsFlow):
                 {
                     vol.Required(
                         "sms_alert_when_armed",
-                        default=self.config_entry.options.get("sms_alert_when_armed"),
+                        default=self.config_entry.options.get(
+                            "sms_alert_when_armed"
+                        ),
                     ): bool
                 }
             ),

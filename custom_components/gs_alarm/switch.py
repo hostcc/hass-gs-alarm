@@ -13,23 +13,25 @@ from .const import DOMAIN
 async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry,
                             async_add_entities: AddEntitiesCallback) -> None:
     """Set up a config entry."""
-    g90_client = hass.data[DOMAIN][entry.entry_id]['client']
-    g90_device = hass.data[DOMAIN][entry.entry_id]['device']
-    g90_guid = hass.data[DOMAIN][entry.entry_id]['guid']
     g90switches = []
-    for device in await g90_client.devices:
-        g90switches.append(G90Switch(device, g90_device, g90_guid))
+    for device in await hass.data[DOMAIN][entry.entry_id]['client'].devices:
+        g90switches.append(
+            G90Switch(device, hass.data[DOMAIN][entry.entry_id])
+        )
     async_add_entities(g90switches)
 
 
 class G90Switch(SwitchEntity):
 
-    def __init__(self, device: object, g90_device: object, g90_guid: str) -> None:
+    def __init__(self, device: object, hass_data: dict) -> None:
         self._device = device
         self._state = False
-        self._attr_unique_id = f'{g90_guid}_switch_{device.index}_{device.subindex + 1}'
+        self._attr_unique_id = (
+            f"{hass_data['guid']}_switch_{device.index}_{device.subindex + 1}"
+        )
         self._attr_name = device.name
-        self._attr_device_info = g90_device
+        self._attr_device_info = hass_data['device']
+        self._hass_data = hass_data
 
     @property
     def is_on(self) -> bool:
