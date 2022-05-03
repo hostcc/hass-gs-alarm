@@ -43,7 +43,7 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry,
 
 class G90AlarmPanel(AlarmControlPanelEntity):
 
-    def __init__(self, hass_data: object) -> None:
+    def __init__(self, hass_data: dict) -> None:
         self._attr_unique_id = hass_data['guid']
         self._attr_supported_features = (
             SUPPORT_ALARM_ARM_AWAY | SUPPORT_ALARM_ARM_HOME

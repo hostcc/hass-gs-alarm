@@ -32,7 +32,7 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry,
 
 class G90BaseSensor(SensorEntity):
 
-    def __init__(self, hass_data: object) -> None:
+    def __init__(self, hass_data: dict) -> None:
         self._hass_data = hass_data
         self._attr_device_info = hass_data['device']
 

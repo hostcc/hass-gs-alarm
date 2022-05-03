@@ -67,7 +67,7 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry,
 
 class G90BinarySensor(BinarySensorEntity):
 
-    def __init__(self, sensor: object, hass_data: object) -> None:
+    def __init__(self, sensor: object, hass_data: dict) -> None:
         self._sensor = sensor
         self._attr_unique_id = f"{hass_data['guid']}_sensor_{sensor.index}"
         self._attr_name = sensor.name
@@ -91,7 +91,7 @@ class G90BinarySensor(BinarySensorEntity):
 
 class G90WifiStatusSensor(BinarySensorEntity):
 
-    def __init__(self, hass_data: object) -> None:
+    def __init__(self, hass_data: dict) -> None:
 
         self._attr_name = 'WiFi Status'
         self._attr_unique_id = f"{hass_data['guid']}_sensor_wifi_status"
@@ -108,7 +108,7 @@ class G90WifiStatusSensor(BinarySensorEntity):
 
 class G90GsmStatusSensor(BinarySensorEntity):
 
-    def __init__(self, hass_data: object) -> None:
+    def __init__(self, hass_data: dict) -> None:
 
         self._attr_name = 'GSM Status'
         self._attr_unique_id = f"{hass_data['guid']}_sensor_gsm_status"
