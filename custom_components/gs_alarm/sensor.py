@@ -41,7 +41,7 @@ class G90WifiSignal(G90BaseSensor):
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        self._attr_name = 'WiFi Signal'
+        self._attr_name = f'{DOMAIN}: WiFi Signal'
         self._attr_unique_id = f"{self._hass_data['guid']}_sensor_wifi_signal"
         self._attr_device_class = SensorDeviceClass.SIGNAL_STRENGTH
         self._attr_native_unit_of_measurement = PERCENTAGE
@@ -57,7 +57,7 @@ class G90GsmSignal(G90BaseSensor):
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        self._attr_name = 'GSM Signal'
+        self._attr_name = f'{DOMAIN}: GSM Signal'
         self._attr_unique_id = f"{self._hass_data['guid']}_sensor_gsm_signal"
         self._attr_device_class = SensorDeviceClass.SIGNAL_STRENGTH
         self._attr_native_unit_of_measurement = PERCENTAGE
