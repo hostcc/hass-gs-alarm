@@ -93,7 +93,7 @@ class G90WifiStatusSensor(BinarySensorEntity):
 
     def __init__(self, hass_data: dict) -> None:
 
-        self._attr_name = 'WiFi Status'
+        self._attr_name = f'{DOMAIN}: WiFi Status'
         self._attr_unique_id = f"{hass_data['guid']}_sensor_wifi_status"
         self._attr_device_class = BinarySensorDeviceClass.CONNECTIVITY
         self._attr_device_info = hass_data['device']
@@ -110,7 +110,7 @@ class G90GsmStatusSensor(BinarySensorEntity):
 
     def __init__(self, hass_data: dict) -> None:
 
-        self._attr_name = 'GSM Status'
+        self._attr_name = f'{DOMAIN}: GSM Status'
         self._attr_unique_id = f"{hass_data['guid']}_sensor_gsm_status"
         self._attr_device_class = BinarySensorDeviceClass.CONNECTIVITY
         self._attr_device_info = hass_data['device']
