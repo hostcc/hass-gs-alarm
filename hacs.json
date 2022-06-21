@@ -1,5 +1,4 @@
 {
   "name": "Golden Security Alarm",
-  "render_readme": true,
-  "domains": ["gs_alarm"]
+  "render_readme": true
 }
