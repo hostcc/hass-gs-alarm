@@ -60,7 +60,7 @@ jobs:
       - name: Determine package version
         id: package-version
         run: |
-          package_version=`python3 setup.py --version`
+          package_version=`cat version.txt`
           echo "VALUE=$package_version" >> $GITHUB_OUTPUT
       - name: SonarCloud scanning
         uses: sonarsource/sonarcloud-github-action@master
