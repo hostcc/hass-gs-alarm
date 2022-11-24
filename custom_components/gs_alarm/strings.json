@@ -20,8 +20,7 @@
     "step": {
       "init": {
         "data": {
-          "sms_alert_when_armed": "SMS alerts only when device is armed",
-          "disabled_sensors": "Disabled sensors"
+          "sms_alert_when_armed": "Configure SMS alerts only when device is armed"
         }
       }
     }

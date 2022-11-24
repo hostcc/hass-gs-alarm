@@ -1,8 +1,4 @@
-"""
-tbd
-"""
 from __future__ import annotations
-import logging
 
 from homeassistant.config_entries import ConfigEntry
 from homeassistant.core import HomeAssistant
@@ -17,6 +13,7 @@ from homeassistant.helpers.entity_platform import AddEntitiesCallback
 from pyg90alarm.entities.sensor import G90SensorTypes
 from pyg90alarm.host_info import (G90HostInfoWifiStatus, G90HostInfoGsmStatus)
 from .const import DOMAIN
+import logging
 
 HASS_SENSOR_TYPES_MAPPING = {
     G90SensorTypes.DOOR: BinarySensorDeviceClass.DOOR,
@@ -58,9 +55,7 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry,
                             async_add_entities: AddEntitiesCallback) -> None:
     """Set up a config entry."""
     g90sensors = []
-    for sensor in (
-        await hass.data[DOMAIN][entry.entry_id]['client'].get_sensors()
-    ):
+    for sensor in await hass.data[DOMAIN][entry.entry_id]['client'].sensors:
         if sensor.enabled:
             g90sensors.append(
                 G90BinarySensor(sensor, hass.data[DOMAIN][entry.entry_id])
@@ -71,9 +66,7 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry,
 
 
 class G90BinarySensor(BinarySensorEntity):
-    """
-    tbd
-    """
+
     def __init__(self, sensor: object, hass_data: dict) -> None:
         self._sensor = sensor
         self._attr_unique_id = f"{hass_data['guid']}_sensor_{sensor.index}"
@@ -86,27 +79,18 @@ class G90BinarySensor(BinarySensorEntity):
         self._hass_data = hass_data
 
     def state_callback(self, value):
-        """
-        tbd
-        """
-        _LOGGER.debug('%s: Received state callback: %s', self.unique_id, value)
+        _LOGGER.debug(f'{self.unique_id}: Received state callback: {value}')
         self.schedule_update_ha_state()
 
     @property
     def is_on(self) -> bool:
-        """
-        tbd
-        """
         val = self._sensor.occupancy
-        _LOGGER.debug('%s: Providing state %s', self.unique_id, val)
+        _LOGGER.debug(f'{self.unique_id}: Providing state {val}')
         return val
 
 
-# pylint:disable=too-few-public-methods
 class G90WifiStatusSensor(BinarySensorEntity):
-    """
-    tbd
-    """
+
     def __init__(self, hass_data: dict) -> None:
 
         self._attr_name = f'{DOMAIN}: WiFi Status'
@@ -117,19 +101,13 @@ class G90WifiStatusSensor(BinarySensorEntity):
 
     @property
     def is_on(self) -> bool:
-        """
-        tbd
-        """
         # `host_info` of entry data is periodically updated by `G90AlarmPanel`
         status = self._hass_data['host_info'].wifi_status
         return status == G90HostInfoWifiStatus.OPERATIONAL
 
 
-# pylint:disable=too-few-public-methods
 class G90GsmStatusSensor(BinarySensorEntity):
-    """
-    tbd
-    """
+
     def __init__(self, hass_data: dict) -> None:
 
         self._attr_name = f'{DOMAIN}: GSM Status'
@@ -140,9 +118,6 @@ class G90GsmStatusSensor(BinarySensorEntity):
 
     @property
     def is_on(self) -> bool:
-        """
-        tbd
-        """
         # See above re: how the data is updated
         status = self._hass_data['host_info'].gsm_status
         return status == G90HostInfoGsmStatus.OPERATIONAL
