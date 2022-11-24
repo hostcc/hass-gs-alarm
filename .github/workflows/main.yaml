@@ -55,9 +55,7 @@ jobs:
           python -m pip install --upgrade setuptools pip tox virtualenv coverage
       - name: Run the tests
         run: tox -e ${{ matrix.toxenv }}
-      - name: Combine Coverage reports
-        run: coverage combine
-      - name: Generage Coverage combined XML report
+      - name: Generage Coverage XML report
         run: coverage xml
       - name: Determine package version
         id: package-version
