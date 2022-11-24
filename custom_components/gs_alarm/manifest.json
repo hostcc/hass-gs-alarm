@@ -3,7 +3,7 @@
   "name": "Golden Security Alarm",
   "version": "0.0.0",
   "config_flow": true,
-  "documentation": "https://github.com/hostcc/hass-gs-alarm/README.md",
+  "documentation": "https://github.com/hostcc/hass-gs-alarm/blob/master/README.md",
   "issue_tracker": "https://github.com/hostcc/hass-gs-alarm/issues",
   "requirements": [
     "pyg90alarm==1.8.0"
