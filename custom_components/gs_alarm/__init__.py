@@ -38,11 +38,9 @@ async def _enable_disable_sensors(g90_client, disabled_sensors):
 async def options_update_listener(hass, entry):
     """ Handle options update. """
     g90_client = hass.data[DOMAIN][entry.entry_id]['client']
-    g90_client.sms_alert_when_armed = entry.options.get(
-        'sms_alert_when_armed', False
-    )
+    g90_client.sms_alert_when_armed = entry.options['sms_alert_when_armed']
     await _enable_disable_sensors(
-        g90_client, entry.options.get('disabled_sensors')
+        g90_client, entry.options['disabled_sensors']
     )
 
 
@@ -73,8 +71,6 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry) -> bool:
     await g90_client.listen_device_notifications()
 
     entry.async_on_unload(entry.add_update_listener(options_update_listener))
-    # Force setting options upon entry added
-    await options_update_listener(hass, entry)
 
     return True
 
