@@ -1,4 +1,8 @@
+"""
+tbd
+"""
 from __future__ import annotations
+import logging
 
 from homeassistant.config_entries import ConfigEntry
 from homeassistant.core import HomeAssistant
@@ -15,7 +19,6 @@ from homeassistant.const import (
 from homeassistant.helpers.entity_platform import AddEntitiesCallback
 
 from .const import DOMAIN
-import logging
 
 _LOGGER = logging.getLogger(__name__)
 
@@ -30,15 +33,28 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry,
     async_add_entities(g90sensors)
 
 
+# pylint:disable=too-few-public-methods
 class G90BaseSensor(SensorEntity):
-
+    """
+    tbd
+    """
     def __init__(self, hass_data: dict) -> None:
         self._hass_data = hass_data
         self._attr_device_info = hass_data['device']
+        self._attr_native_value = None
+
+    async def async_update(self):
+        """
+        tbd
+        """
+        _LOGGER.debug('Updating state')
 
 
+# pylint:disable=too-few-public-methods
 class G90WifiSignal(G90BaseSensor):
-
+    """
+    tbd
+    """
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self._attr_name = f'{DOMAIN}: WiFi Signal'
@@ -48,13 +64,19 @@ class G90WifiSignal(G90BaseSensor):
         self._attr_state_class = SensorStateClass.MEASUREMENT
 
     async def async_update(self):
+        """
+        tbd
+        """
+        await super().async_update()
         # `host_info` of entry data is periodically updated by `G90AlarmPanel`
         host_info = self._hass_data['host_info']
         self._attr_native_value = host_info.wifi_signal_level
 
 
 class G90GsmSignal(G90BaseSensor):
-
+    """
+    tbd
+    """
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self._attr_name = f'{DOMAIN}: GSM Signal'
@@ -64,6 +86,10 @@ class G90GsmSignal(G90BaseSensor):
         self._attr_state_class = SensorStateClass.MEASUREMENT
 
     async def async_update(self):
+        """
+        tbd
+        """
+        await super().async_update()
         # See above re: how the data is updated
         host_info = self._hass_data['host_info']
         self._attr_native_value = host_info.gsm_signal_level
