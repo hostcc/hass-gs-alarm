@@ -43,8 +43,9 @@ SMS messages if you enabled those in mobile application) to be sent.
 
 ## Specifics
 
-* The integration doesn't manage settings for the alarm panel, including
-  adding/removing sensors. You will still need the mobile application for that
+* The integration doesn't manage most of settings for the alarm panel, including
+  adding/removing sensors - you can only enable/disable sensors/realy. For the
+  rest you will still need the mobile application
 * No cloud or Internet connectivity required in case of local setup (Home
   Assistant in the same local network as the alarm panel)
 * Changes in alarm panel with regards to sensors and switches require the
