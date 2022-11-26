@@ -43,6 +43,7 @@ class ConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
             return self.async_show_form(step_id="confirm")
 
         devices = await self.hass.async_create_task(G90Alarm.discover())
+        _LOGGER.debug('Discovered devices: %s', devices)
         if not devices:
             return await self.async_step_custom_host(None)
         # Need to extend to handle multiple devices
@@ -110,20 +111,20 @@ class OptionsFlowHandler(config_entries.OptionsFlow):
 
         disabled_sensors = []
         all_sensors = []
-        sensors_unsupported = []
         if g90_client:
             g90_sensors = await g90_client.get_sensors()
             all_sensors = [
                 SelectOptionDict(label=x.name, value=str(x.index))
                 for x in g90_sensors
+                if x.supports_enable_disable
             ]
+            _LOGGER.debug(
+                'configure: all sensor entries for selector: %s', all_sensors
+            )
             disabled_sensors = [
                 str(x.index) for x in g90_sensors if not x.enabled
             ]
-            sensors_unsupported = [
-                str(x.index) for x in g90_sensors
-                if not x.supports_enable_disable
-            ]
+            _LOGGER.debug('configure: disabled sensors: %s', disabled_sensors)
             schema.update({
                 vol.Optional(
                     "disabled_sensors",
@@ -144,10 +145,7 @@ class OptionsFlowHandler(config_entries.OptionsFlow):
 
         errors = {}
         if user_input is not None:
-            if sensors_unsupported in user_input.get('disabled_sensors', []):
-                errors['disabled_sensors'] = 'sensor_no_enable_disable_support'
-            else:
-                return self.async_create_entry(title="", data=user_input)
+            return self.async_create_entry(title="", data=user_input)
 
         return self.async_show_form(
             step_id="init",
