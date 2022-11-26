@@ -4,7 +4,6 @@ build-backend = "setuptools.build_meta"
 
 [tool.setuptools_scm]
 local_scheme = "no-local-version"
-write_to = "version.txt"
 
 [tool.pytest.ini_options]
 log_cli = 1
