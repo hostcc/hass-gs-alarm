@@ -19,14 +19,15 @@ from custom_components.gs_alarm import (
 from custom_components.gs_alarm.const import DOMAIN
 
 
-async def test_setup_unload_and_reload_entry(hass, mock_g90alarm):
+async def test_setup_unload_and_reload_entry_afresh(hass, mock_g90alarm):
     """
-    Tests the custom integration load and then unloads properly.
+    Tests the custom integration load and then unloads properly, simulating it
+    just been added to HASS with no options persisted previously.
     """
     config_entry = MockConfigEntry(
         domain=DOMAIN,
         data={'ip_addr': 'dummy-ip'},
-        options={'disabled_sensors': ['Dummy sensor#1']},
+        options={},
         entry_id="test"
     )
 
@@ -61,7 +62,43 @@ async def test_setup_unload_and_reload_entry(hass, mock_g90alarm):
         'binary_sensor.gs_alarm_gsm_status'
     ])
 
+    # Verify options haven't been propagated to `G90Alarm` instance
+    mock_g90alarm.return_value.sms_alert_when_armed.assert_not_called()
+    (
+        mock_g90alarm.return_value
+        .get_sensors.return_value[0]
+        .set_enabled
+    ).assert_not_called()
+
     assert await async_unload_entry(hass, config_entry)
     await hass.async_block_till_done()
     # Verify the component cleaned up its data upon unloading
     assert not hass.data[DOMAIN]
+
+
+async def test_setup_entry_with_persisted_options(hass, mock_g90alarm):
+    """
+    Tests the custom integration loads properly, simulating there are some
+    options persisted (integration has been added to HASS and configured).
+    """
+    config_entry = MockConfigEntry(
+        domain=DOMAIN,
+        data={'ip_addr': 'dummy-ip'},
+        options={
+            'disabled_sensors': ['0'],
+            'sms_alert_when_armed': True,
+        },
+        entry_id="test"
+    )
+
+    assert await async_setup_entry(hass, config_entry)
+    await hass.async_block_till_done()
+
+    # Verify `G90Alarm` instance has been configured according to integration
+    # options
+    assert mock_g90alarm.return_value.sms_alert_when_armed is True
+    (
+        mock_g90alarm.return_value
+        .get_sensors.return_value[0]
+        .set_enabled
+    ).assert_called_once_with(False)
