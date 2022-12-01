@@ -56,13 +56,15 @@ class G90AlarmPanel(AlarmControlPanelEntity):
         )
         self._attr_name = hass_data['guid']
         self._attr_device_info = hass_data['device']
+        self._attr_changed_by = None
         self._state = None
         self._hass_data = hass_data
         self._hass_data['client'].armdisarm_callback = self.armdisarm_callback
+        self._hass_data['client'].alarm_callback = self.alarm_callback
 
     async def add_to_platform_finish(self) -> None:
         """
-        tbd
+        Invoked by HASS when platform is added.
         """
         # Read the state of the alarm panel upon entry is added to the
         # platform, but before its state is persisted. This helps HomeAssistant
@@ -73,16 +75,25 @@ class G90AlarmPanel(AlarmControlPanelEntity):
 
     def armdisarm_callback(self, state):
         """
-        tbd
+        Invoked by `G90Alarm` when panel is armed or disarmed.
         """
         _LOGGER.debug('Received arm/disarm callback: %s', state)
         self._state = STATE_MAPPING[state]
         # Schedule updating HA since the panel state has changed
         self.schedule_update_ha_state()
 
+    def alarm_callback(self, _sensor_idx, sensor_name):
+        """
+        Invoked by `G90Alarm` whan alarm is triggered.
+        """
+        _LOGGER.debug('Received alarm callback: %s', sensor_name)
+        self._attr_changed_by = sensor_name
+        # Schedule updating HA since the panel state has changed
+        self.schedule_update_ha_state()
+
     async def async_update(self):
         """
-        tbd
+        Invoked by HASS when state needs an update.
         """
         _LOGGER.debug('Updating state')
 
@@ -99,7 +110,7 @@ class G90AlarmPanel(AlarmControlPanelEntity):
     @property
     def state(self):
         """
-        tbd
+        Returns the platform state.
         """
         return self._state
 
