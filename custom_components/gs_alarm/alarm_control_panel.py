@@ -1,11 +1,11 @@
 """
-tbd
+Alarm control panel component.
 """
 from __future__ import annotations
 import logging
 
 from homeassistant.config_entries import ConfigEntry
-from homeassistant.core import HomeAssistant
+from homeassistant.core import HomeAssistant, callback
 
 from homeassistant.components.alarm_control_panel import (
     AlarmControlPanelEntity,
@@ -47,7 +47,7 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry,
 
 class G90AlarmPanel(AlarmControlPanelEntity):
     """
-    tbd
+    Instantiate entity for alarm control panel.
     """
     def __init__(self, hass_data: dict) -> None:
         self._attr_unique_id = hass_data['guid']
@@ -73,23 +73,42 @@ class G90AlarmPanel(AlarmControlPanelEntity):
         await self.async_update()
         await super().add_to_platform_finish()
 
+    @callback
     def armdisarm_callback(self, state):
         """
         Invoked by `G90Alarm` when panel is armed or disarmed.
         """
         _LOGGER.debug('Received arm/disarm callback: %s', state)
         self._state = STATE_MAPPING[state]
-        # Schedule updating HA since the panel state has changed
-        self.schedule_update_ha_state()
+        # Update HA entity since the panel state has changed
+        self.async_write_ha_state()
 
-    def alarm_callback(self, _sensor_idx, sensor_name):
+    @callback
+    def alarm_callback(self, sensor_idx, sensor_name, extra_data):
         """
         Invoked by `G90Alarm` whan alarm is triggered.
+
+        :param int sensor_idx: Index of the sensor (specific attribute of the
+         sensor in the alarm panel, not index in the sensors list) triggered
+         the alarm
+        :param str sensor_name: Name of the sensor (as known to alarm panel)
+         triggered the alarm
+        :param Any extra_data: Extra data might have been set to the
+         `G90Sensor` instance via `G90Sensor.extra_data` associated with the
+         alarm. The integration stores ID of sensor entity there, so it is
+         extracted and used for `changed_by` attribute of the HASS alarm panel
         """
-        _LOGGER.debug('Received alarm callback: %s', sensor_name)
-        self._attr_changed_by = sensor_name
-        # Schedule updating HA since the panel state has changed
-        self.schedule_update_ha_state()
+        _LOGGER.debug(
+            'Received alarm callback: %s (idx=%s), entity id: %s',
+            sensor_name, sensor_idx, extra_data
+        )
+        # Set `changed_by` panel attribute to the sensor entity ID if available
+        # in `extra_data`
+        if extra_data:
+            self._attr_changed_by = extra_data
+        self._state = STATE_ALARM_TRIGGERED
+        # Update HA entity since the panel state has changed
+        self.async_write_ha_state()
 
     async def async_update(self):
         """
