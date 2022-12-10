@@ -74,16 +74,19 @@ class G90BinarySensor(BinarySensorEntity):
     """
     tbd
     """
-    def __init__(self, sensor: object, hass_data: dict) -> None:
-        self._sensor = sensor
-        self._attr_unique_id = f"{hass_data['guid']}_sensor_{sensor.index}"
-        self._attr_name = sensor.name
-        hass_sensor_type = HASS_SENSOR_TYPES_MAPPING.get(sensor.type, None)
+    def __init__(self, g90_sensor: object, hass_data: dict) -> None:
+        self._g90_sensor = g90_sensor
+        self._attr_unique_id = f"{hass_data['guid']}_sensor_{g90_sensor.index}"
+        self._attr_name = g90_sensor.name
+        hass_sensor_type = HASS_SENSOR_TYPES_MAPPING.get(g90_sensor.type, None)
         if hass_sensor_type:
             self._attr_device_class = hass_sensor_type
-        sensor.state_callback = self.state_callback
+        g90_sensor.state_callback = self.state_callback
         self._attr_device_info = hass_data['device']
         self._hass_data = hass_data
+        # Store the entiry ID as extra data to `G90Sensor` instance, it will be
+        # provided in the arguments when `G90Alarm.alarm_callback` is invoked
+        self._g90_sensor.extra_data = self.entity_id
 
     def state_callback(self, value):
         """
@@ -97,7 +100,7 @@ class G90BinarySensor(BinarySensorEntity):
         """
         tbd
         """
-        val = self._sensor.occupancy
+        val = self._g90_sensor.occupancy
         _LOGGER.debug('%s: Providing state %s', self.unique_id, val)
         return val
 

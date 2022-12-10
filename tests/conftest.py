@@ -25,6 +25,10 @@ def pytest_configure(config):
     # results
     config.addinivalue_line("markers", "g90discovery")
 
+    # Register `g90host_status` mark allows to specify status of mocked G90
+    # panel
+    config.addinivalue_line("markers", "g90host_status")
+
 
 @pytest.fixture
 def mock_g90alarm(request):
@@ -72,11 +76,19 @@ def mock_g90alarm(request):
             )
         )
 
+        # Mocked panel status, either from `g90host_status` mark (`result`
+        # keyword) or disarmed by default
+        host_status = getattr(
+            request.node
+            .get_closest_marker('g90host_status'),
+            'kwargs', {}
+        ).get('result', pyg90alarm.alarm.G90ArmDisarmTypes.DISARM)
+
         # Mock `G90Alarm().get_host_info()` method with dummy status
         # information
         mock.return_value.get_host_status = AsyncMock(
             return_value=pyg90alarm.alarm.G90HostStatus(
-                host_status=pyg90alarm.alarm.G90ArmDisarmTypes.DISARM,
+                host_status=host_status,
                 host_phone_number=None,
                 product_name='Dummy product',
                 mcu_hw_version='1.0-test',
