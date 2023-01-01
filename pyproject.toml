@@ -8,3 +8,6 @@ local_scheme = "no-local-version"
 [tool.pytest.ini_options]
 log_cli = 1
 log_cli_level = "error"
+# Workaround for
+# https://github.com/MatthewFlamm/pytest-homeassistant-custom-component/issues/129
+asyncio_mode = "auto"
