@@ -6,9 +6,10 @@ import logging
 
 from homeassistant.config_entries import ConfigEntry
 from homeassistant.core import HomeAssistant
+from homeassistant.helpers.entity import EntityCategory
 
-from homeassistant.components.binary_sensor import BinarySensorEntity
 from homeassistant.components.binary_sensor import (
+    BinarySensorEntity,
     BinarySensorDeviceClass,
 )
 
@@ -115,6 +116,7 @@ class G90WifiStatusSensor(BinarySensorEntity):
         self._attr_name = f'{DOMAIN}: WiFi Status'
         self._attr_unique_id = f"{hass_data['guid']}_sensor_wifi_status"
         self._attr_device_class = BinarySensorDeviceClass.CONNECTIVITY
+        self._attr_entity_category = EntityCategory.DIAGNOSTIC
         self._attr_device_info = hass_data['device']
         self._hass_data = hass_data
 
@@ -138,6 +140,7 @@ class G90GsmStatusSensor(BinarySensorEntity):
         self._attr_name = f'{DOMAIN}: GSM Status'
         self._attr_unique_id = f"{hass_data['guid']}_sensor_gsm_status"
         self._attr_device_class = BinarySensorDeviceClass.CONNECTIVITY
+        self._attr_entity_category = EntityCategory.DIAGNOSTIC
         self._attr_device_info = hass_data['device']
         self._hass_data = hass_data
 
