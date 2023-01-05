@@ -6,10 +6,10 @@ import logging
 
 from homeassistant.config_entries import ConfigEntry
 from homeassistant.core import HomeAssistant
+from homeassistant.helpers.entity import EntityCategory
 
-from homeassistant.components.sensor import SensorEntity
 from homeassistant.components.sensor import (
-    SensorDeviceClass,
+    SensorEntity,
     SensorStateClass,
 )
 from homeassistant.const import (
@@ -59,9 +59,10 @@ class G90WifiSignal(G90BaseSensor):
         super().__init__(*args, **kwargs)
         self._attr_name = f'{DOMAIN}: WiFi Signal'
         self._attr_unique_id = f"{self._hass_data['guid']}_sensor_wifi_signal"
-        self._attr_device_class = SensorDeviceClass.SIGNAL_STRENGTH
+        self._attr_icon = 'mdi:wifi'
         self._attr_native_unit_of_measurement = PERCENTAGE
         self._attr_state_class = SensorStateClass.MEASUREMENT
+        self._attr_entity_category = EntityCategory.DIAGNOSTIC
 
     async def async_update(self):
         """
@@ -81,9 +82,10 @@ class G90GsmSignal(G90BaseSensor):
         super().__init__(*args, **kwargs)
         self._attr_name = f'{DOMAIN}: GSM Signal'
         self._attr_unique_id = f"{self._hass_data['guid']}_sensor_gsm_signal"
-        self._attr_device_class = SensorDeviceClass.SIGNAL_STRENGTH
+        self._attr_icon = 'mdi:signal'
         self._attr_native_unit_of_measurement = PERCENTAGE
         self._attr_state_class = SensorStateClass.MEASUREMENT
+        self._attr_entity_category = EntityCategory.DIAGNOSTIC
 
     async def async_update(self):
         """
