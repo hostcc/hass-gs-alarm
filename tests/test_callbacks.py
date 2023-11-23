@@ -7,9 +7,6 @@ from pytest_homeassistant_custom_component.common import (
 )
 from pyg90alarm.const import G90ArmDisarmTypes
 
-from custom_components.gs_alarm import (
-    async_setup_entry,
-)
 from custom_components.gs_alarm.const import DOMAIN
 
 
@@ -26,8 +23,9 @@ async def test_alarm_callback(hass, mock_g90alarm):
         options={},
         entry_id="test-alarm-callbacks"
     )
+    config_entry.add_to_hass(hass)
+    await hass.config_entries.async_setup(config_entry.entry_id)
 
-    assert await async_setup_entry(hass, config_entry)
     await hass.async_block_till_done()
 
     # Simulate the alarm callback is triggered
@@ -55,8 +53,9 @@ async def test_arm_callback(hass, mock_g90alarm):
         options={},
         entry_id="test-arm-callbacks"
     )
+    config_entry.add_to_hass(hass)
+    await hass.config_entries.async_setup(config_entry.entry_id)
 
-    assert await async_setup_entry(hass, config_entry)
     await hass.async_block_till_done()
 
     # Simulate the arm callback is triggered
@@ -84,7 +83,8 @@ async def test_disarm_callback(hass, mock_g90alarm):
         entry_id="test-disarm-callbacks"
     )
 
-    assert await async_setup_entry(hass, config_entry)
+    config_entry.add_to_hass(hass)
+    await hass.config_entries.async_setup(config_entry.entry_id)
     await hass.async_block_till_done()
 
     # Simulate the disarm callback is triggered
