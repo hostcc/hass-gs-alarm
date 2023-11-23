@@ -1,16 +1,16 @@
 {
   "domain": "gs_alarm",
   "name": "Golden Security Alarm",
-  "version": "0.0.0",
+  "codeowners": [
+    "@hostcc"
+  ],
   "config_flow": true,
+  "dependencies": [],
   "documentation": "https://github.com/hostcc/hass-gs-alarm/blob/master/README.md",
+  "iot_class": "local_polling",
   "issue_tracker": "https://github.com/hostcc/hass-gs-alarm/issues",
   "requirements": [
     "pyg90alarm==1.10.0"
   ],
-  "dependencies": [],
-  "codeowners": [
-    "@hostcc"
-  ],
-  "iot_class": "local_polling"
+  "version": "0.0.0"
 }
