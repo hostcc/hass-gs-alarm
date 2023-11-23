@@ -13,7 +13,6 @@ import homeassistant.helpers.device_registry as dr
 import homeassistant.helpers.entity_registry as er
 
 from custom_components.gs_alarm import (
-    async_setup_entry,
     async_unload_entry,
 )
 from custom_components.gs_alarm.const import DOMAIN
@@ -30,8 +29,9 @@ async def test_setup_unload_and_reload_entry_afresh(hass, mock_g90alarm):
         options={},
         entry_id="test"
     )
+    config_entry.add_to_hass(hass)
+    await hass.config_entries.async_setup(config_entry.entry_id)
 
-    assert await async_setup_entry(hass, config_entry)
     # Simulate some time has passed for HomeAssistant to invoke
     # `async_update()` for components
     async_fire_time_changed(hass, dt.utcnow() + timedelta(hours=1))
@@ -90,8 +90,9 @@ async def test_setup_entry_with_persisted_options(hass, mock_g90alarm):
         },
         entry_id="test"
     )
+    config_entry.add_to_hass(hass)
+    await hass.config_entries.async_setup(config_entry.entry_id)
 
-    assert await async_setup_entry(hass, config_entry)
     await hass.async_block_till_done()
 
     # Verify `G90Alarm` instance has been configured according to integration
