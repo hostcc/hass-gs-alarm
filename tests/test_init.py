@@ -1,6 +1,7 @@
 """
 Tests for loading/unloading the custom component.
 """
+import re
 from datetime import timedelta
 from pytest_unordered import unordered
 
@@ -12,9 +13,6 @@ from homeassistant.util import dt
 import homeassistant.helpers.device_registry as dr
 import homeassistant.helpers.entity_registry as er
 
-from custom_components.gs_alarm import (
-    async_unload_entry,
-)
 from custom_components.gs_alarm.const import DOMAIN
 
 
@@ -70,7 +68,12 @@ async def test_setup_unload_and_reload_entry_afresh(hass, mock_g90alarm):
         .set_enabled
     ).assert_not_called()
 
-    assert await async_unload_entry(hass, config_entry)
+    # Verify `G90Alarm` sensors received the HASS entity IDs as `extra_data`
+    for sensor in await mock_g90alarm.return_value.get_sensors():
+        assert re.search(r'^(sensor|binary_sensor)\..+$', sensor.extra_data)
+
+    # Unload the integration
+    await hass.config_entries.async_forward_entry_unload(config_entry, DOMAIN)
     await hass.async_block_till_done()
     # Verify the component cleaned up its data upon unloading
     assert not hass.data[DOMAIN]

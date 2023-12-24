@@ -8,9 +8,6 @@ from pytest_homeassistant_custom_component.common import (
     MockConfigEntry,
 )
 
-from custom_components.gs_alarm import (
-    async_setup_entry,
-)
 from custom_components.gs_alarm.const import DOMAIN
 
 
@@ -24,8 +21,8 @@ async def test_config_flow_options(hass, mock_g90alarm):
         domain=DOMAIN,
         data={},
     )
-    await async_setup_entry(hass, config_entry)
     config_entry.add_to_hass(hass)
+    await hass.config_entries.async_setup(config_entry.entry_id)
 
     # Initial step
     result = await hass.config_entries.options.async_init(
@@ -72,8 +69,8 @@ async def test_config_flow_options_unsupported_disable(hass, mock_g90alarm):
         domain=DOMAIN,
         data={},
     )
-    await async_setup_entry(hass, config_entry)
     config_entry.add_to_hass(hass)
+    await hass.config_entries.async_setup(config_entry.entry_id)
 
     # Initial step
     result = await hass.config_entries.options.async_init(

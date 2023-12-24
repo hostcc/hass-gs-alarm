@@ -85,8 +85,17 @@ class G90BinarySensor(BinarySensorEntity):
         g90_sensor.state_callback = self.state_callback
         self._attr_device_info = hass_data['device']
         self._hass_data = hass_data
-        # Store the entiry ID as extra data to `G90Sensor` instance, it will be
+
+    async def async_added_to_hass(self) -> None:
+        """
+        Invoked by HASS when entity is added.
+        """
+        # Store the entity ID as extra data to `G90Sensor` instance, it will be
         # provided in the arguments when `G90Alarm.alarm_callback` is invoked
+        _LOGGER.debug(
+            'Storing entity ID as extra data: sensor %s (idx %s), ID: %s',
+            self._g90_sensor.name, self._g90_sensor.index, self.entity_id
+        )
         self._g90_sensor.extra_data = self.entity_id
 
     def state_callback(self, value):
