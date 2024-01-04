@@ -80,6 +80,10 @@ class G90AlarmPanel(AlarmControlPanelEntity):
         """
         _LOGGER.debug('Received arm/disarm callback: %s', state)
         self._state = STATE_MAPPING[state]
+        # Reset `changed_by` attribute so the value it possibly has (name of
+        # sensor caused last alarm) isn't carried on indefinitely which might
+        # be confusing
+        self._attr_changed_by = None
         # Update HA entity since the panel state has changed
         self.async_write_ha_state()
 

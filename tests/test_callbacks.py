@@ -38,6 +38,14 @@ async def test_alarm_callback(hass, mock_g90alarm):
     assert panel_state.state == 'triggered'
     assert panel_state.attributes.get('changed_by') == 'binary_sensor.dummy_1'
 
+    # Simulate the arm callback is triggered
+    mock_g90alarm.return_value.armdisarm_callback(
+        G90ArmDisarmTypes.ARM_AWAY
+    )
+    # Verify `changed_by` attribute has been reset
+    panel_state = hass.states.get('alarm_control_panel.dummy')
+    assert panel_state.attributes.get('changed_by') is None
+
 
 @pytest.mark.g90host_status(
     result=G90ArmDisarmTypes.DISARM
