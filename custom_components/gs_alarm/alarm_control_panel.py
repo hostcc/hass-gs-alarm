@@ -12,8 +12,7 @@ from homeassistant.components.alarm_control_panel import (
 )
 from homeassistant.helpers.entity_platform import AddEntitiesCallback
 from homeassistant.components.alarm_control_panel.const import (
-    SUPPORT_ALARM_ARM_AWAY,
-    SUPPORT_ALARM_ARM_HOME,
+    AlarmControlPanelEntityFeature
 )
 
 from homeassistant.const import (
@@ -46,13 +45,17 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry,
 
 
 class G90AlarmPanel(AlarmControlPanelEntity):
+    # Not all base class methods are meaningfull in the context of the
+    # integration, silence the `pylint` for those
+    # pylint: disable=abstract-method
     """
     Instantiate entity for alarm control panel.
     """
     def __init__(self, hass_data: dict) -> None:
         self._attr_unique_id = hass_data['guid']
         self._attr_supported_features = (
-            SUPPORT_ALARM_ARM_AWAY | SUPPORT_ALARM_ARM_HOME
+            AlarmControlPanelEntityFeature.ARM_HOME
+            | AlarmControlPanelEntityFeature.ARM_AWAY
         )
         self._attr_name = hass_data['guid']
         self._attr_device_info = hass_data['device']
