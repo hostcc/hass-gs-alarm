@@ -27,6 +27,9 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry,
 
 
 class G90Switch(SwitchEntity):
+    # Not all base class methods are meaningfull in the context of the
+    # integration, silence the `pylint` for those
+    # pylint: disable=abstract-method
     """
     tbd
     """
