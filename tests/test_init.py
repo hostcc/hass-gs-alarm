@@ -73,7 +73,7 @@ async def test_setup_unload_and_reload_entry_afresh(hass, mock_g90alarm):
         assert re.search(r'^(sensor|binary_sensor)\..+$', sensor.extra_data)
 
     # Unload the integration
-    await hass.config_entries.async_forward_entry_unload(config_entry, DOMAIN)
+    await hass.config_entries.async_unload(config_entry.entry_id, DOMAIN)
     await hass.async_block_till_done()
     # Verify the component cleaned up its data upon unloading
     assert not hass.data[DOMAIN]

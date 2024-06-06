@@ -47,7 +47,7 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry,
 class G90AlarmPanel(AlarmControlPanelEntity):
     # Not all base class methods are meaningfull in the context of the
     # integration, silence the `pylint` for those
-    # pylint: disable=abstract-method
+    # pylint: disable=abstract-method, too-many-instance-attributes
     """
     Instantiate entity for alarm control panel.
     """
@@ -57,6 +57,7 @@ class G90AlarmPanel(AlarmControlPanelEntity):
             AlarmControlPanelEntityFeature.ARM_HOME
             | AlarmControlPanelEntityFeature.ARM_AWAY
         )
+        self._attr_code_arm_required = False
         self._attr_name = hass_data['guid']
         self._attr_device_info = hass_data['device']
         self._attr_changed_by = None

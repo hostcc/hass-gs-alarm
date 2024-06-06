@@ -22,6 +22,9 @@ async def _enable_disable_sensors(g90_client, disabled_sensors):
     """
     _LOGGER.debug('Sensors to disable: %s', disabled_sensors)
     for sensor in await g90_client.get_sensors():
+        # Ensure no attempts made to disable sensors not supporting that
+        if not sensor.supports_enable_disable:
+            continue
         # Calculate target state for the sensor, depending on whether it has
         # been included into `disabled_sensors` configure result or not
         enable_sensor = (
