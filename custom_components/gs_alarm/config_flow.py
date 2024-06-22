@@ -16,8 +16,7 @@ from homeassistant.helpers.selector import (
     BooleanSelector,
     SelectSelector,
     SelectSelectorConfig,
-    SelectOptionDict,
-    SelectSelectorMode,
+    SelectOptionDict
 )
 from pyg90alarm import G90Alarm
 
@@ -165,8 +164,7 @@ class OptionsFlowHandler(config_entries.OptionsFlow):
                 ): SelectSelector(
                     SelectSelectorConfig(
                         options=all_sensors,
-                        multiple=True,
-                        mode=SelectSelectorMode.LIST,
+                        multiple=True
                     )
                 ),
             })
