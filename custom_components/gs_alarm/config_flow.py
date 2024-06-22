@@ -16,8 +16,7 @@ from homeassistant.helpers.selector import (
     BooleanSelector,
     SelectSelector,
     SelectSelectorConfig,
-    SelectOptionDict,
-    SelectSelectorMode,
+    SelectOptionDict
 )
 from pyg90alarm import G90Alarm
 
