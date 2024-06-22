@@ -165,8 +165,7 @@ class OptionsFlowHandler(config_entries.OptionsFlow):
                 ): SelectSelector(
                     SelectSelectorConfig(
                         options=all_sensors,
-                        multiple=True,
-                        mode=SelectSelectorMode.LIST,
+                        multiple=True
                     )
                 ),
             })
