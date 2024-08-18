@@ -21,6 +21,7 @@
       "init": {
         "data": {
           "sms_alert_when_armed": "SMS alerts only when device is armed",
+          "simulate_alerts_from_history": "Simulate device alerts from history",
           "disabled_sensors": "Disabled sensors"
         }
       }

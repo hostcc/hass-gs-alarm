@@ -131,6 +131,12 @@ class OptionsFlowHandler(config_entries.OptionsFlow):
                     "sms_alert_when_armed", False
                 ),
             ): BooleanSelector(),
+            vol.Required(
+                "simulate_alerts_from_history",
+                default=self.config_entry.options.get(
+                    "simulate_alerts_from_history", False
+                ),
+            ): BooleanSelector(),
         }
 
         # `G90Alarm` instance might be missing, for example if integration has

@@ -39,7 +39,8 @@ async def test_config_flow_options(hass, mock_g90alarm):
         flow_id=result['flow_id'],
         user_input={
             'sms_alert_when_armed': True,
-            'disabled_sensors': ['0']
+            'disabled_sensors': ['0'],
+            'simulate_alerts_from_history': True,
         },
     )
     # Verify it results in (re)creating corresponding entry in HomeAssistant
@@ -56,6 +57,10 @@ async def test_config_flow_options(hass, mock_g90alarm):
     # Verify the value of the `sms_alert_when_armed` property of `G90Alarm()`
     # instance
     assert mock_g90alarm.return_value.sms_alert_when_armed
+
+    # Verify simulating device alerts from history has been started
+    (mock_g90alarm.return_value
+        .start_simulating_alerts_from_history.assert_called())
 
 
 async def test_config_flow_options_unsupported_disable(hass, mock_g90alarm):

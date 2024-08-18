@@ -70,6 +70,17 @@ async def options_update_listener(hass, entry):
             g90_client.sms_alert_when_armed
         )
 
+    simulate_alerts_from_history = entry.options.get(
+        'simulate_alerts_from_history'
+    )
+    if simulate_alerts_from_history is not None:
+        if simulate_alerts_from_history:
+            _LOGGER.debug('Starting to simulate device alerts from history')
+            await g90_client.start_simulating_alerts_from_history()
+        else:
+            _LOGGER.debug('Stopping to simulate device alerts from history')
+            await g90_client.stop_simulating_alerts_from_history()
+
     # Skip updating the sensors if integration has no options persisted
     disabled_sensors = entry.options.get('disabled_sensors')
     if disabled_sensors is not None:
