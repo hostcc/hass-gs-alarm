@@ -24,6 +24,18 @@ integration will have additional limitations:
 * Delays reflecting panel status up to 30 seconds
 * Sensor state changes will be absent
 
+**NOTE**
+To work around the limitation above the integration now supports simulating the
+device alerts from the history it records - it is implemented by
+[pyg90alarm](https://pypi.org/project/pyg90alarm/) Python package, and it does
+so by periodically polling the device history and sending newer entries down
+the code path as if those been received from device.
+The mode is enabled by selecting `Simulate device alerts from history` option
+in device configuration, and enabling particular device alerts types you're
+interested in via mobile application.
+This mode will still have limitations as not reflecting the state of motion
+sensors (as those come as device notifications not alerts).
+
 Additionally, you might want to enable door close alerts ("Alarm Alert -> Door
 close" in mobile application), so the integration properly reflects the state
 of a door sensor.  Not enabling it will lead the sensor to become inactive in 3
@@ -52,10 +64,10 @@ SMS messages if you enabled those in mobile application) to be sent.
   integration to be reloaded, it currently does not support making those
   updates available in HomeAssistant without the restart
 * If your alarm panel is in a subnet different from one HomeAssistant runs,
-  making the intergration receiving the device notification messages will
+  making the integration receiving the device notification messages will
   require additional steps - the notifications are sent by alarm panel as
   broadcast packets, thus you'll need those forwarded to the HomeAssistant
-  subnet
+  subnet. Alternatively, you could consider the alert simulation option above.
 
 
 ## Troubleshooting
