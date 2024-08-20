@@ -36,7 +36,7 @@ jobs:
           path: custom_components/gs_alarm/manifest.json
 
       - name: Commit updated manifest
-        uses: actions-js/push@master
+        uses: actions4git/add-commit-push@v1
         with:
-          branch: ${{ github.event.repository.default_branch }}
-          github_token: ${{ github.token }}
+          add-pathspec: custom_components/gs_alarm/manifest.json 
+          push-refspec: ${{ github.event.repository.default_branch }}
