@@ -19,7 +19,11 @@ jobs:
         uses: ietf-tools/semver-action@v1
         with:
           token: ${{ github.token }}
-          branch: ${{ github.event.repository.default_branch }}
+          branch: >-
+            ${{
+              github.head_ref
+              || github.event.repository.default_branch
+            }}
 
       - name: Set version in manifest and commit that
         uses: maxgfr/github-change-json@v0.0.26
