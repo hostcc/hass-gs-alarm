@@ -16,14 +16,16 @@ jobs:
         with:
           fetch-depth: 0
 
-      - name: Get version
+      - name: Generate next version
         id: version
-        uses: home-assistant/actions/helpers/version@master
+        uses: gandarez/semver-action@v2.0.0
+        with:
+          branching_model: trunk-based
 
       - name: Set version in manifest and commit that
         uses: maxgfr/github-change-json@v0.0.26
         with:
           key: version
-          value: ${{ steps.version.outputs.version }}
+          value: ${{ steps.version.outputs.semver_tag }}
           path: custom_components/gs_alarm/manifest.json
           commit: true
