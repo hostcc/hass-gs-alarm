@@ -2,7 +2,6 @@
 name: release
 
 on:
-  pull_request:
   release:
     types: [published]
 
@@ -14,7 +13,11 @@ jobs:
       - name: Checkout the code
         uses: actions/checkout@v4
         with:
+          # Branches/tags should be available for semver action below to pick
+          # next version
           fetch-depth: 0
+          # Git will use deploy SSH key, mostly to push to default branch being
+          # protected
           ssh-key: ${{ secrets.DEPLOY_KEY }}
 
       - name: Generate next version
@@ -22,6 +25,9 @@ jobs:
         uses: ietf-tools/semver-action@v1
         with:
           token: ${{ github.token }}
+          # Pick either current branch for PR or the default branch to find the
+          # version from (the former is only needed for testing the workflow in
+          # an PR)
           branch: >-
             ${{
               github.head_ref
@@ -47,5 +53,7 @@ jobs:
       - name: Push changes
         uses: ad-m/github-push-action@master
         with:
+          # SSH (deploy) key allows to bypass branch protection on default
+          # branch
           ssh: true
           branch: ${{ github.event.repository.default_branch }}
