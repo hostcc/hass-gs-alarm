@@ -27,11 +27,13 @@ jobs:
 
       - name: Set version in manifest and commit that
         uses: maxgfr/github-change-json@v0.0.26
-        env:
-          GITHUB_HEAD_REF: ${{ github.event.repository.default_branch }}
-          GITHUB_REF: ${{ github.event.repository.default_branch }}
         with:
           key: version
           value: ${{ steps.version.outputs.nextStrict }}
           path: custom_components/gs_alarm/manifest.json
-          commit: true
+
+      - name: Commit updated manifest
+        uses: actions-js/push@master
+        with:
+          branch: ${{ github.event.repository.default_branch }}
+          github_token: ${{ github.token }}
