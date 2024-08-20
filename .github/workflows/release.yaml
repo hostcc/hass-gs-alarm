@@ -36,7 +36,16 @@ jobs:
           path: custom_components/gs_alarm/manifest.json
 
       - name: Commit updated manifest
-        uses: actions4git/add-commit-push@main
+        run: |
+          git config --local user.email \
+            "github-actions[bot]@users.noreply.github.com"
+          git config --local user.name \
+            "github-actions[bot]"
+          git add custom_components/gs_alarm/manifest.json
+          git commit -m "Updating version in 'manifest.json'"
+
+      - name: Push changes
+        uses: ad-m/github-push-action@master
         with:
-          add-pathspec: custom_components/gs_alarm/manifest.json 
-          push-refspec: ${{ github.event.repository.default_branch }}
+          ssh: true
+          branch: ${{ github.event.repository.default_branch }}
