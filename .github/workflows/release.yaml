@@ -13,20 +13,18 @@ jobs:
     steps:
       - name: Checkout the code
         uses: actions/checkout@v4
-        with:
-          fetch-depth: 0
 
       - name: Generate next version
         id: version
-        uses: gandarez/semver-action@v2.0.0
+        uses: ietf-tools/semver-action@v1
         with:
-          branching_model: trunk-based
-          debug: true
+          token: ${{ github.token }}
+          branch: ${{ github.event.repository.default_branch }}
 
       - name: Set version in manifest and commit that
         uses: maxgfr/github-change-json@v0.0.26
         with:
           key: version
-          value: ${{ steps.version.outputs.semver_tag }}
+          value: ${{ steps.version.outputs.nextStrict }}
           path: custom_components/gs_alarm/manifest.json
           commit: true
