@@ -22,6 +22,7 @@ jobs:
         uses: gandarez/semver-action@v2.0.0
         with:
           branching_model: trunk-based
+          debug: true
 
       - name: Set version in manifest and commit that
         uses: maxgfr/github-change-json@v0.0.26
