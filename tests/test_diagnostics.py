@@ -35,7 +35,7 @@ async def test_diagnostics(hass, hass_client):
     )
     integration_device_id = next(iter(integration_devices)).id
 
-    # Keys expected for the response 
+    # Keys expected for the response
     expected_data_keys = unordered([
         'config_entry', 'device_entry', 'alarm_panel'
     ])
