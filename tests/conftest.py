@@ -1,6 +1,7 @@
 """
 Pytest configuration and fixtures
 """
+import asyncio
 from unittest.mock import patch, AsyncMock, PropertyMock
 import pytest
 
@@ -89,7 +90,7 @@ def mock_g90alarm(request):
         mock.return_value.get_host_status = AsyncMock(
             return_value=pyg90alarm.alarm.G90HostStatus(
                 host_status=host_status,
-                host_phone_number=None,
+                host_phone_number='12345678',
                 product_name='Dummy product',
                 mcu_hw_version='1.0-test',
                 wifi_hw_version='1.0-test',
@@ -141,7 +142,7 @@ def mock_g90alarm(request):
                     parent_name='Dummy switch',
                     index=0,
                     room_id=0,
-                    type_id=0,
+                    type_id=128,
                     subtype=0,
                     timeout=0,
                     user_flag_data=0,
@@ -157,5 +158,26 @@ def mock_g90alarm(request):
 
         # Mock `G90Alarm().listen_device_notificaitons()` to do nothing
         mock.return_value.listen_device_notifications = AsyncMock()
+
+        mock.return_value.history = AsyncMock(
+            return_value=[
+                pyg90alarm.history.G90History(
+                    type=2,
+                    event_id=3,
+                    source=0,
+                    state=0,
+                    sensor_name='',
+                    unix_time=3,
+                    other=''
+                )
+            ]
+        )
+
+        mock.return_value.get_alert_config = AsyncMock(
+            return_value=pyg90alarm.config.G90AlertConfig(255)
+        )
+
+        # pylint:disable=protected-access
+        mock.return_value._alert_simulation_task = AsyncMock(spec=asyncio.Task)
 
         yield mock

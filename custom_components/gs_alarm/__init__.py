@@ -7,6 +7,7 @@ import logging
 
 from pyg90alarm import G90Alarm
 from homeassistant.config_entries import ConfigEntry
+from homeassistant.helpers.device_registry import DeviceInfo
 from homeassistant.core import HomeAssistant
 
 from .const import DOMAIN
@@ -100,16 +101,17 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry) -> bool:
         'guid': host_info.host_guid,
         # Will periodically be updated by `G90AlarmPanel`
         'host_info': host_info,
-        'device': {
-            'name': f'{DOMAIN}:{host_info.host_guid}',
-            'model': host_info.product_name,
-            'sw_version': f'MCU: {host_info.mcu_hw_version},'
-                          f' WiFi: {host_info.wifi_hw_version}',
-            'identifiers': {
+        'device': DeviceInfo(
+            identifiers=set(
                 (DOMAIN, host_info.host_guid)
-            },
-            'manufacturer': 'Golden Security',
-        }
+            ),
+            manufacturer='Golden Security',
+            model=host_info.product_name,
+            name=f'{DOMAIN}:{host_info.host_guid}',
+            serial_number=host_info.host_guid,
+            sw_version=f'MCU: {host_info.mcu_hw_version},'
+                       f' WiFi: {host_info.wifi_hw_version}',
+        )
     }
 
     await hass.config_entries.async_forward_entry_setups(entry, PLATFORMS)
