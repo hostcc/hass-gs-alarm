@@ -12,5 +12,5 @@
   "requirements": [
     "pyg90alarm==1.12.1"
   ],
-  "version": "f4024af90802f1aeedcb25d93c7e798841c5efdf"
+  "version": "1.14.2"
 }
