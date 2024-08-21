@@ -11,3 +11,11 @@ log_cli_level = "error"
 # Workaround for
 # https://github.com/MatthewFlamm/pytest-homeassistant-custom-component/issues/129
 asyncio_mode = "auto"
+
+[[tool.mypy.overrides]]
+module = "pyg90alarm.*"
+ignore_missing_imports = true
+
+[[tool.mypy.overrides]]
+module = "voluptuous"
+ignore_missing_imports = true

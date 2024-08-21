@@ -81,8 +81,8 @@ async def test_config_flow_manual_device(hass, mock_g90alarm):
     mock_g90alarm.assert_called_with(host='dummy-manual-host')
 
 
-# pylint: disable=unused-argument
-async def test_config_flow_manual_device_no_ip_addr(hass, mock_g90alarm):
+@pytest.mark.usefixtures('mock_g90alarm')
+async def test_config_flow_manual_device_no_ip_addr(hass):
     """
     Tests config flow wit manual device and omitted input for its hostname/IP
     address.

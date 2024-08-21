@@ -2,6 +2,7 @@
 The `gs_alarm` integration.
 """
 from __future__ import annotations
+from typing import List
 import asyncio
 import logging
 
@@ -16,7 +17,9 @@ _LOGGER = logging.getLogger(__name__)
 PLATFORMS = ["alarm_control_panel", "switch", "binary_sensor", "sensor"]
 
 
-async def _enable_disable_sensors(g90_client, disabled_sensors):
+async def _enable_disable_sensors(
+    g90_client: G90Alarm, disabled_sensors: List[str]
+) -> None:
     """
     Perform enabling/disabling sensors support that during options (configure)
     flow
@@ -49,7 +52,9 @@ async def _enable_disable_sensors(g90_client, disabled_sensors):
         await sensor.set_enabled(enable_sensor)
 
 
-async def options_update_listener(hass, entry):
+async def options_update_listener(
+    hass: HomeAssistant, entry: ConfigEntry
+) -> None:
     """
     Handles options update.
     """
@@ -102,9 +107,9 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry) -> bool:
         # Will periodically be updated by `G90AlarmPanel`
         'host_info': host_info,
         'device': DeviceInfo(
-            identifiers=set(
+            identifiers={
                 (DOMAIN, host_info.host_guid)
-            ),
+            },
             manufacturer='Golden Security',
             model=host_info.product_name,
             name=f'{DOMAIN}:{host_info.host_guid}',

@@ -1,12 +1,13 @@
 """
-tbd
+Binary sensors for `gs_alarm` integration.
 """
 from __future__ import annotations
+from typing import Dict, Any, cast, List
 import logging
 
 from homeassistant.config_entries import ConfigEntry
 from homeassistant.core import HomeAssistant
-from homeassistant.helpers.entity import EntityCategory
+from homeassistant.const import EntityCategory
 
 from homeassistant.components.binary_sensor import (
     BinarySensorEntity,
@@ -15,7 +16,7 @@ from homeassistant.components.binary_sensor import (
 
 from homeassistant.helpers.entity_platform import AddEntitiesCallback
 
-from pyg90alarm.entities.sensor import G90SensorTypes
+from pyg90alarm.entities.sensor import (G90Sensor, G90SensorTypes)
 from pyg90alarm.host_info import (G90HostInfoWifiStatus, G90HostInfoGsmStatus)
 from .const import DOMAIN
 
@@ -58,7 +59,9 @@ _LOGGER = logging.getLogger(__name__)
 async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry,
                             async_add_entities: AddEntitiesCallback) -> None:
     """Set up a config entry."""
-    g90sensors = []
+    g90sensors: List[
+        G90WifiStatusSensor | G90GsmStatusSensor | G90BinarySensor
+    ] = []
     for sensor in (
         await hass.data[DOMAIN][entry.entry_id]['client'].get_sensors()
     ):
@@ -73,9 +76,11 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry,
 
 class G90BinarySensor(BinarySensorEntity):
     """
-    tbd
+    Binary sensor specific to alarm panel.
     """
-    def __init__(self, g90_sensor: object, hass_data: dict) -> None:
+    def __init__(
+        self, g90_sensor: G90Sensor, hass_data: Dict[str, Any]
+    ) -> None:
         self._g90_sensor = g90_sensor
         self._attr_unique_id = f"{hass_data['guid']}_sensor_{g90_sensor.index}"
         self._attr_name = g90_sensor.name
@@ -98,9 +103,9 @@ class G90BinarySensor(BinarySensorEntity):
         )
         self._g90_sensor.extra_data = self.entity_id
 
-    def state_callback(self, value):
+    def state_callback(self, value: bool) -> None:
         """
-        tbd
+        Invoked by `pyg90alarm` when its sensor changes the state.
         """
         _LOGGER.debug('%s: Received state callback: %s', self.unique_id, value)
         self.schedule_update_ha_state()
@@ -108,9 +113,9 @@ class G90BinarySensor(BinarySensorEntity):
     @property
     def is_on(self) -> bool:
         """
-        tbd
+        Indicates if sensor is active.
         """
-        val = self._g90_sensor.occupancy
+        val: bool = self._g90_sensor.occupancy
         _LOGGER.debug('%s: Providing state %s', self.unique_id, val)
         return val
 
@@ -118,10 +123,9 @@ class G90BinarySensor(BinarySensorEntity):
 # pylint:disable=too-few-public-methods
 class G90WifiStatusSensor(BinarySensorEntity):
     """
-    tbd
+    WiFi status sensor.
     """
-    def __init__(self, hass_data: dict) -> None:
-
+    def __init__(self, hass_data: Dict[str, Any]) -> None:
         self._attr_name = f'{DOMAIN}: WiFi Status'
         self._attr_unique_id = f"{hass_data['guid']}_sensor_wifi_status"
         self._attr_device_class = BinarySensorDeviceClass.CONNECTIVITY
@@ -132,20 +136,19 @@ class G90WifiStatusSensor(BinarySensorEntity):
     @property
     def is_on(self) -> bool:
         """
-        tbd
+        Indicates if WiFi is connected.
         """
         # `host_info` of entry data is periodically updated by `G90AlarmPanel`
         status = self._hass_data['host_info'].wifi_status
-        return status == G90HostInfoWifiStatus.OPERATIONAL
+        return cast(bool, status == G90HostInfoWifiStatus.OPERATIONAL)
 
 
 # pylint:disable=too-few-public-methods
 class G90GsmStatusSensor(BinarySensorEntity):
     """
-    tbd
+    GSM status sensor.
     """
-    def __init__(self, hass_data: dict) -> None:
-
+    def __init__(self, hass_data: Dict[str, Any]) -> None:
         self._attr_name = f'{DOMAIN}: GSM Status'
         self._attr_unique_id = f"{hass_data['guid']}_sensor_gsm_status"
         self._attr_device_class = BinarySensorDeviceClass.CONNECTIVITY
@@ -156,8 +159,8 @@ class G90GsmStatusSensor(BinarySensorEntity):
     @property
     def is_on(self) -> bool:
         """
-        tbd
+        Indicates if GSM is connected.
         """
         # See above re: how the data is updated
         status = self._hass_data['host_info'].gsm_status
-        return status == G90HostInfoGsmStatus.OPERATIONAL
+        return cast(bool, status == G90HostInfoGsmStatus.OPERATIONAL)

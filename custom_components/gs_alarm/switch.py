@@ -1,8 +1,8 @@
 """
-tbd
+Switches for `gs_alarm` integration.
 """
 from __future__ import annotations
-from typing import Any
+from typing import Any, Dict
 
 from homeassistant.config_entries import ConfigEntry
 from homeassistant.core import HomeAssistant
@@ -10,11 +10,15 @@ from homeassistant.core import HomeAssistant
 from homeassistant.components.switch import SwitchEntity
 from homeassistant.helpers.entity_platform import AddEntitiesCallback
 
+from pyg90alarm.entities.device import G90Device
+
 from .const import DOMAIN
 
 
-async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry,
-                            async_add_entities: AddEntitiesCallback) -> None:
+async def async_setup_entry(
+    hass: HomeAssistant, entry: ConfigEntry,
+    async_add_entities: AddEntitiesCallback
+) -> None:
     """Set up a config entry."""
     g90switches = []
     for device in await (
@@ -31,9 +35,9 @@ class G90Switch(SwitchEntity):
     # integration, silence the `pylint` for those
     # pylint: disable=abstract-method
     """
-    tbd
+    Switch specific to alarm panel.
     """
-    def __init__(self, device: object, hass_data: dict) -> None:
+    def __init__(self, device: G90Device, hass_data: Dict[str, Any]) -> None:
         self._device = device
         self._state = False
         self._attr_unique_id = (
@@ -46,20 +50,20 @@ class G90Switch(SwitchEntity):
     @property
     def is_on(self) -> bool:
         """
-        tbd
+        Indicates if the switch is active (on).
         """
         return self._state
 
     async def async_turn_on(self, **_kwargs: Any) -> None:
         """
-        tbd
+        Turn on the switch.
         """
         await self._device.turn_on()
         self._state = True
 
     async def async_turn_off(self, **_kwargs: Any) -> None:
         """
-        tbd
+        Turn off the switch.
         """
         await self._device.turn_off()
         self._state = False

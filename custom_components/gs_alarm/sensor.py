@@ -1,18 +1,19 @@
 """
-tbd
+Sensors for `gs_alarm` integration.
 """
 from __future__ import annotations
+from typing import Dict, Any
 import logging
 
 from homeassistant.config_entries import ConfigEntry
 from homeassistant.core import HomeAssistant
-from homeassistant.helpers.entity import EntityCategory
 
 from homeassistant.components.sensor import (
     SensorEntity,
     SensorStateClass,
 )
 from homeassistant.const import (
+    EntityCategory,
     PERCENTAGE,
 )
 
@@ -36,16 +37,17 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry,
 # pylint:disable=too-few-public-methods
 class G90BaseSensor(SensorEntity):
     """
-    tbd
+    Base class for sensors.
     """
-    def __init__(self, hass_data: dict) -> None:
+    def __init__(self, hass_data: Dict[str, Any]) -> None:
         self._hass_data = hass_data
         self._attr_device_info = hass_data['device']
         self._attr_native_value = None
 
-    async def async_update(self):
+    async def async_update(self) -> None:
         """
-        tbd
+        Invoked when HomeAssistant needs to update the sensor, required by base
+        class.
         """
         _LOGGER.debug('Updating state')
 
@@ -53,10 +55,10 @@ class G90BaseSensor(SensorEntity):
 # pylint:disable=too-few-public-methods
 class G90WifiSignal(G90BaseSensor):
     """
-    tbd
+    Sensor for WiFi signal strength.
     """
-    def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
+    def __init__(self, hass_data: Dict[str, Any]) -> None:
+        super().__init__(hass_data)
         self._attr_name = f'{DOMAIN}: WiFi Signal'
         self._attr_unique_id = f"{self._hass_data['guid']}_sensor_wifi_signal"
         self._attr_icon = 'mdi:wifi'
@@ -64,9 +66,9 @@ class G90WifiSignal(G90BaseSensor):
         self._attr_state_class = SensorStateClass.MEASUREMENT
         self._attr_entity_category = EntityCategory.DIAGNOSTIC
 
-    async def async_update(self):
+    async def async_update(self) -> None:
         """
-        tbd
+        Invoked when HomeAssistant needs to update the sensor state.
         """
         await super().async_update()
         # `host_info` of entry data is periodically updated by `G90AlarmPanel`
@@ -76,10 +78,10 @@ class G90WifiSignal(G90BaseSensor):
 
 class G90GsmSignal(G90BaseSensor):
     """
-    tbd
+    Sensor for GSM signal strength.
     """
-    def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
+    def __init__(self, hass_data: Dict[str, Any]) -> None:
+        super().__init__(hass_data)
         self._attr_name = f'{DOMAIN}: GSM Signal'
         self._attr_unique_id = f"{self._hass_data['guid']}_sensor_gsm_signal"
         self._attr_icon = 'mdi:signal'
@@ -87,9 +89,9 @@ class G90GsmSignal(G90BaseSensor):
         self._attr_state_class = SensorStateClass.MEASUREMENT
         self._attr_entity_category = EntityCategory.DIAGNOSTIC
 
-    async def async_update(self):
+    async def async_update(self) -> None:
         """
-        tbd
+        Invoked when HomeAssistant needs to update the sensor state.
         """
         await super().async_update()
         # See above re: how the data is updated
