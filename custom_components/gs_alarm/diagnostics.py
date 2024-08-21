@@ -2,13 +2,13 @@
 Diagnostics support for the integration.
 """
 from __future__ import annotations
-from typing import Any
+from typing import Any, cast
 
 import logging
 from homeassistant.core import HomeAssistant
 from homeassistant.config_entries import ConfigEntry
 from homeassistant.helpers.device_registry import DeviceEntry
-from homeassistant.helpers.redact import async_redact_data
+from homeassistant.components.diagnostics.util import async_redact_data
 from pyg90alarm.entities.sensor import G90Sensor
 from pyg90alarm.entities.device import G90Device
 from pyg90alarm.exceptions import G90Error, G90TimeoutError
@@ -28,7 +28,9 @@ async def async_get_config_entry_diagnostics(
     """
     Returns diagnostics for the config entry.
     """
-    return await async_get_device_diagnostics(hass, entry, None)
+    return await async_get_device_diagnostics(
+        hass, entry, cast(DeviceEntry, None)
+    )
 
 
 def format_g90_sensor_device(sensor: G90Sensor | G90Device) -> dict[str, Any]:
@@ -93,7 +95,7 @@ async def async_get_device_diagnostics(
             },
         }
 
-        return async_redact_data(result, TO_REDACT)
+        return cast(dict[str, Any], async_redact_data(result, TO_REDACT))
     # Errors raised by `pyg90alarm` are treated as non-terminating, just
     # resulting in error response
     except (G90Error, G90TimeoutError) as exc:

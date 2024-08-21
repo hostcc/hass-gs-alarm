@@ -2,6 +2,7 @@
 Alarm control panel component.
 """
 from __future__ import annotations
+from typing import Any
 import logging
 
 from homeassistant.config_entries import ConfigEntry
@@ -20,6 +21,7 @@ from homeassistant.const import (
     STATE_ALARM_ARMED_HOME,
     STATE_ALARM_DISARMED,
     STATE_ALARM_TRIGGERED,
+    STATE_UNKNOWN,
 )
 
 from pyg90alarm.const import G90ArmDisarmTypes
@@ -51,7 +53,7 @@ class G90AlarmPanel(AlarmControlPanelEntity):
     """
     Instantiate entity for alarm control panel.
     """
-    def __init__(self, hass_data: dict) -> None:
+    def __init__(self, hass_data: dict[str, Any]) -> None:
         self._attr_unique_id = hass_data['guid']
         self._attr_supported_features = (
             AlarmControlPanelEntityFeature.ARM_HOME
@@ -61,7 +63,7 @@ class G90AlarmPanel(AlarmControlPanelEntity):
         self._attr_name = hass_data['guid']
         self._attr_device_info = hass_data['device']
         self._attr_changed_by = None
-        self._state = None
+        self._state = STATE_UNKNOWN
         self._hass_data = hass_data
         self._hass_data['client'].armdisarm_callback = self.armdisarm_callback
         self._hass_data['client'].alarm_callback = self.alarm_callback
@@ -78,7 +80,7 @@ class G90AlarmPanel(AlarmControlPanelEntity):
         await super().add_to_platform_finish()
 
     @callback
-    def armdisarm_callback(self, state):
+    def armdisarm_callback(self, state: G90ArmDisarmTypes) -> None:
         """
         Invoked by `G90Alarm` when panel is armed or disarmed.
         """
@@ -92,7 +94,9 @@ class G90AlarmPanel(AlarmControlPanelEntity):
         self.async_write_ha_state()
 
     @callback
-    def alarm_callback(self, sensor_idx, sensor_name, extra_data):
+    def alarm_callback(
+        self, sensor_idx: int, sensor_name: str, extra_data: str
+    ) -> None:
         """
         Invoked by `G90Alarm` whan alarm is triggered.
 
@@ -118,7 +122,7 @@ class G90AlarmPanel(AlarmControlPanelEntity):
         # Update HA entity since the panel state has changed
         self.async_write_ha_state()
 
-    async def async_update(self):
+    async def async_update(self) -> None:
         """
         Invoked by HASS when state needs an update.
         """
@@ -135,7 +139,7 @@ class G90AlarmPanel(AlarmControlPanelEntity):
         )
 
     @property
-    def state(self):
+    def state(self) -> str:
         """
         Returns the platform state.
         """
