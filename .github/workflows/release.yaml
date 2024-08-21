@@ -26,6 +26,8 @@ jobs:
         uses: ietf-tools/semver-action@v1
         with:
           token: ${{ github.token }}
+          # Increase patch component if no conventional commits found
+          noVersionBumpBehavior: patch
           # Pick either current branch for PR or the default branch to find the
           # version from (the former is only needed for testing the workflow in
           # an PR)
