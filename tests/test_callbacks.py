@@ -6,6 +6,11 @@ from pytest_homeassistant_custom_component.common import (
     MockConfigEntry,
 )
 from homeassistant.core import HomeAssistant
+from homeassistant.const import (
+   STATE_ALARM_DISARMED,
+   STATE_ALARM_ARMED_AWAY,
+   STATE_ALARM_TRIGGERED,
+)
 
 from pyg90alarm import G90Alarm
 from pyg90alarm.const import G90ArmDisarmTypes
@@ -40,7 +45,7 @@ async def test_alarm_callback(
     # Verify panel state and attributes reflect that
     panel_state = hass.states.get('alarm_control_panel.dummy_guid')
     assert panel_state is not None
-    assert panel_state.state == 'triggered'
+    assert panel_state.state == STATE_ALARM_TRIGGERED
     assert panel_state.attributes.get('changed_by') == 'binary_sensor.dummy_1'
 
     # Simulate the arm callback is triggered
@@ -81,7 +86,7 @@ async def test_arm_callback(
     # Verify panel state reflects that
     panel_state = hass.states.get('alarm_control_panel.dummy_guid')
     assert panel_state is not None
-    assert panel_state.state == 'armed_away'
+    assert panel_state.state == STATE_ALARM_ARMED_AWAY
 
 
 @pytest.mark.g90host_status(
@@ -113,4 +118,4 @@ async def test_disarm_callback(
     # Verify panel state reflects that
     panel_state = hass.states.get('alarm_control_panel.dummy_guid')
     assert panel_state is not None
-    assert panel_state.state == 'disarmed'
+    assert panel_state.state == STATE_ALARM_DISARMED
