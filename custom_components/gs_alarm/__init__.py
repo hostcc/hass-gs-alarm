@@ -7,9 +7,15 @@ import asyncio
 import logging
 
 from pyg90alarm import G90Alarm
+from pyg90alarm.exceptions import (
+    G90Error, G90TimeoutError
+)
 from homeassistant.config_entries import ConfigEntry
 from homeassistant.helpers.device_registry import DeviceInfo
 from homeassistant.core import HomeAssistant
+from homeassistant.exceptions import (
+    ConfigEntryNotReady, ConfigEntryError
+)
 
 from .const import DOMAIN
 
@@ -79,16 +85,28 @@ async def options_update_listener(
     simulate_alerts_from_history = entry.options.get(
         'simulate_alerts_from_history'
     )
+    # See the comment above
     if simulate_alerts_from_history is not None:
-        if simulate_alerts_from_history:
-            _LOGGER.debug('Starting to simulate device alerts from history')
-            await g90_client.start_simulating_alerts_from_history()
-        else:
-            _LOGGER.debug('Stopping to simulate device alerts from history')
-            await g90_client.stop_simulating_alerts_from_history()
+        try:
+            if simulate_alerts_from_history:
+                _LOGGER.debug(
+                    'Starting to simulate device alerts from history'
+                )
+                await g90_client.start_simulating_alerts_from_history()
+            else:
+                _LOGGER.debug(
+                    'Stopping to simulate device alerts from history'
+                )
+                await g90_client.stop_simulating_alerts_from_history()
+        except (G90Error, G90TimeoutError) as exc:
+            _LOGGER.error(
+                'Error %s simulate device alerts from history: %s',
+                'enabling' if simulate_alerts_from_history else 'disabling',
+                repr(exc)
+            )
 
-    # Skip updating the sensors if integration has no options persisted
     disabled_sensors = entry.options.get('disabled_sensors')
+    # See the comment above
     if disabled_sensors is not None:
         await _enable_disable_sensors(g90_client, disabled_sensors)
 
@@ -98,21 +116,36 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry) -> bool:
     Sets up gs_alarm from a config entry.
     """
     hass.data.setdefault(DOMAIN, {})
-    g90_client = G90Alarm(host=entry.data.get('ip_addr', None))
-    host_info = await g90_client.get_host_info()
+    host = entry.data.get('ip_addr', None)
+    try:
+        g90_client = G90Alarm(host)
+        host_info = await g90_client.get_host_info()
+        devices = await g90_client.get_devices()
+        sensors = await g90_client.get_sensors()
+        await g90_client.listen_device_notifications()
+    except G90TimeoutError as exc:
+        raise ConfigEntryNotReady(
+            f"Timeout while connecting to '{host}'"
+        ) from exc
+    except G90Error as exc:
+        raise ConfigEntryError(f"'{host}': {repr(exc)}") from exc
 
     hass.data[DOMAIN][entry.entry_id] = {
         'client': g90_client,
         'guid': host_info.host_guid,
         # Will periodically be updated by `G90AlarmPanel`
         'host_info': host_info,
+        # Store panel sensors/devices for switch and sensor platforms
+        'panel_devices': devices,
+        'panel_sensors': sensors,
+        # HASS device information
         'device': DeviceInfo(
             identifiers={
                 (DOMAIN, host_info.host_guid)
             },
             manufacturer='Golden Security',
             model=host_info.product_name,
-            name=f'{DOMAIN}:{host_info.host_guid}',
+            name=host_info.host_guid,
             serial_number=host_info.host_guid,
             sw_version=f'MCU: {host_info.mcu_hw_version},'
                        f' WiFi: {host_info.wifi_hw_version}',
@@ -120,11 +153,16 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry) -> bool:
     }
 
     await hass.config_entries.async_forward_entry_setups(entry, PLATFORMS)
-    await g90_client.listen_device_notifications()
 
     entry.async_on_unload(entry.add_update_listener(options_update_listener))
-    # Force setting options upon entry added
-    await options_update_listener(hass, entry)
+
+    # Update the entry's title
+    if not hass.config_entries.async_update_entry(
+        entry, title=host_info.host_guid
+    ):
+        # Force setting options upon entry added, but only of title update
+        # didn't result in the change thus triggering the listener
+        await options_update_listener(hass, entry)
 
     return True
 

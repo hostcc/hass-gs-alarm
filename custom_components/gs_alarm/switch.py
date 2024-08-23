@@ -3,6 +3,7 @@ Switches for `gs_alarm` integration.
 """
 from __future__ import annotations
 from typing import Any, Dict
+import logging
 
 from homeassistant.config_entries import ConfigEntry
 from homeassistant.core import HomeAssistant
@@ -11,8 +12,13 @@ from homeassistant.components.switch import SwitchEntity
 from homeassistant.helpers.entity_platform import AddEntitiesCallback
 
 from pyg90alarm.entities.device import G90Device
+from pyg90alarm.exceptions import (
+    G90Error, G90TimeoutError
+)
 
 from .const import DOMAIN
+
+_LOGGER = logging.getLogger(__name__)
 
 
 async def async_setup_entry(
@@ -21,12 +27,13 @@ async def async_setup_entry(
 ) -> None:
     """Set up a config entry."""
     g90switches = []
-    for device in await (
-        hass.data[DOMAIN][entry.entry_id]['client'].get_devices()
+    for device in (
+        hass.data[DOMAIN][entry.entry_id]['panel_devices']
     ):
         g90switches.append(
             G90Switch(device, hass.data[DOMAIN][entry.entry_id])
         )
+
     async_add_entities(g90switches)
 
 
@@ -58,12 +65,25 @@ class G90Switch(SwitchEntity):
         """
         Turn on the switch.
         """
-        await self._device.turn_on()
-        self._state = True
+        try:
+            await self._device.turn_on()
+        except (G90Error, G90TimeoutError) as exc:
+            # State isn't set to STATE_UNKNOWN since the panel doesn't support
+            # reading it back
+            _LOGGER.error('Error turning on the switch: %s', repr(exc))
+        else:
+            # State is only updated upon successful command execution
+            self._state = True
 
     async def async_turn_off(self, **_kwargs: Any) -> None:
         """
         Turn off the switch.
         """
-        await self._device.turn_off()
-        self._state = False
+        try:
+            await self._device.turn_off()
+        except (G90Error, G90TimeoutError) as exc:
+            # See comment above
+            _LOGGER.error('Error turning off the switch: %s', repr(exc))
+        else:
+            # See comment above
+            self._state = False

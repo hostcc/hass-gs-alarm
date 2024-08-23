@@ -9,14 +9,18 @@ from pytest_homeassistant_custom_component.common import (
     MockConfigEntry,
     async_fire_time_changed,
 )
+from homeassistant.core import HomeAssistant
 from homeassistant.util import dt
 import homeassistant.helpers.device_registry as dr
 import homeassistant.helpers.entity_registry as er
 
+from pyg90alarm import G90Alarm
 from custom_components.gs_alarm.const import DOMAIN
 
 
-async def test_setup_unload_and_reload_entry_afresh(hass, mock_g90alarm):
+async def test_setup_unload_and_reload_entry_afresh(
+    hass: HomeAssistant, mock_g90alarm: G90Alarm
+) -> None:
     """
     Tests the custom integration load and then unloads properly, simulating it
     just been added to HASS with no options persisted previously.
@@ -35,6 +39,8 @@ async def test_setup_unload_and_reload_entry_afresh(hass, mock_g90alarm):
     async_fire_time_changed(hass, dt.utcnow() + timedelta(hours=1))
     await hass.async_block_till_done()
 
+    assert config_entry.title == 'Dummy GUID'
+
     mock_g90alarm.assert_called_once_with(host='dummy-ip')
 
     # Verify single device has been added
@@ -51,7 +57,7 @@ async def test_setup_unload_and_reload_entry_afresh(hass, mock_g90alarm):
     )
     integration_entity_ids = [x.entity_id for x in integration_entities]
     assert integration_entity_ids == unordered([
-        'alarm_control_panel.dummy',
+        'alarm_control_panel.dummy_guid',
         'binary_sensor.dummy_sensor_1',
         'switch.dummy_switch_1',
         'sensor.gs_alarm_wifi_signal',
@@ -73,13 +79,15 @@ async def test_setup_unload_and_reload_entry_afresh(hass, mock_g90alarm):
         assert re.search(r'^(sensor|binary_sensor)\..+$', sensor.extra_data)
 
     # Unload the integration
-    await hass.config_entries.async_unload(config_entry.entry_id, DOMAIN)
+    await hass.config_entries.async_unload(config_entry.entry_id)
     await hass.async_block_till_done()
     # Verify the component cleaned up its data upon unloading
     assert not hass.data[DOMAIN]
 
 
-async def test_setup_entry_with_persisted_options(hass, mock_g90alarm):
+async def test_setup_entry_with_persisted_options(
+    hass: HomeAssistant, mock_g90alarm: G90Alarm
+) -> None:
     """
     Tests the custom integration loads properly, simulating there are some
     options persisted (integration has been added to HASS and configured).

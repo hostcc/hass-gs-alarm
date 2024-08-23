@@ -7,8 +7,14 @@
   "config_flow": true,
   "dependencies": [],
   "documentation": "https://github.com/hostcc/hass-gs-alarm/blob/master/README.md",
+  "integration_type": "device",
   "iot_class": "local_polling",
   "issue_tracker": "https://github.com/hostcc/hass-gs-alarm/issues",
+  "loggers": [
+    "pyg90alarm",
+    "custom_components.gs_alarm"
+  ],
+  "quality_scale": "gold",
   "requirements": [
     "pyg90alarm==1.12.1"
   ],

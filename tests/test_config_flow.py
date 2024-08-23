@@ -3,9 +3,11 @@ Tests config flow for the custom component.
 """
 import pytest
 
+from homeassistant.core import HomeAssistant
 from homeassistant.data_entry_flow import FlowResultType
 from homeassistant.config_entries import ConfigEntry
 
+from pyg90alarm import G90Alarm
 from custom_components.gs_alarm.const import DOMAIN
 
 
@@ -17,7 +19,9 @@ from custom_components.gs_alarm.const import DOMAIN
         'port': 4321,
     }
 ])
-async def test_config_flow_discovered_devices(hass, mock_g90alarm):
+async def test_config_flow_discovered_devices(
+    hass: HomeAssistant, mock_g90alarm: G90Alarm
+) -> None:
     """
     Tests config flow with single discovered device.
     """
@@ -45,7 +49,9 @@ async def test_config_flow_discovered_devices(hass, mock_g90alarm):
     mock_g90alarm.assert_called_with(host='dummy-discovered-host')
 
 
-async def test_config_flow_manual_device(hass, mock_g90alarm):
+async def test_config_flow_manual_device(
+    hass: HomeAssistant, mock_g90alarm: G90Alarm
+) -> None:
     """
     Tests config flow with no discovered and single manually added device.
     """
@@ -82,7 +88,9 @@ async def test_config_flow_manual_device(hass, mock_g90alarm):
 
 
 @pytest.mark.usefixtures('mock_g90alarm')
-async def test_config_flow_manual_device_no_ip_addr(hass):
+async def test_config_flow_manual_device_no_ip_addr(
+    hass: HomeAssistant
+) -> None:
     """
     Tests config flow wit manual device and omitted input for its hostname/IP
     address.

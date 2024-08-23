@@ -20,5 +20,13 @@ ignore_missing_imports = true
 module = "voluptuous"
 ignore_missing_imports = true
 
+[[tool.mypy.overrides]]
+module = "pytest_homeassistant_custom_component.common"
+ignore_missing_imports = true
+
+[[tool.mypy.overrides]]
+module = "pytest_homeassistant_custom_component.typing"
+ignore_missing_imports = true
+
 [tool.coverage.run]
 relative_files = true

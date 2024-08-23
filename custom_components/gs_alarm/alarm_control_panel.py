@@ -7,7 +7,6 @@ import logging
 
 from homeassistant.config_entries import ConfigEntry
 from homeassistant.core import HomeAssistant, callback
-
 from homeassistant.components.alarm_control_panel import (
     AlarmControlPanelEntity,
 )
@@ -25,6 +24,9 @@ from homeassistant.const import (
 )
 
 from pyg90alarm.const import G90ArmDisarmTypes
+from pyg90alarm.exceptions import (
+    G90Error, G90TimeoutError
+)
 
 from .const import DOMAIN
 
@@ -128,15 +130,20 @@ class G90AlarmPanel(AlarmControlPanelEntity):
         """
         _LOGGER.debug('Updating state')
 
-        host_status = await self._hass_data['client'].get_host_status()
-        host_state = host_status.host_status
-        self._state = STATE_MAPPING[host_state]
-        # Store alarm panel information (GSM/WiFi status/signal level etc.) so
-        # a sensor could use the data w/o duplicate access to `host_info`
-        # property of `G90Alarm`, which issues a device call internally
-        self._hass_data['host_info'] = (
-            await self._hass_data['client'].get_host_info()
-        )
+        try:
+            host_status = await self._hass_data['client'].get_host_status()
+            host_state = host_status.host_status
+            self._state = STATE_MAPPING[host_state]
+            # Store alarm panel information (GSM/WiFi status/signal level etc.)
+            # so a sensor could use the data w/o duplicate access to
+            # `host_info` property of `G90Alarm`, which issues a device call
+            # internally
+            self._hass_data['host_info'] = (
+                await self._hass_data['client'].get_host_info()
+            )
+        except (G90Error, G90TimeoutError) as exc:
+            _LOGGER.error('Error updating state of alarm panel: %s', repr(exc))
+            self._state = STATE_UNKNOWN
 
     @property
     def state(self) -> str:
@@ -147,12 +154,25 @@ class G90AlarmPanel(AlarmControlPanelEntity):
 
     async def async_alarm_disarm(self, _code: str | None = None) -> None:
         """Send disarm command."""
-        await self._hass_data['client'].disarm()
+        try:
+            await self._hass_data['client'].disarm()
+        except (G90Error, G90TimeoutError) as exc:
+            # Log the error, the state is not altered since `async_update()`
+            # should read back the previous state unchanged
+            _LOGGER.error('Error disarming: %s', repr(exc))
 
     async def async_alarm_arm_home(self, _code: str | None = None) -> None:
         """Send arm home command."""
-        await self._hass_data['client'].arm_home()
+        try:
+            await self._hass_data['client'].arm_home()
+        except (G90Error, G90TimeoutError) as exc:
+            # See comment above
+            _LOGGER.error('Error arming home: %s', repr(exc))
 
     async def async_alarm_arm_away(self, _code: str | None = None) -> None:
         """Send arm away command."""
-        await self._hass_data['client'].arm_away()
+        try:
+            await self._hass_data['client'].arm_away()
+        except (G90Error, G90TimeoutError) as exc:
+            # See comment above
+            _LOGGER.error('Error arming away: %s', repr(exc))
