@@ -63,14 +63,19 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry,
         G90WifiStatusSensor | G90GsmStatusSensor | G90BinarySensor
     ] = []
     for sensor in (
-        await hass.data[DOMAIN][entry.entry_id]['client'].get_sensors()
+        hass.data[DOMAIN][entry.entry_id]['panel_sensors']
     ):
         if sensor.enabled:
             g90sensors.append(
                 G90BinarySensor(sensor, hass.data[DOMAIN][entry.entry_id])
             )
-    g90sensors.append(G90WifiStatusSensor(hass.data[DOMAIN][entry.entry_id]))
-    g90sensors.append(G90GsmStatusSensor(hass.data[DOMAIN][entry.entry_id]))
+    g90sensors.append(
+        G90WifiStatusSensor(hass.data[DOMAIN][entry.entry_id])
+    )
+    g90sensors.append(
+        G90GsmStatusSensor(hass.data[DOMAIN][entry.entry_id])
+    )
+
     async_add_entities(g90sensors)
 
 

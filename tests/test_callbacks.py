@@ -5,6 +5,9 @@ import pytest
 from pytest_homeassistant_custom_component.common import (
     MockConfigEntry,
 )
+from homeassistant.core import HomeAssistant
+
+from pyg90alarm import G90Alarm
 from pyg90alarm.const import G90ArmDisarmTypes
 
 from custom_components.gs_alarm.const import DOMAIN
@@ -13,7 +16,9 @@ from custom_components.gs_alarm.const import DOMAIN
 @pytest.mark.g90host_status(
     result=G90ArmDisarmTypes.DISARM
 )
-async def test_alarm_callback(hass, mock_g90alarm):
+async def test_alarm_callback(
+    hass: HomeAssistant, mock_g90alarm: G90Alarm
+) -> None:
     """
     Tests the alarm panel changes its state upon alarm callback is triggered.
     """
@@ -25,7 +30,6 @@ async def test_alarm_callback(hass, mock_g90alarm):
     )
     config_entry.add_to_hass(hass)
     await hass.config_entries.async_setup(config_entry.entry_id)
-
     await hass.async_block_till_done()
 
     # Simulate the alarm callback is triggered
@@ -34,7 +38,8 @@ async def test_alarm_callback(hass, mock_g90alarm):
     )
 
     # Verify panel state and attributes reflect that
-    panel_state = hass.states.get('alarm_control_panel.dummy')
+    panel_state = hass.states.get('alarm_control_panel.dummy_guid')
+    assert panel_state is not None
     assert panel_state.state == 'triggered'
     assert panel_state.attributes.get('changed_by') == 'binary_sensor.dummy_1'
 
@@ -43,14 +48,17 @@ async def test_alarm_callback(hass, mock_g90alarm):
         G90ArmDisarmTypes.ARM_AWAY
     )
     # Verify `changed_by` attribute has been reset
-    panel_state = hass.states.get('alarm_control_panel.dummy')
+    panel_state = hass.states.get('alarm_control_panel.dummy_guid')
+    assert panel_state is not None
     assert panel_state.attributes.get('changed_by') is None
 
 
 @pytest.mark.g90host_status(
     result=G90ArmDisarmTypes.DISARM
 )
-async def test_arm_callback(hass, mock_g90alarm):
+async def test_arm_callback(
+    hass: HomeAssistant, mock_g90alarm: G90Alarm
+) -> None:
     """
     Tests the alarm panel changes its state upon arm callback is triggered for
     arming away.
@@ -63,7 +71,6 @@ async def test_arm_callback(hass, mock_g90alarm):
     )
     config_entry.add_to_hass(hass)
     await hass.config_entries.async_setup(config_entry.entry_id)
-
     await hass.async_block_till_done()
 
     # Simulate the arm callback is triggered
@@ -72,14 +79,17 @@ async def test_arm_callback(hass, mock_g90alarm):
     )
 
     # Verify panel state reflects that
-    panel_state = hass.states.get('alarm_control_panel.dummy')
+    panel_state = hass.states.get('alarm_control_panel.dummy_guid')
+    assert panel_state is not None
     assert panel_state.state == 'armed_away'
 
 
 @pytest.mark.g90host_status(
     result=G90ArmDisarmTypes.ARM_AWAY
 )
-async def test_disarm_callback(hass, mock_g90alarm):
+async def test_disarm_callback(
+    hass: HomeAssistant, mock_g90alarm: G90Alarm
+) -> None:
     """
     Tests the alarm panel changes its state upon arm callback is triggered for
     disarming.
@@ -101,5 +111,6 @@ async def test_disarm_callback(hass, mock_g90alarm):
     )
 
     # Verify panel state reflects that
-    panel_state = hass.states.get('alarm_control_panel.dummy')
+    panel_state = hass.states.get('alarm_control_panel.dummy_guid')
+    assert panel_state is not None
     assert panel_state.state == 'disarmed'

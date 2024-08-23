@@ -1,24 +1,30 @@
 """
 Pytest configuration and fixtures
 """
+from typing import Iterator
 import asyncio
 from unittest.mock import patch, AsyncMock, PropertyMock
 import pytest
 
+from homeassistant.core import HomeAssistant
+
 import pyg90alarm
+from pyg90alarm import G90Alarm
 
 
 @pytest.fixture(autouse=True)
 # pylint: disable=unused-argument
-def auto_enable_custom_integrations(enable_custom_integrations):
+def auto_enable_custom_integrations(
+    enable_custom_integrations: pytest.FixtureDef[HomeAssistant]
+) -> Iterator[None]:
     """
     Automatically uses `enable_custom_integrations` Homeassistant fixture,
     since it is required for custom integrations to be loaded during tests.
     """
-    yield
+    yield None
 
 
-def pytest_configure(config):
+def pytest_configure(config: pytest.Config) -> None:
     """
     Configures `pytest`.
     """
@@ -32,7 +38,7 @@ def pytest_configure(config):
 
 
 @pytest.fixture
-def mock_g90alarm(request):
+def mock_g90alarm(request: pytest.FixtureRequest) -> Iterator[G90Alarm]:
     """
     Mocks `G90Alarm` instance and its methods relevant to tests.
     """
@@ -61,7 +67,7 @@ def mock_g90alarm(request):
         # information
         mock.return_value.get_host_info = AsyncMock(
             return_value=pyg90alarm.alarm.G90HostInfo(
-                host_guid='Dummy',
+                host_guid='Dummy GUID',
                 product_name='Dummy product',
                 wifi_protocol_version='1.0-test',
                 cloud_protocol_version='1.1-test',

@@ -6,15 +6,23 @@ from pytest_unordered import unordered
 from pytest_homeassistant_custom_component.common import (
     MockConfigEntry,
 )
+from pytest_homeassistant_custom_component.typing import (
+    ClientSessionGenerator
+)
+from homeassistant.core import HomeAssistant
 from homeassistant.setup import async_setup_component
 import homeassistant.helpers.device_registry as dr
+
+from pyg90alarm import G90Alarm
 from pyg90alarm.exceptions import G90Error
 
 from custom_components.gs_alarm.const import DOMAIN
 
 
 @pytest.mark.usefixtures('mock_g90alarm')
-async def test_diagnostics(hass, hass_client):
+async def test_diagnostics(
+    hass: HomeAssistant, hass_client: ClientSessionGenerator
+) -> None:
     """
     Verifies diagnostics are successfully generated.
     """
@@ -73,7 +81,10 @@ async def test_diagnostics(hass, hass_client):
     assert list(data['alarm_panel'].keys()) == expected_alarm_panel_keys
 
 
-async def test_diagnostics_exception(hass, hass_client, mock_g90alarm):
+async def test_diagnostics_exception(
+    hass: HomeAssistant, hass_client: ClientSessionGenerator,
+    mock_g90alarm: G90Alarm
+) -> None:
     """
     Verify the `pyg90alarm` error doesn't lead to diagnostics resulting in
     internal error sent back to the client.

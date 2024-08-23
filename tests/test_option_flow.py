@@ -3,15 +3,19 @@ Tests for option (configure) flow for the custom component.
 """
 from unittest.mock import PropertyMock
 
+from homeassistant.core import HomeAssistant
 from homeassistant.data_entry_flow import FlowResultType
 from pytest_homeassistant_custom_component.common import (
     MockConfigEntry,
 )
 
+from pyg90alarm import G90Alarm
 from custom_components.gs_alarm.const import DOMAIN
 
 
-async def test_config_flow_options(hass, mock_g90alarm):
+async def test_config_flow_options(
+    hass: HomeAssistant, mock_g90alarm: G90Alarm
+) -> None:
     """
     Tests options (configure) flow for the component with correct inputs.
     """
@@ -63,7 +67,9 @@ async def test_config_flow_options(hass, mock_g90alarm):
         .start_simulating_alerts_from_history.assert_called())
 
 
-async def test_config_flow_options_unsupported_disable(hass, mock_g90alarm):
+async def test_config_flow_options_unsupported_disable(
+    hass: HomeAssistant, mock_g90alarm: G90Alarm
+) -> None:
     """
     Tests options (configure) flow for the component where sensor attempted to
     disable and it isn't supported.
