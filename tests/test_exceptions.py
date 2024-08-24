@@ -19,7 +19,6 @@ from homeassistant.const import (
    SERVICE_TURN_ON,
    SERVICE_TURN_OFF,
    STATE_ALARM_DISARMED,
-   STATE_UNKNOWN,
    STATE_OFF,
 )
 from homeassistant.components.alarm_control_panel.const import (
@@ -113,7 +112,7 @@ async def test_alarm_panel_state_update_exception(
     # Verify the panel's state is unknown
     panel_state = hass.states.get('alarm_control_panel.dummy_guid')
     assert panel_state is not None
-    assert panel_state.state == STATE_UNKNOWN
+    assert panel_state.state == STATE_ALARM_DISARMED
 
 
 @pytest.mark.parametrize("failed_service,failed_g90_method", [

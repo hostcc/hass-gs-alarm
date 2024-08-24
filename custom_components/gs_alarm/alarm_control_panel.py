@@ -142,8 +142,10 @@ class G90AlarmPanel(AlarmControlPanelEntity):
                 await self._hass_data['client'].get_host_info()
             )
         except (G90Error, G90TimeoutError) as exc:
+            # Log the error but retain the state, otherwise it might get noisy
+            # re: changing it between `unknown` and last state - the panel is
+            # known of leading to protocol errors somewhat often
             _LOGGER.error('Error updating state of alarm panel: %s', repr(exc))
-            self._state = STATE_UNKNOWN
 
     @property
     def state(self) -> str:
