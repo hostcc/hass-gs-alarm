@@ -145,7 +145,11 @@ class G90AlarmPanel(AlarmControlPanelEntity):
             # Log the error but retain the state, otherwise it might get noisy
             # re: changing it between `unknown` and last state - the panel is
             # known of leading to protocol errors somewhat often
-            _LOGGER.error('Error updating state of alarm panel: %s', repr(exc))
+            _LOGGER.error(
+                "Error updating state of alarm panel '%s': %s",
+                self.unique_id,
+                repr(exc)
+            )
 
     @property
     def state(self) -> str:
@@ -161,7 +165,11 @@ class G90AlarmPanel(AlarmControlPanelEntity):
         except (G90Error, G90TimeoutError) as exc:
             # Log the error, the state is not altered since `async_update()`
             # should read back the previous state unchanged
-            _LOGGER.error('Error disarming: %s', repr(exc))
+            _LOGGER.error(
+                "Error disarming panel '%s': %s",
+                self.unique_id,
+                repr(exc)
+            )
 
     async def async_alarm_arm_home(self, _code: str | None = None) -> None:
         """Send arm home command."""
@@ -169,7 +177,11 @@ class G90AlarmPanel(AlarmControlPanelEntity):
             await self._hass_data['client'].arm_home()
         except (G90Error, G90TimeoutError) as exc:
             # See comment above
-            _LOGGER.error('Error arming home: %s', repr(exc))
+            _LOGGER.error(
+                "Error arming panel '%s' home: %s",
+                self.unique_id,
+                repr(exc)
+            )
 
     async def async_alarm_arm_away(self, _code: str | None = None) -> None:
         """Send arm away command."""
@@ -177,4 +189,8 @@ class G90AlarmPanel(AlarmControlPanelEntity):
             await self._hass_data['client'].arm_away()
         except (G90Error, G90TimeoutError) as exc:
             # See comment above
-            _LOGGER.error('Error arming away: %s', repr(exc))
+            _LOGGER.error(
+                "Error arming panel '%s' away: %s",
+                self.unique_id,
+                repr(exc)
+            )

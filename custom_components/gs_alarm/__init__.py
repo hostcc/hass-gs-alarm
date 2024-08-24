@@ -100,8 +100,10 @@ async def options_update_listener(
                 await g90_client.stop_simulating_alerts_from_history()
         except (G90Error, G90TimeoutError) as exc:
             _LOGGER.error(
-                'Error %s simulate device alerts from history: %s',
+                "Error %s simulate device alerts from history"
+                " for panel '%s': %s",
                 'enabling' if simulate_alerts_from_history else 'disabling',
+                entry.title,
                 repr(exc)
             )
 

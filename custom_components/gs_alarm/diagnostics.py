@@ -99,6 +99,9 @@ async def async_get_device_diagnostics(
     # Errors raised by `pyg90alarm` are treated as non-terminating, just
     # resulting in error response
     except (G90Error, G90TimeoutError) as exc:
-        msg = f'Unable to gather diagnostics data: {repr(exc)}'
+        msg = (
+            "Unable to gather diagnostics data for"
+            f" panel '{entry.title}': {repr(exc)}"
+        )
         _LOGGER.error(msg)
         return {'error': msg}
