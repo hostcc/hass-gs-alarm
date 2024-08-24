@@ -27,6 +27,9 @@ jobs:
           token: ${{ github.token }}
           # Increase patch component if no conventional commits found
           noVersionBumpBehavior: patch
+          # Retain the current version if there no commits tag and recent
+          # commit
+          noNewCommitBehavior: current
           # Pick either current branch for PR or the default branch to find the
           # version from (the former is only needed for testing the workflow in
           # an PR)
@@ -38,12 +41,22 @@ jobs:
 
       - name: Set version in manifest and commit that
         uses: maxgfr/github-change-json@v0.0.26
+        # Only perform release-related actions if new version is generated, do
+        # nothing otherwise - primiry use case to prevent another run of the
+        # workflow triggered when manifest is updated (see below)
+        if: >-
+            steps.version.outputs.next !=
+            steps.version.outputs.current
         with:
           key: version
           value: ${{ steps.version.outputs.nextStrict }}
           path: custom_components/gs_alarm/manifest.json
 
       - name: Commit updated manifest
+        # See comment above
+        if: >-
+            steps.version.outputs.next !=
+            steps.version.outputs.current
         run: |
           git config --local user.email \
             "github-actions[bot]@users.noreply.github.com"
@@ -54,6 +67,10 @@ jobs:
 
       - name: Push changes
         uses: ad-m/github-push-action@master
+        # See comment above
+        if: >-
+            steps.version.outputs.next !=
+            steps.version.outputs.current
         with:
           # SSH (deploy) key allows to bypass branch protection on default
           # branch
@@ -62,6 +79,10 @@ jobs:
 
       - name: Create release
         uses: ncipollo/release-action@v1
+        # See comment above
+        if: >-
+            steps.version.outputs.next !=
+            steps.version.outputs.current
         with:
           # Base the release off of the tip of default branch
           commit: ${{ github.event.repository.default_branch }}
@@ -70,4 +91,4 @@ jobs:
           draft: false
           generateReleaseNotes: true
           prerelease: false
-          tag: ${{ steps.version.outputs.nextStrict }} 
+          tag: ${{ steps.version.outputs.nextStrict }}
