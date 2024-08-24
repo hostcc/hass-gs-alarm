@@ -111,5 +111,7 @@ async def test_diagnostics_exception(
     response_dict = await response.json()
     data = response_dict.get('data')
     assert data == {
-        'error': 'Unable to gather diagnostics data: G90Error()'
+        'error':
+            "Unable to gather diagnostics data for"
+            " panel 'Dummy GUID': G90Error()"
     }

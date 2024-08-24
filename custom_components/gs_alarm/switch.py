@@ -70,7 +70,11 @@ class G90Switch(SwitchEntity):
         except (G90Error, G90TimeoutError) as exc:
             # State isn't set to STATE_UNKNOWN since the panel doesn't support
             # reading it back
-            _LOGGER.error('Error turning on the switch: %s', repr(exc))
+            _LOGGER.error(
+                "Error turning on the switch '%s': %s",
+                self.unique_id,
+                repr(exc)
+            )
         else:
             # State is only updated upon successful command execution
             self._state = True
@@ -83,7 +87,11 @@ class G90Switch(SwitchEntity):
             await self._device.turn_off()
         except (G90Error, G90TimeoutError) as exc:
             # See comment above
-            _LOGGER.error('Error turning off the switch: %s', repr(exc))
+            _LOGGER.error(
+                "Error turning off the switch '%s': %s",
+                self.unique_id,
+                repr(exc)
+            )
         else:
             # See comment above
             self._state = False
