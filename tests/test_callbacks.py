@@ -12,17 +12,17 @@ from homeassistant.const import (
    STATE_ALARM_TRIGGERED,
 )
 
-from pyg90alarm import G90Alarm
-from pyg90alarm.const import G90ArmDisarmTypes
+from pyg90alarm import G90ArmDisarmTypes
 
 from custom_components.gs_alarm.const import DOMAIN
+from .conftest import AlarmMockT
 
 
 @pytest.mark.g90host_status(
     result=G90ArmDisarmTypes.DISARM
 )
 async def test_alarm_callback(
-    hass: HomeAssistant, mock_g90alarm: G90Alarm
+    hass: HomeAssistant, mock_g90alarm: AlarmMockT
 ) -> None:
     """
     Tests the alarm panel changes its state upon alarm callback is triggered.
@@ -62,7 +62,7 @@ async def test_alarm_callback(
     result=G90ArmDisarmTypes.DISARM
 )
 async def test_arm_callback(
-    hass: HomeAssistant, mock_g90alarm: G90Alarm
+    hass: HomeAssistant, mock_g90alarm: AlarmMockT
 ) -> None:
     """
     Tests the alarm panel changes its state upon arm callback is triggered for
@@ -93,7 +93,7 @@ async def test_arm_callback(
     result=G90ArmDisarmTypes.ARM_AWAY
 )
 async def test_disarm_callback(
-    hass: HomeAssistant, mock_g90alarm: G90Alarm
+    hass: HomeAssistant, mock_g90alarm: AlarmMockT
 ) -> None:
     """
     Tests the alarm panel changes its state upon arm callback is triggered for

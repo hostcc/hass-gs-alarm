@@ -13,10 +13,10 @@ from homeassistant.core import HomeAssistant
 from homeassistant.setup import async_setup_component
 import homeassistant.helpers.device_registry as dr
 
-from pyg90alarm import G90Alarm
-from pyg90alarm.exceptions import G90Error
+from pyg90alarm import G90Error
 
 from custom_components.gs_alarm.const import DOMAIN
+from .conftest import AlarmMockT
 
 
 @pytest.mark.usefixtures('mock_g90alarm')
@@ -83,7 +83,7 @@ async def test_diagnostics(
 
 async def test_diagnostics_exception(
     hass: HomeAssistant, hass_client: ClientSessionGenerator,
-    mock_g90alarm: G90Alarm
+    mock_g90alarm: AlarmMockT
 ) -> None:
     """
     Verify the `pyg90alarm` error doesn't lead to diagnostics resulting in

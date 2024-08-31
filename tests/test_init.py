@@ -14,12 +14,12 @@ from homeassistant.util import dt
 import homeassistant.helpers.device_registry as dr
 import homeassistant.helpers.entity_registry as er
 
-from pyg90alarm import G90Alarm
 from custom_components.gs_alarm.const import DOMAIN
+from .conftest import AlarmMockT
 
 
 async def test_setup_unload_and_reload_entry_afresh(
-    hass: HomeAssistant, mock_g90alarm: G90Alarm
+    hass: HomeAssistant, mock_g90alarm: AlarmMockT
 ) -> None:
     """
     Tests the custom integration load and then unloads properly, simulating it
@@ -86,7 +86,7 @@ async def test_setup_unload_and_reload_entry_afresh(
 
 
 async def test_setup_entry_with_persisted_options(
-    hass: HomeAssistant, mock_g90alarm: G90Alarm
+    hass: HomeAssistant, mock_g90alarm: AlarmMockT
 ) -> None:
     """
     Tests the custom integration loads properly, simulating there are some

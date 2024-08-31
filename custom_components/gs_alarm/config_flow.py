@@ -137,10 +137,9 @@ class OptionsFlowHandler(OptionsFlow):
         Manage the options.
         """
         # Attempt to retrieve `G90Alarm()` instance from integration data
-        g90_client = (
-            self.hass.data[DOMAIN]
-            .get(self.config_entry.entry_id, {})
-            .get('client', None)
+        g90_client = getattr(
+            self.hass.data[DOMAIN].get(self.config_entry.entry_id, None),
+            'client', None
         )
 
         schema = {

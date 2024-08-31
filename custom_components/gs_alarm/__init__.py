@@ -3,11 +3,12 @@ The `gs_alarm` integration.
 """
 from __future__ import annotations
 from typing import List
+from dataclasses import dataclass
 import asyncio
 import logging
 
-from pyg90alarm import G90Alarm
-from pyg90alarm.exceptions import (
+from pyg90alarm import (
+    G90Alarm, G90Sensor, G90Device, G90HostInfo,
     G90Error, G90TimeoutError
 )
 from homeassistant.config_entries import ConfigEntry
@@ -21,6 +22,22 @@ from .const import DOMAIN
 
 _LOGGER = logging.getLogger(__name__)
 PLATFORMS = ["alarm_control_panel", "switch", "binary_sensor", "sensor"]
+
+
+@dataclass
+class GsAlarmData:
+    """
+    tb
+    """
+    client: G90Alarm
+    guid: str
+    # Will periodically be updated by `G90AlarmPanel`
+    host_info: G90HostInfo
+    # Store panel sensors/devices for switch and sensor platforms
+    panel_devices: List[G90Device]
+    panel_sensors: List[G90Sensor]
+    # HASS device information
+    device: DeviceInfo
 
 
 async def _enable_disable_sensors(
@@ -64,7 +81,7 @@ async def options_update_listener(
     """
     Handles options update.
     """
-    g90_client = hass.data[DOMAIN][entry.entry_id]['client']
+    g90_client = hass.data[DOMAIN][entry.entry_id].client
     _LOGGER.debug(
         'Updating alarm panel from config_entry options %s',
         entry.options
@@ -132,16 +149,16 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry) -> bool:
     except G90Error as exc:
         raise ConfigEntryError(f"'{host}': {repr(exc)}") from exc
 
-    hass.data[DOMAIN][entry.entry_id] = {
-        'client': g90_client,
-        'guid': host_info.host_guid,
+    hass.data[DOMAIN][entry.entry_id] = GsAlarmData(
+        client=g90_client,
+        guid=host_info.host_guid,
         # Will periodically be updated by `G90AlarmPanel`
-        'host_info': host_info,
+        host_info=host_info,
         # Store panel sensors/devices for switch and sensor platforms
-        'panel_devices': devices,
-        'panel_sensors': sensors,
+        panel_devices=devices,
+        panel_sensors=sensors,
         # HASS device information
-        'device': DeviceInfo(
+        device=DeviceInfo(
             identifiers={
                 (DOMAIN, host_info.host_guid)
             },
@@ -152,7 +169,7 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry) -> bool:
             sw_version=f'MCU: {host_info.mcu_hw_version},'
                        f' WiFi: {host_info.wifi_hw_version}',
         )
-    }
+    )
 
     await hass.config_entries.async_forward_entry_setups(entry, PLATFORMS)
 
@@ -188,7 +205,7 @@ async def async_unload_entry(hass: HomeAssistant, entry: ConfigEntry) -> bool:
         'Platforms unloaded %successfully', '' if unload_ok else 'un'
     )
     if unload_ok:
-        g90_client = hass.data[DOMAIN][entry.entry_id]['client']
+        g90_client = hass.data[DOMAIN][entry.entry_id].client
         g90_client.close_device_notifications()
         hass.data[DOMAIN].pop(entry.entry_id)
         _LOGGER.debug('Custom component unloaded')

@@ -1,7 +1,8 @@
 """
 Pytest configuration and fixtures
 """
-from typing import Iterator
+from __future__ import annotations
+from typing import Iterator, TypeVar
 import asyncio
 from unittest.mock import patch, AsyncMock, PropertyMock
 import pytest
@@ -9,7 +10,8 @@ import pytest
 from homeassistant.core import HomeAssistant
 
 import pyg90alarm
-from pyg90alarm import G90Alarm
+
+AlarmMockT = TypeVar('AlarmMockT', bound=AsyncMock)
 
 
 @pytest.fixture(autouse=True)
@@ -38,7 +40,7 @@ def pytest_configure(config: pytest.Config) -> None:
 
 
 @pytest.fixture
-def mock_g90alarm(request: pytest.FixtureRequest) -> Iterator[G90Alarm]:
+def mock_g90alarm(request: pytest.FixtureRequest) -> Iterator[AlarmMockT]:
     """
     Mocks `G90Alarm` instance and its methods relevant to tests.
     """
@@ -66,7 +68,7 @@ def mock_g90alarm(request: pytest.FixtureRequest) -> Iterator[G90Alarm]:
         # Mock `G90Alarm().get_host_info()` method with dummy product
         # information
         mock.return_value.get_host_info = AsyncMock(
-            return_value=pyg90alarm.alarm.G90HostInfo(
+            return_value=pyg90alarm.G90HostInfo(
                 host_guid='Dummy GUID',
                 product_name='Dummy product',
                 wifi_protocol_version='1.0-test',
@@ -75,9 +77,9 @@ def mock_g90alarm(request: pytest.FixtureRequest) -> Iterator[G90Alarm]:
                 wifi_hw_version='1.0-test',
                 gsm_status_data=0,
                 wifi_status_data=0,
-                reserved1=None,
-                reserved2=None,
-                band_frequency=None,
+                reserved1=0,
+                reserved2=0,
+                band_frequency='',
                 gsm_signal_level=100,
                 wifi_signal_level=100,
             )
@@ -89,13 +91,13 @@ def mock_g90alarm(request: pytest.FixtureRequest) -> Iterator[G90Alarm]:
             request.node
             .get_closest_marker('g90host_status'),
             'kwargs', {}
-        ).get('result', pyg90alarm.alarm.G90ArmDisarmTypes.DISARM)
+        ).get('result', pyg90alarm.G90ArmDisarmTypes.DISARM)
 
         # Mock `G90Alarm().get_host_info()` method with dummy status
         # information
         mock.return_value.get_host_status = AsyncMock(
-            return_value=pyg90alarm.alarm.G90HostStatus(
-                host_status=host_status,
+            return_value=pyg90alarm.G90HostStatus(
+                host_status_data=host_status,
                 host_phone_number='12345678',
                 product_name='Dummy product',
                 mcu_hw_version='1.0-test',
@@ -104,7 +106,7 @@ def mock_g90alarm(request: pytest.FixtureRequest) -> Iterator[G90Alarm]:
         )
 
         # Instantiate a dummy sensor to mock in `G90Alarm.get_sensors()`
-        mock_sensor = pyg90alarm.alarm.G90Sensor(
+        mock_sensor = pyg90alarm.G90Sensor(
             parent=mock.return_value,  # Has to point to `G90Alarm()` instance
             subindex=0, proto_idx=0,
             parent_name='Dummy sensor',
@@ -123,11 +125,13 @@ def mock_g90alarm(request: pytest.FixtureRequest) -> Iterator[G90Alarm]:
         )
         # Mock `set_enabled()` method of the sensor, will be used in test
         # assertions
-        mock_sensor.set_enabled = AsyncMock()
+        mock_sensor.set_enabled = AsyncMock()  # type: ignore[method-assign]
         # Mock `supports_enable_disable` property of the sensor defaulting to
         # `True`, will later be used by tests to simulate a sensor no
         # supporting enabling/disabling
-        type(mock_sensor).supports_enable_disable = (
+        type(
+            mock_sensor
+        ).supports_enable_disable = (  # type: ignore[method-assign]
             PropertyMock(return_value=True)
         )
 
@@ -143,7 +147,7 @@ def mock_g90alarm(request: pytest.FixtureRequest) -> Iterator[G90Alarm]:
         # device (relay)
         mock.return_value.get_devices = AsyncMock(
             return_value=[
-                pyg90alarm.alarm.G90Device(
+                pyg90alarm.G90Device(
                     parent=mock.return_value, subindex=0, proto_idx=0,
                     parent_name='Dummy switch',
                     index=0,

@@ -2,7 +2,7 @@
 Binary sensors for `gs_alarm` integration.
 """
 from __future__ import annotations
-from typing import Dict, Any, cast, List
+from typing import List, TYPE_CHECKING
 import logging
 
 from homeassistant.config_entries import ConfigEntry
@@ -16,9 +16,12 @@ from homeassistant.components.binary_sensor import (
 
 from homeassistant.helpers.entity_platform import AddEntitiesCallback
 
-from pyg90alarm.entities.sensor import (G90Sensor, G90SensorTypes)
-from pyg90alarm.host_info import (G90HostInfoWifiStatus, G90HostInfoGsmStatus)
+from pyg90alarm import (
+    G90Sensor, G90SensorTypes, G90HostInfoWifiStatus, G90HostInfoGsmStatus
+)
 from .const import DOMAIN
+if TYPE_CHECKING:
+    from . import GsAlarmData
 
 HASS_SENSOR_TYPES_MAPPING = {
     G90SensorTypes.DOOR: BinarySensorDeviceClass.DOOR,
@@ -63,7 +66,7 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry,
         G90WifiStatusSensor | G90GsmStatusSensor | G90BinarySensor
     ] = []
     for sensor in (
-        hass.data[DOMAIN][entry.entry_id]['panel_sensors']
+        hass.data[DOMAIN][entry.entry_id].panel_sensors
     ):
         if sensor.enabled:
             g90sensors.append(
@@ -84,16 +87,16 @@ class G90BinarySensor(BinarySensorEntity):
     Binary sensor specific to alarm panel.
     """
     def __init__(
-        self, g90_sensor: G90Sensor, hass_data: Dict[str, Any]
+        self, g90_sensor: G90Sensor, hass_data: GsAlarmData
     ) -> None:
         self._g90_sensor = g90_sensor
-        self._attr_unique_id = f"{hass_data['guid']}_sensor_{g90_sensor.index}"
+        self._attr_unique_id = f"{hass_data.guid}_sensor_{g90_sensor.index}"
         self._attr_name = g90_sensor.name
         hass_sensor_type = HASS_SENSOR_TYPES_MAPPING.get(g90_sensor.type, None)
         if hass_sensor_type:
             self._attr_device_class = hass_sensor_type
         g90_sensor.state_callback = self.state_callback
-        self._attr_device_info = hass_data['device']
+        self._attr_device_info = hass_data.device
         self._hass_data = hass_data
 
     async def async_added_to_hass(self) -> None:
@@ -130,12 +133,12 @@ class G90WifiStatusSensor(BinarySensorEntity):
     """
     WiFi status sensor.
     """
-    def __init__(self, hass_data: Dict[str, Any]) -> None:
+    def __init__(self, hass_data: GsAlarmData) -> None:
         self._attr_name = f'{DOMAIN}: WiFi Status'
-        self._attr_unique_id = f"{hass_data['guid']}_sensor_wifi_status"
+        self._attr_unique_id = f"{hass_data.guid}_sensor_wifi_status"
         self._attr_device_class = BinarySensorDeviceClass.CONNECTIVITY
         self._attr_entity_category = EntityCategory.DIAGNOSTIC
-        self._attr_device_info = hass_data['device']
+        self._attr_device_info = hass_data.device
         self._hass_data = hass_data
 
     @property
@@ -144,8 +147,8 @@ class G90WifiStatusSensor(BinarySensorEntity):
         Indicates if WiFi is connected.
         """
         # `host_info` of entry data is periodically updated by `G90AlarmPanel`
-        status = self._hass_data['host_info'].wifi_status
-        return cast(bool, status == G90HostInfoWifiStatus.OPERATIONAL)
+        status = self._hass_data.host_info.wifi_status
+        return status == G90HostInfoWifiStatus.OPERATIONAL
 
 
 # pylint:disable=too-few-public-methods
@@ -153,12 +156,12 @@ class G90GsmStatusSensor(BinarySensorEntity):
     """
     GSM status sensor.
     """
-    def __init__(self, hass_data: Dict[str, Any]) -> None:
+    def __init__(self, hass_data: GsAlarmData) -> None:
         self._attr_name = f'{DOMAIN}: GSM Status'
-        self._attr_unique_id = f"{hass_data['guid']}_sensor_gsm_status"
+        self._attr_unique_id = f"{hass_data.guid}_sensor_gsm_status"
         self._attr_device_class = BinarySensorDeviceClass.CONNECTIVITY
         self._attr_entity_category = EntityCategory.DIAGNOSTIC
-        self._attr_device_info = hass_data['device']
+        self._attr_device_info = hass_data.device
         self._hass_data = hass_data
 
     @property
@@ -167,5 +170,5 @@ class G90GsmStatusSensor(BinarySensorEntity):
         Indicates if GSM is connected.
         """
         # See above re: how the data is updated
-        status = self._hass_data['host_info'].gsm_status
-        return cast(bool, status == G90HostInfoGsmStatus.OPERATIONAL)
+        status = self._hass_data.host_info.gsm_status
+        return status == G90HostInfoGsmStatus.OPERATIONAL

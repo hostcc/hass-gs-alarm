@@ -9,9 +9,9 @@ from homeassistant.core import HomeAssistant
 from homeassistant.config_entries import ConfigEntry
 from homeassistant.helpers.device_registry import DeviceEntry
 from homeassistant.components.diagnostics.util import async_redact_data
-from pyg90alarm.entities.sensor import G90Sensor
-from pyg90alarm.entities.device import G90Device
-from pyg90alarm.exceptions import G90Error, G90TimeoutError
+from pyg90alarm import (
+    G90Error, G90TimeoutError
+)
 from .const import DOMAIN
 
 _LOGGER = logging.getLogger(__name__)
@@ -33,30 +33,6 @@ async def async_get_config_entry_diagnostics(
     )
 
 
-def format_g90_sensor_device(sensor: G90Sensor | G90Device) -> dict[str, Any]:
-    """
-    Formats G90Sensor or G90Device returning `dict` representing its
-    properties.
-
-    """
-    return {
-        'name': sensor.name,
-        'type': repr(sensor.type),
-        # pylint:disable=protected-access
-        'subtype': sensor._protocol_data.subtype,
-        'index': sensor.index,
-        'subindex': sensor.subindex,
-        'node_count': sensor.node_count,
-        'protocol': repr(sensor.protocol),
-        'occupancy': sensor.occupancy,
-        'user_flag': repr(sensor.user_flag),
-        'reserved': repr(sensor.reserved),
-        'extra_data': repr(sensor.extra_data),
-        'enabled': repr(sensor.enabled),
-        'supports_enable_disable': sensor.supports_enable_disable,
-    }
-
-
 async def async_get_device_diagnostics(
     hass: HomeAssistant, entry: ConfigEntry, device: DeviceEntry
 ) -> dict[str, Any]:
@@ -66,24 +42,24 @@ async def async_get_device_diagnostics(
 
     try:
         hass_data = hass.data[DOMAIN][entry.entry_id]
-        g90_client = hass_data['client']
+        g90_client = hass_data.client
 
         result = {
             'config_entry': entry.as_dict(),
             'device_entry': device.dict_repr if device else None,
             'alarm_panel': {
                 'history': [
-                    repr(x)
+                    x._asdict()
                     # 50 history records should be the maximum for most of the
                     # panels
                     for x in await g90_client.history(count=50)
                 ],
                 'sensors': [
-                    format_g90_sensor_device(x)
+                    x._asdict()
                     for x in await g90_client.get_sensors()
                 ],
                 'devices': [
-                    format_g90_sensor_device(x)
+                    x._asdict()
                     for x in await g90_client.get_devices()
                 ],
                 'host_info': (await g90_client.get_host_info())._asdict(),
