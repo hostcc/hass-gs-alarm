@@ -2,7 +2,7 @@
 Sensors for `gs_alarm` integration.
 """
 from __future__ import annotations
-from typing import Dict, Any
+from typing import TYPE_CHECKING
 import logging
 
 from homeassistant.config_entries import ConfigEntry
@@ -20,6 +20,8 @@ from homeassistant.const import (
 from homeassistant.helpers.entity_platform import AddEntitiesCallback
 
 from .const import DOMAIN
+if TYPE_CHECKING:
+    from . import GsAlarmData
 
 _LOGGER = logging.getLogger(__name__)
 
@@ -39,9 +41,9 @@ class G90BaseSensor(SensorEntity):
     """
     Base class for sensors.
     """
-    def __init__(self, hass_data: Dict[str, Any]) -> None:
+    def __init__(self, hass_data: GsAlarmData) -> None:
         self._hass_data = hass_data
-        self._attr_device_info = hass_data['device']
+        self._attr_device_info = hass_data.device
         self._attr_native_value = None
 
     async def async_update(self) -> None:
@@ -57,10 +59,10 @@ class G90WifiSignal(G90BaseSensor):
     """
     Sensor for WiFi signal strength.
     """
-    def __init__(self, hass_data: Dict[str, Any]) -> None:
+    def __init__(self, hass_data: GsAlarmData) -> None:
         super().__init__(hass_data)
         self._attr_name = f'{DOMAIN}: WiFi Signal'
-        self._attr_unique_id = f"{self._hass_data['guid']}_sensor_wifi_signal"
+        self._attr_unique_id = f"{self._hass_data.guid}_sensor_wifi_signal"
         self._attr_icon = 'mdi:wifi'
         self._attr_native_unit_of_measurement = PERCENTAGE
         self._attr_state_class = SensorStateClass.MEASUREMENT
@@ -72,7 +74,7 @@ class G90WifiSignal(G90BaseSensor):
         """
         await super().async_update()
         # `host_info` of entry data is periodically updated by `G90AlarmPanel`
-        host_info = self._hass_data['host_info']
+        host_info = self._hass_data.host_info
         self._attr_native_value = host_info.wifi_signal_level
 
 
@@ -80,10 +82,10 @@ class G90GsmSignal(G90BaseSensor):
     """
     Sensor for GSM signal strength.
     """
-    def __init__(self, hass_data: Dict[str, Any]) -> None:
+    def __init__(self, hass_data: GsAlarmData) -> None:
         super().__init__(hass_data)
         self._attr_name = f'{DOMAIN}: GSM Signal'
-        self._attr_unique_id = f"{self._hass_data['guid']}_sensor_gsm_signal"
+        self._attr_unique_id = f"{self._hass_data.guid}_sensor_gsm_signal"
         self._attr_icon = 'mdi:signal'
         self._attr_native_unit_of_measurement = PERCENTAGE
         self._attr_state_class = SensorStateClass.MEASUREMENT
@@ -95,5 +97,5 @@ class G90GsmSignal(G90BaseSensor):
         """
         await super().async_update()
         # See above re: how the data is updated
-        host_info = self._hass_data['host_info']
+        host_info = self._hass_data.host_info
         self._attr_native_value = host_info.gsm_signal_level

@@ -7,8 +7,8 @@ from homeassistant.core import HomeAssistant
 from homeassistant.data_entry_flow import FlowResultType
 from homeassistant.config_entries import ConfigEntry
 
-from pyg90alarm import G90Alarm
 from custom_components.gs_alarm.const import DOMAIN
+from .conftest import AlarmMockT
 
 
 # Simulate single device discovered
@@ -20,7 +20,7 @@ from custom_components.gs_alarm.const import DOMAIN
     }
 ])
 async def test_config_flow_discovered_devices(
-    hass: HomeAssistant, mock_g90alarm: G90Alarm
+    hass: HomeAssistant, mock_g90alarm: AlarmMockT
 ) -> None:
     """
     Tests config flow with single discovered device.
@@ -50,7 +50,7 @@ async def test_config_flow_discovered_devices(
 
 
 async def test_config_flow_manual_device(
-    hass: HomeAssistant, mock_g90alarm: G90Alarm
+    hass: HomeAssistant, mock_g90alarm: AlarmMockT
 ) -> None:
     """
     Tests config flow with no discovered and single manually added device.

@@ -2,7 +2,7 @@
 Switches for `gs_alarm` integration.
 """
 from __future__ import annotations
-from typing import Any, Dict
+from typing import Any, TYPE_CHECKING
 import logging
 
 from homeassistant.config_entries import ConfigEntry
@@ -11,12 +11,13 @@ from homeassistant.core import HomeAssistant
 from homeassistant.components.switch import SwitchEntity
 from homeassistant.helpers.entity_platform import AddEntitiesCallback
 
-from pyg90alarm.entities.device import G90Device
-from pyg90alarm.exceptions import (
-    G90Error, G90TimeoutError
+from pyg90alarm import (
+    G90Device, G90Error, G90TimeoutError
 )
 
 from .const import DOMAIN
+if TYPE_CHECKING:
+    from . import GsAlarmData
 
 _LOGGER = logging.getLogger(__name__)
 
@@ -28,7 +29,7 @@ async def async_setup_entry(
     """Set up a config entry."""
     g90switches = []
     for device in (
-        hass.data[DOMAIN][entry.entry_id]['panel_devices']
+        hass.data[DOMAIN][entry.entry_id].panel_devices
     ):
         g90switches.append(
             G90Switch(device, hass.data[DOMAIN][entry.entry_id])
@@ -44,14 +45,14 @@ class G90Switch(SwitchEntity):
     """
     Switch specific to alarm panel.
     """
-    def __init__(self, device: G90Device, hass_data: Dict[str, Any]) -> None:
+    def __init__(self, device: G90Device, hass_data: GsAlarmData) -> None:
         self._device = device
         self._state = False
         self._attr_unique_id = (
-            f"{hass_data['guid']}_switch_{device.index}_{device.subindex + 1}"
+            f"{hass_data.guid}_switch_{device.index}_{device.subindex + 1}"
         )
         self._attr_name = device.name
-        self._attr_device_info = hass_data['device']
+        self._attr_device_info = hass_data.device
         self._hass_data = hass_data
 
     @property

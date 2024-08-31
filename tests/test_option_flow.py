@@ -9,12 +9,12 @@ from pytest_homeassistant_custom_component.common import (
     MockConfigEntry,
 )
 
-from pyg90alarm import G90Alarm
 from custom_components.gs_alarm.const import DOMAIN
+from .conftest import AlarmMockT
 
 
 async def test_config_flow_options(
-    hass: HomeAssistant, mock_g90alarm: G90Alarm
+    hass: HomeAssistant, mock_g90alarm: AlarmMockT
 ) -> None:
     """
     Tests options (configure) flow for the component with correct inputs.
@@ -68,7 +68,7 @@ async def test_config_flow_options(
 
 
 async def test_config_flow_options_unsupported_disable(
-    hass: HomeAssistant, mock_g90alarm: G90Alarm
+    hass: HomeAssistant, mock_g90alarm: AlarmMockT
 ) -> None:
     """
     Tests options (configure) flow for the component where sensor attempted to

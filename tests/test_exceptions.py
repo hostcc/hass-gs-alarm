@@ -28,9 +28,9 @@ from homeassistant.components.switch.const import (
     DOMAIN as SWITCH_DOMAIN
 )
 
-from pyg90alarm import G90Alarm
-from pyg90alarm.exceptions import G90TimeoutError, G90Error
+from pyg90alarm import G90TimeoutError, G90Error
 from custom_components.gs_alarm.const import DOMAIN
+from .conftest import AlarmMockT
 
 
 @pytest.mark.parametrize(
@@ -54,7 +54,7 @@ from custom_components.gs_alarm.const import DOMAIN
     ]
 )
 async def test_setup_entry_exception(
-    hass: HomeAssistant, mock_g90alarm: G90Alarm, failed_g90_method: str,
+    hass: HomeAssistant, mock_g90alarm: AlarmMockT, failed_g90_method: str,
     simulated_error: Exception, expected_entry_state: ConfigEntryState
 ) -> None:
     """
@@ -84,7 +84,7 @@ async def test_setup_entry_exception(
 
 
 async def test_alarm_panel_state_update_exception(
-    hass: HomeAssistant, mock_g90alarm: G90Alarm
+    hass: HomeAssistant, mock_g90alarm: AlarmMockT
 ) -> None:
     """
     Tests the custom integration properly handles exceptions when updating the
@@ -125,7 +125,7 @@ async def test_alarm_panel_state_update_exception(
     G90TimeoutError,
 ])
 async def test_alarm_panel_service_exception(
-    hass: HomeAssistant, mock_g90alarm: G90Alarm,
+    hass: HomeAssistant, mock_g90alarm: AlarmMockT,
     failed_service: str, failed_g90_method: str, simulated_error: Exception
 ) -> None:
     """
@@ -172,7 +172,7 @@ async def test_alarm_panel_service_exception(
     G90TimeoutError,
 ])
 async def test_switch_service_exception(
-    hass: HomeAssistant, mock_g90alarm: G90Alarm,
+    hass: HomeAssistant, mock_g90alarm: AlarmMockT,
     failed_service: str, failed_g90_method: str, simulated_error: Exception
 ) -> None:
     """
