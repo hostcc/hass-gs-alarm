@@ -119,3 +119,39 @@ async def test_disarm_callback(
     panel_state = hass.states.get('alarm_control_panel.dummy_guid')
     assert panel_state is not None
     assert panel_state.state == STATE_ALARM_DISARMED
+
+
+async def test_low_battery_callback(
+    hass: HomeAssistant, mock_g90alarm: AlarmMockT
+) -> None:
+    """
+    Tests the binary sensor changes its attributes upon low battery condition
+    is reported.
+    """
+    config_entry = MockConfigEntry(
+        domain=DOMAIN,
+        data={'ip_addr': 'dummy-ip'},
+        options={},
+        entry_id="test-disarm-callbacks"
+    )
+
+    config_entry.add_to_hass(hass)
+    await hass.config_entries.async_setup(config_entry.entry_id)
+    # Allow Home Assistant to process the setup
+    await hass.async_block_till_done()
+
+    sensor = mock_g90alarm.return_value.get_sensors.return_value[0]
+    # Ensure the sensor is wireless
+    assert sensor.is_wireless is True
+    # Simulate the sensor is low on battery
+    sensor._set_low_battery(True)  # pylint: disable=protected-access
+    # Simulate the low battery callback is triggered
+    sensor.low_battery_callback()
+    # Wait for the callback to be processed
+    await hass.async_block_till_done()
+
+    # Verify sensor state reflects the low battery status
+    sensor_state = hass.states.get('binary_sensor.dummy_sensor_1')
+    assert sensor_state is not None
+    assert sensor_state.attributes != {}
+    assert sensor_state.attributes.get('low_battery') is True
