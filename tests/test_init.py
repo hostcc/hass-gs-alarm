@@ -66,6 +66,14 @@ async def test_setup_unload_and_reload_entry_afresh(
         'binary_sensor.gs_alarm_gsm_status'
     ])
 
+    # Verify binary sensor has expected extra attributes
+    dummy_sensor_1 = hass.states.get('binary_sensor.dummy_sensor_1')
+    assert dummy_sensor_1 is not None
+    assert 'wireless' in dummy_sensor_1.attributes
+    assert 'panel_sensor_number' in dummy_sensor_1.attributes
+    assert 'protocol' in dummy_sensor_1.attributes
+    assert 'flags' in dummy_sensor_1.attributes
+
     # Verify options haven't been propagated to `G90Alarm` instance
     mock_g90alarm.return_value.sms_alert_when_armed.assert_not_called()
     (

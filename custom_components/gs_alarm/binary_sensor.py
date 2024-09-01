@@ -2,7 +2,7 @@
 Binary sensors for `gs_alarm` integration.
 """
 from __future__ import annotations
-from typing import List, TYPE_CHECKING
+from typing import List, TYPE_CHECKING, Mapping, Any
 import logging
 
 from homeassistant.config_entries import ConfigEntry
@@ -92,10 +92,20 @@ class G90BinarySensor(BinarySensorEntity):
         self._g90_sensor = g90_sensor
         self._attr_unique_id = f"{hass_data.guid}_sensor_{g90_sensor.index}"
         self._attr_name = g90_sensor.name
+        # Extra attributes over sensor characteristics, useful for
+        # troubleshooting to identify sensor type and its number as panel
+        # reports it
+        self._attr_extra_state_attributes = {
+            'panel_sensor_number': g90_sensor.index,
+            'protocol': g90_sensor.protocol.name,
+            'flags': g90_sensor.user_flag.name,
+            'wireless': g90_sensor.is_wireless,
+        }
         hass_sensor_type = HASS_SENSOR_TYPES_MAPPING.get(g90_sensor.type, None)
         if hass_sensor_type:
             self._attr_device_class = hass_sensor_type
         g90_sensor.state_callback = self.state_callback
+        g90_sensor.low_battery_callback = self.low_battery_callback
         self._attr_device_info = hass_data.device
         self._hass_data = hass_data
 
@@ -116,7 +126,39 @@ class G90BinarySensor(BinarySensorEntity):
         Invoked by `pyg90alarm` when its sensor changes the state.
         """
         _LOGGER.debug('%s: Received state callback: %s', self.unique_id, value)
+        # Signal HASS to update the sensor's state, which will trigger the
+        # `is_on()` method
         self.schedule_update_ha_state()
+
+    def low_battery_callback(self) -> None:
+        """
+        Invoked by `pyg90alarm` when its sensor reports low battery condition.
+        """
+        _LOGGER.debug(
+            '%s: Received low battery callback', self.unique_id
+        )
+        # Signal HASS to update the sensor's attributes, which will trigger the
+        # `extra_state_attributes()` method
+        self.schedule_update_ha_state()
+
+    @property
+    def extra_state_attributes(self) -> Mapping[str, Any] | None:
+        """
+        Provides extra state attributes.
+        """
+        extra_attrs = self._attr_extra_state_attributes
+        # Low battery is only applicable to wireless sensors
+        if self._g90_sensor.is_wireless:
+            extra_attrs['low_battery'] = (
+                self._g90_sensor.is_low_battery
+            )
+
+        _LOGGER.debug(
+            '%s: Providing extra attributes %s', self.unique_id,
+            repr(extra_attrs)
+        )
+
+        return extra_attrs
 
     @property
     def is_on(self) -> bool:
