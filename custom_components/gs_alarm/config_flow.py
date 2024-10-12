@@ -63,7 +63,7 @@ class G90ConfigFlow(ConfigFlow, domain=DOMAIN):
         # Need to properly handle the result for multiple devices
         for device in devices:
             res = self.async_create_entry(
-                title=DOMAIN, data={'ip_addr': device['host']}
+                title=DOMAIN, data={'ip_addr': device.host}
             )
         return cast(ConfigFlowResult, res)
 

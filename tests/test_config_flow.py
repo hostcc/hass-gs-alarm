@@ -1,6 +1,7 @@
 """
 Tests config flow for the custom component.
 """
+from unittest.mock import Mock
 import pytest
 
 from homeassistant.core import HomeAssistant
@@ -13,11 +14,11 @@ from .conftest import AlarmMockT
 
 # Simulate single device discovered
 @pytest.mark.g90discovery(result=[
-    {
-        'guid': 'Dummy guid',
-        'host': 'dummy-discovered-host',
-        'port': 4321,
-    }
+    Mock(
+        guid='Dummy guid',
+        host='dummy-discovered-host',
+        port=4321,
+    )
 ])
 async def test_config_flow_discovered_devices(
     hass: HomeAssistant, mock_g90alarm: AlarmMockT
@@ -112,7 +113,7 @@ async def test_config_flow_manual_device_no_ip_addr(
     assert result['type'] == FlowResultType.FORM
     assert result['step_id'] == 'custom_host'
 
-    # Submittion step confirming the manual host providing empty input
+    # Submission step confirming the manual host providing empty input
     result = await hass.config_entries.flow.async_configure(
         flow_id=result['flow_id'],
         user_input={'ip_addr': ''},
