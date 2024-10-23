@@ -35,6 +35,9 @@ jobs:
           - os: ubuntu-latest
             python: '3.12'
             toxenv: py
+          - os: ubuntu-latest
+            python: '3.13'
+            toxenv: py
     runs-on: ${{ matrix.os }}
     steps:
       - name: Checkout the code

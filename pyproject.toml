@@ -11,10 +11,8 @@ log_cli_level = "error"
 # Workaround for
 # https://github.com/MatthewFlamm/pytest-homeassistant-custom-component/issues/129
 asyncio_mode = "auto"
-
-[[tool.mypy.overrides]]
-module = "voluptuous"
-ignore_missing_imports = true
+# Introduced by `pytest-asyncio` recently
+asyncio_default_fixture_loop_scope = "function"
 
 [[tool.mypy.overrides]]
 module = "pytest_homeassistant_custom_component.common"
