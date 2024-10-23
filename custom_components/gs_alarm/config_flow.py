@@ -142,7 +142,10 @@ class OptionsFlowHandler(OptionsFlow):
             'client', None
         )
 
-        schema = {
+        schema: dict[
+            vol.Required | vol.Optional,
+            SelectSelector | BooleanSelector
+        ] = {
             vol.Required(
                 "sms_alert_when_armed",
                 default=self.config_entry.options.get(
