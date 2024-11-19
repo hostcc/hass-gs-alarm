@@ -18,11 +18,10 @@ from homeassistant.const import (
    SERVICE_ALARM_DISARM,
    SERVICE_TURN_ON,
    SERVICE_TURN_OFF,
-   STATE_ALARM_DISARMED,
    STATE_OFF,
 )
 from homeassistant.components.alarm_control_panel.const import (
-    DOMAIN as ALARM_DOMAIN
+    DOMAIN as ALARM_DOMAIN, AlarmControlPanelState,
 )
 from homeassistant.components.switch.const import (
     DOMAIN as SWITCH_DOMAIN
@@ -112,7 +111,7 @@ async def test_alarm_panel_state_update_exception(
     # Verify the panel's state is unknown
     panel_state = hass.states.get('alarm_control_panel.dummy_guid')
     assert panel_state is not None
-    assert panel_state.state == STATE_ALARM_DISARMED
+    assert panel_state.state == AlarmControlPanelState.DISARMED
 
 
 @pytest.mark.parametrize("failed_service,failed_g90_method", [
@@ -158,7 +157,7 @@ async def test_alarm_panel_service_exception(
 
     # Verify the panel's state is left unchanged - `mock_g90alarm` simulates
     # the panel is disarmed during initial setup
-    assert entity.state == STATE_ALARM_DISARMED
+    assert entity.state == AlarmControlPanelState.DISARMED
 
 
 @pytest.mark.parametrize("failed_service,failed_g90_method", [
