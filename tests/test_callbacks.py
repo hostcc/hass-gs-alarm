@@ -6,10 +6,8 @@ from pytest_homeassistant_custom_component.common import (
     MockConfigEntry,
 )
 from homeassistant.core import HomeAssistant
-from homeassistant.const import (
-   STATE_ALARM_DISARMED,
-   STATE_ALARM_ARMED_AWAY,
-   STATE_ALARM_TRIGGERED,
+from homeassistant.components.alarm_control_panel.const import (
+    AlarmControlPanelState,
 )
 
 from pyg90alarm import G90ArmDisarmTypes
@@ -45,8 +43,11 @@ async def test_alarm_callback(
     # Verify panel state and attributes reflect that
     panel_state = hass.states.get('alarm_control_panel.dummy_guid')
     assert panel_state is not None
-    assert panel_state.state == STATE_ALARM_TRIGGERED
-    assert panel_state.attributes.get('changed_by') == 'binary_sensor.dummy_1'
+    assert panel_state.state == AlarmControlPanelState.TRIGGERED
+    assert panel_state.attributes is not None
+    assert panel_state.attributes.get('changed_by') == (
+        'binary_sensor.dummy_1'
+    )
 
     # Simulate the arm callback is triggered
     mock_g90alarm.return_value.armdisarm_callback(
@@ -55,6 +56,7 @@ async def test_alarm_callback(
     # Verify `changed_by` attribute has been reset
     panel_state = hass.states.get('alarm_control_panel.dummy_guid')
     assert panel_state is not None
+    assert panel_state.attributes is not None
     assert panel_state.attributes.get('changed_by') is None
 
 
@@ -86,7 +88,7 @@ async def test_arm_callback(
     # Verify panel state reflects that
     panel_state = hass.states.get('alarm_control_panel.dummy_guid')
     assert panel_state is not None
-    assert panel_state.state == STATE_ALARM_ARMED_AWAY
+    assert panel_state.state == AlarmControlPanelState.ARMED_AWAY
 
 
 @pytest.mark.g90host_status(
@@ -118,7 +120,7 @@ async def test_disarm_callback(
     # Verify panel state reflects that
     panel_state = hass.states.get('alarm_control_panel.dummy_guid')
     assert panel_state is not None
-    assert panel_state.state == STATE_ALARM_DISARMED
+    assert panel_state.state == AlarmControlPanelState.DISARMED
 
 
 async def test_low_battery_callback(

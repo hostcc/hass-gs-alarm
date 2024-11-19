@@ -5,7 +5,7 @@ Config flow for `gs_alarm` integrarion.
 from __future__ import annotations
 import logging
 
-from typing import Any, cast
+from typing import Any, cast, Self
 
 import voluptuous as vol
 
@@ -117,6 +117,18 @@ class G90ConfigFlow(ConfigFlow, domain=DOMAIN):
         Instantiates options flow handler.
         """
         return OptionsFlowHandler(config_entry)
+
+    def is_matching(self, other_flow: Self) -> bool:
+        """
+        Determine if there is another flow for the same entity running already.
+
+        Not currently implemented, and only used to prevent `pylint` from
+        erroring out stating the method is abstract in the base class:
+
+            W0223: Method 'is_matching' is abstract in class 'ConfigFlow' but
+            is not overridden in child class 'G90ConfigFlow' (abstract-method)
+        """
+        raise NotImplementedError
 
 
 # pylint:disable=too-few-public-methods
