@@ -12,15 +12,7 @@ from homeassistant.components.alarm_control_panel import (
 )
 from homeassistant.helpers.entity_platform import AddEntitiesCallback
 from homeassistant.components.alarm_control_panel.const import (
-    AlarmControlPanelEntityFeature
-)
-
-from homeassistant.const import (
-    STATE_ALARM_ARMED_AWAY,
-    STATE_ALARM_ARMED_HOME,
-    STATE_ALARM_DISARMED,
-    STATE_ALARM_TRIGGERED,
-    STATE_UNKNOWN,
+    AlarmControlPanelEntityFeature, AlarmControlPanelState,
 )
 
 from pyg90alarm import (
@@ -36,10 +28,10 @@ _LOGGER = logging.getLogger(__name__)
 
 # Mapping between `pyg90alarm` states for the panel and ones for HomeAssitant
 STATE_MAPPING = {
-    G90ArmDisarmTypes.ARM_AWAY: STATE_ALARM_ARMED_AWAY,
-    G90ArmDisarmTypes.ARM_HOME: STATE_ALARM_ARMED_HOME,
-    G90ArmDisarmTypes.DISARM: STATE_ALARM_DISARMED,
-    G90ArmDisarmTypes.ALARMED: STATE_ALARM_TRIGGERED,
+    G90ArmDisarmTypes.ARM_AWAY: AlarmControlPanelState.ARMED_AWAY,
+    G90ArmDisarmTypes.ARM_HOME: AlarmControlPanelState.ARMED_HOME,
+    G90ArmDisarmTypes.DISARM: AlarmControlPanelState.DISARMED,
+    G90ArmDisarmTypes.ALARMED: AlarmControlPanelState.TRIGGERED,
 }
 
 
@@ -66,7 +58,7 @@ class G90AlarmPanel(AlarmControlPanelEntity):
         self._attr_name = hass_data.guid
         self._attr_device_info = hass_data.device
         self._attr_changed_by = None
-        self._state = STATE_UNKNOWN
+        self._attr_alarm_state = None
         self._hass_data = hass_data
         self._hass_data.client.armdisarm_callback = self.armdisarm_callback
         self._hass_data.client.alarm_callback = self.alarm_callback
@@ -87,7 +79,7 @@ class G90AlarmPanel(AlarmControlPanelEntity):
         Invoked by `G90Alarm` when panel is armed or disarmed.
         """
         _LOGGER.debug('Received arm/disarm callback: %s', state)
-        self._state = STATE_MAPPING[state]
+        self._attr_alarm_state = STATE_MAPPING[state]
         # Reset `changed_by` attribute so the value it possibly has (name of
         # sensor caused last alarm) isn't carried on indefinitely which might
         # be confusing
@@ -119,7 +111,7 @@ class G90AlarmPanel(AlarmControlPanelEntity):
         # in `extra_data`
         if extra_data:
             self._attr_changed_by = extra_data
-        self._state = STATE_ALARM_TRIGGERED
+        self._attr_alarm_state = AlarmControlPanelState.TRIGGERED
         # Update HA entity since the panel state has changed
         self.async_write_ha_state()
 
@@ -132,7 +124,7 @@ class G90AlarmPanel(AlarmControlPanelEntity):
         try:
             host_status = await self._hass_data.client.get_host_status()
             host_state = host_status.host_status
-            self._state = STATE_MAPPING[host_state]
+            self._attr_alarm_state = STATE_MAPPING[host_state]
             # Store alarm panel information (GSM/WiFi status/signal level etc.)
             # so a sensor could use the data w/o duplicate access to
             # `host_info` property of `G90Alarm`, which issues a device call
@@ -149,13 +141,6 @@ class G90AlarmPanel(AlarmControlPanelEntity):
                 self.unique_id,
                 repr(exc)
             )
-
-    @property
-    def state(self) -> str:
-        """
-        Returns the platform state.
-        """
-        return self._state
 
     async def async_alarm_disarm(self, _code: str | None = None) -> None:
         """Send disarm command."""
