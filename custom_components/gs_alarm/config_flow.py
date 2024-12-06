@@ -116,7 +116,7 @@ class G90ConfigFlow(ConfigFlow, domain=DOMAIN):
         """
         Instantiates options flow handler.
         """
-        return OptionsFlowHandler(config_entry)
+        return OptionsFlowHandler()
 
     def is_matching(self, other_flow: Self) -> bool:
         """
@@ -136,12 +136,6 @@ class OptionsFlowHandler(OptionsFlow):
     """
     Handle options (configure) flows.
     """
-    def __init__(self, config_entry: ConfigEntry) -> None:
-        """
-        Initialize options flow.
-        """
-        self.config_entry = config_entry
-
     async def async_step_init(
         self, user_input: dict[str, Any] | None = None
     ) -> ConfigFlowResult:
