@@ -171,10 +171,21 @@ def mock_g90alarm(request: pytest.FixtureRequest) -> Iterator[AlarmMockT]:
 
         mock.return_value.history = AsyncMock(
             return_value=[
+                # Valid entry
                 pyg90alarm.history.G90History(
                     type=2,
                     event_id=3,
                     source=0,
+                    state=0,
+                    sensor_name='',
+                    unix_time=3,
+                    other=''
+                ),
+                # Invalid entry (wrong source)
+                pyg90alarm.history.G90History(
+                    type=2,
+                    event_id=3,
+                    source=254,
                     state=0,
                     sensor_name='',
                     unix_time=3,

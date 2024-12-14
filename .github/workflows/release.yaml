@@ -85,5 +85,5 @@ jobs:
           allowUpdates: false
           draft: false
           generateReleaseNotes: true
-          prerelease: false
+          prerelease: true
           tag: ${{ steps.version.outputs.nextStrict }}
