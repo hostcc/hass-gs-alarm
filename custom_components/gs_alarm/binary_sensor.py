@@ -106,6 +106,10 @@ class G90BinarySensor(BinarySensorEntity):
             self._attr_device_class = hass_sensor_type
         g90_sensor.state_callback = self.state_callback
         g90_sensor.low_battery_callback = self.low_battery_callback
+        g90_sensor.tamper_callback = self.tamper_callback
+        g90_sensor.door_open_when_arming_callback = (
+            self.door_open_when_arming_callback
+        )
         self._attr_device_info = hass_data.device
         self._hass_data = hass_data
 
@@ -141,6 +145,28 @@ class G90BinarySensor(BinarySensorEntity):
         # `extra_state_attributes()` method
         self.schedule_update_ha_state()
 
+    def tamper_callback(self) -> None:
+        """
+        Invoked by `pyg90alarm` when its sensor reports tampered condition.
+        """
+        _LOGGER.debug(
+            '%s: Received tamper callback', self.unique_id
+        )
+        # Signal HASS to update the sensor's attributes, which will trigger the
+        # `extra_state_attributes()` method
+        self.schedule_update_ha_state()
+
+    def door_open_when_arming_callback(self) -> None:
+        """
+        Invoked by `pyg90alarm` when its sensor reports door open when arming.
+        """
+        _LOGGER.debug(
+            '%s: Received door open when arming callback', self.unique_id
+        )
+        # Signal HASS to update the sensor's attributes, which will trigger the
+        # `extra_state_attributes()` method
+        self.schedule_update_ha_state()
+
     @property
     def extra_state_attributes(self) -> Mapping[str, Any] | None:
         """
@@ -152,6 +178,11 @@ class G90BinarySensor(BinarySensorEntity):
             extra_attrs['low_battery'] = (
                 self._g90_sensor.is_low_battery
             )
+
+        extra_attrs['tampered'] = self._g90_sensor.is_tampered
+        extra_attrs['door_open_when_arming'] = (
+            self._g90_sensor.is_door_open_when_arming
+        )
 
         _LOGGER.debug(
             '%s: Providing extra attributes %s', self.unique_id,
