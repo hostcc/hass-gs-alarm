@@ -33,9 +33,6 @@ jobs:
       matrix:
         include:
           - os: ubuntu-latest
-            python: '3.12'
-            toxenv: py
-          - os: ubuntu-latest
             python: '3.13'
             toxenv: py
     runs-on: ${{ matrix.os }}
