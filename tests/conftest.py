@@ -166,13 +166,13 @@ def mock_g90alarm(request: pytest.FixtureRequest) -> Iterator[AlarmMockT]:
             ]
         )
 
-        # Mock `G90Alarm().listen_device_notificaitons()` to do nothing
-        mock.return_value.listen_device_notifications = AsyncMock()
+        # Mock `G90Alarm().listen_notificaitons()` to do nothing
+        mock.return_value.listen_notifications = AsyncMock()
 
         mock.return_value.history = AsyncMock(
             return_value=[
                 # Valid entry
-                pyg90alarm.history.G90History(
+                pyg90alarm.local.history.G90History(
                     type=2,
                     event_id=3,
                     source=0,
@@ -182,7 +182,7 @@ def mock_g90alarm(request: pytest.FixtureRequest) -> Iterator[AlarmMockT]:
                     other=''
                 ),
                 # Invalid entry (wrong source)
-                pyg90alarm.history.G90History(
+                pyg90alarm.local.history.G90History(
                     type=2,
                     event_id=3,
                     source=254,
@@ -195,7 +195,7 @@ def mock_g90alarm(request: pytest.FixtureRequest) -> Iterator[AlarmMockT]:
         )
 
         mock.return_value.get_alert_config = AsyncMock(
-            return_value=pyg90alarm.config.G90AlertConfig(255)
+            return_value=pyg90alarm.local.config.G90AlertConfig(255)
         )
 
         # pylint:disable=protected-access

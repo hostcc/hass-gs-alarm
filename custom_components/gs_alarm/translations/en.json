@@ -22,9 +22,36 @@
                 "data": {
                     "sms_alert_when_armed": "SMS alerts only when device is armed",
                     "simulate_alerts_from_history": "Simulate device alerts from history",
-                    "disabled_sensors": "Disabled sensors"
+                    "disabled_sensors": "Disabled sensors",
+                    "notifications_protocol": "Notifications protocol"
+                },
+                "data_description": {
+                    "notifications_protocol": "Notifications protocols\n* Local: The panel has '10.10.10.250' IP address\n* Cloud: Panel traffic to cloud could be diverted on network level, no traffic sent to cloud servers\n* Chained cloud: Panel traffic could be diverted and traffic sent to cloud servers"
+                }
+            },
+            "cloud": {
+                "description": "Cloud protocol",
+                "data": {
+                    "cloud_local_port": "Port to listen for panel traffic on"
+                }
+            },
+            "cloud_upstream": {
+                "description": "Chained cloud protocol",
+                "data": {
+                    "cloud_local_port": "Port to listen for panel traffic on",
+                    "cloud_upstream_host": "Host to send panel notifications to after processing",
+                    "cloud_upstream_port": "Port to send panel notifications to after processing"
                 }
             }
         }
+  },
+  "selector": {
+    "notifications_protocol": {
+        "options": {
+            "local": "Local",
+            "cloud": "Cloud",
+            "cloud_upstream": "Chained cloud"
+        }
     }
+  }
 }

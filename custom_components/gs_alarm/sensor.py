@@ -11,6 +11,7 @@ from homeassistant.core import HomeAssistant
 from homeassistant.components.sensor import (
     SensorEntity,
     SensorStateClass,
+    SensorDeviceClass,
 )
 from homeassistant.const import (
     EntityCategory,
@@ -32,6 +33,8 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry,
     g90sensors = [
         G90WifiSignal(hass.data[DOMAIN][entry.entry_id]),
         G90GsmSignal(hass.data[DOMAIN][entry.entry_id]),
+        G90LastDevicePacket(hass.data[DOMAIN][entry.entry_id]),
+        G90LastUpstreamPacket(hass.data[DOMAIN][entry.entry_id]),
     ]
     async_add_entities(g90sensors)
 
@@ -99,3 +102,49 @@ class G90GsmSignal(G90BaseSensor):
         # See above re: how the data is updated
         host_info = self._hass_data.host_info
         self._attr_native_value = host_info.gsm_signal_level
+
+
+class G90LastDevicePacket(G90BaseSensor):
+    """
+    Sensor for last device packet.
+    """
+    def __init__(self, hass_data: GsAlarmData) -> None:
+        super().__init__(hass_data)
+        self._attr_name = f'{DOMAIN}: Last device packet'
+        self._attr_unique_id = (
+            f"{self._hass_data.guid}_sensor_last_device_packet"
+        )
+        self._attr_icon = 'mdi:clock-check'
+        self._attr_device_class = SensorDeviceClass.TIMESTAMP
+        self._attr_entity_category = EntityCategory.DIAGNOSTIC
+
+    async def async_update(self) -> None:
+        """
+        Invoked when HomeAssistant needs to update the sensor state.
+        """
+        await super().async_update()
+        g90_client = self._hass_data.client
+        self._attr_native_value = g90_client.last_device_packet_time
+
+
+class G90LastUpstreamPacket(G90BaseSensor):
+    """
+    Sensor for last upstream packet.
+    """
+    def __init__(self, hass_data: GsAlarmData) -> None:
+        super().__init__(hass_data)
+        self._attr_name = f'{DOMAIN}: Last upstream packet'
+        self._attr_unique_id = (
+            f"{self._hass_data.guid}_sensor_last_upstream_packet"
+        )
+        self._attr_icon = 'mdi:cloud-clock'
+        self._attr_device_class = SensorDeviceClass.TIMESTAMP
+        self._attr_entity_category = EntityCategory.DIAGNOSTIC
+
+    async def async_update(self) -> None:
+        """
+        Invoked when HomeAssistant needs to update the sensor state.
+        """
+        await super().async_update()
+        g90_client = self._hass_data.client
+        self._attr_native_value = g90_client.last_upstream_packet_time

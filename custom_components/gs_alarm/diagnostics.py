@@ -18,7 +18,7 @@ _LOGGER = logging.getLogger(__name__)
 # Redact the properties could contain sensitive information
 TO_REDACT = [
     'host_guid', 'host_phone_number', 'ip_addr', 'serial_number', 'name',
-    'title', 'identifiers', 'extra_data', 'sensor_name'
+    'title', 'identifiers', 'extra_data', 'sensor_name', 'cloud_upstream_host',
 ]
 
 
