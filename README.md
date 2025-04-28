@@ -162,7 +162,7 @@ exposes additional sensors:
 * Install HACS by following [Setup](https://hacs.xyz/docs/setup/prerequisites)
   and [Configuration](https://hacs.xyz/docs/configuration/basic) steps
 * Download `Golden Security Alarm` integration in HACS
-* Add the `Golden Security Alarm` integration in HomeAssistant
+* Add the `Golden Security Alarm` integration in Home Assistant
 
 ## Specifics
 
@@ -171,16 +171,16 @@ exposes additional sensors:
   rest you will still need the mobile application
 * Changes in alarm panel with regards to sensors and switches require the
   integration to be reloaded, it currently does not support making those
-  updates available in HomeAssistant without the restart
+  updates available in Home Assistant without the restart
 
 ## Troubleshooting
 
 If you need to troubleshoot the integration it is recommended to first enable
 debug logging for it, to capture additional details.
 
-For that you'll need to add following options to HomeAssistant's
+For that you'll need to add following options to Home Assistant's
 `configuration.yaml`. Please note this will also set logging level to `info`
-for all other HomeAssistant components - please adjust `default: info` to fit
+for all other Home Assistant components - please adjust `default: info` to fit
 your needs.
 
 ```
