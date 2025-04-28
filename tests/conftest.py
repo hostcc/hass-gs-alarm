@@ -166,7 +166,7 @@ def mock_g90alarm(request: pytest.FixtureRequest) -> Iterator[AlarmMockT]:
             ]
         )
 
-        # Mock `G90Alarm().listen_notificaitons()` to do nothing
+        # Mock `G90Alarm().listen_notifications()` to do nothing
         mock.return_value.listen_notifications = AsyncMock()
 
         mock.return_value.history = AsyncMock(
