@@ -13,9 +13,9 @@ from pytest_homeassistant_custom_component.common import (
 
 from custom_components.gs_alarm.const import (
     DOMAIN,
-    CONF_OPT_NOTTIICATIONS_LOCAL,
-    CONF_OPT_NOTTIICATIONS_CLOUD,
-    CONF_OPT_NOTTIICATIONS_CLOUD_UPSTREAM
+    CONF_OPT_NOTIFICATIONS_LOCAL,
+    CONF_OPT_NOTIFICATIONS_CLOUD,
+    CONF_OPT_NOTIFICATIONS_CLOUD_UPSTREAM
 )
 from .conftest import AlarmMockT
 
@@ -78,11 +78,11 @@ async def test_config_flow_options(
     "protocol,user_input,expected_call,expected_kwargs",
     [
         (
-            CONF_OPT_NOTTIICATIONS_LOCAL,
+            CONF_OPT_NOTIFICATIONS_LOCAL,
             {}, 'use_local_notifications', {},
         ),
         (
-            CONF_OPT_NOTTIICATIONS_CLOUD,
+            CONF_OPT_NOTIFICATIONS_CLOUD,
             {
                 'cloud_local_port': 1234
             },
@@ -94,7 +94,7 @@ async def test_config_flow_options(
             },
         ),
         (
-            CONF_OPT_NOTTIICATIONS_CLOUD_UPSTREAM,
+            CONF_OPT_NOTIFICATIONS_CLOUD_UPSTREAM,
             {
                 'cloud_local_port': 1234,
                 'cloud_upstream_host': 'test-host.example.com',
@@ -151,7 +151,7 @@ async def test_config_flow_options_notifications_protocol(
     )
 
     # Local notifications won't result in a second step
-    if protocol != CONF_OPT_NOTTIICATIONS_LOCAL:
+    if protocol != CONF_OPT_NOTIFICATIONS_LOCAL:
         # Verify it shows cloud configuration form
         assert result['step_id'] == protocol
         assert result['type'] == FlowResultType.FORM
@@ -170,23 +170,26 @@ async def test_config_flow_options_notifications_protocol(
     # persisted, the `use_local_notifications()` method will be called
     # first (since local protocol is the default when no options set),
     # and then the method corresponds to selected protocol
-    if protocol == CONF_OPT_NOTTIICATIONS_LOCAL:
-        # Verify the `use_local_notifications()` method has been called twice,
-        # see above for the explanation
-        mock_g90alarm.return_value.use_local_notifications.assert_has_calls(
-            [call(**expected_kwargs), call(**expected_kwargs)]
-        )
-    else:
-        # Verify the `use_local_notifications()` method has been called earlier
-        # than the method corresponds to the selected protocol, i.e. selected
-        # method prevails
-        assert (
+    assert (local_notifications_call_idx :=
             mock_g90alarm.return_value.mock_calls.index(
-                call.use_local_notifications()
-            ) < mock_g90alarm.return_value.mock_calls.index(
-                getattr(call, expected_call)(**expected_kwargs)
+                call.use_local_notifications())
             )
-        )
+
+    # Verify the call to setup the notifications for the protocol configured
+    # has been made later than `use_local_notifications()` one (see above
+    # for the explanation). In this context 'later' means 'appearing in mocked
+    # calls list further towards the end'
+    assert (mock_g90alarm.return_value.mock_calls.index(
+        getattr(call, expected_call)(**expected_kwargs),
+        local_notifications_call_idx
+    ))
+
+    # Verify listening for notifications immediately follows setting up
+    # the notification protocol
+    mock_g90alarm.return_value.assert_has_calls([
+        getattr(call, expected_call)(**expected_kwargs),
+        call.listen_notifications(),
+    ])
 
 
 async def test_config_flow_options_unsupported_disable(
