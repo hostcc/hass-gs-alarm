@@ -63,7 +63,9 @@ async def test_setup_unload_and_reload_entry_afresh(
         'sensor.gs_alarm_wifi_signal',
         'binary_sensor.gs_alarm_wifi_status',
         'sensor.gs_alarm_gsm_signal',
-        'binary_sensor.gs_alarm_gsm_status'
+        'binary_sensor.gs_alarm_gsm_status',
+        'sensor.gs_alarm_last_device_packet',
+        'sensor.gs_alarm_last_upstream_packet',
     ])
 
     # Verify binary sensor has expected extra attributes
@@ -85,6 +87,8 @@ async def test_setup_unload_and_reload_entry_afresh(
     # Verify `G90Alarm` sensors received the HASS entity IDs as `extra_data`
     for sensor in await mock_g90alarm.return_value.get_sensors():
         assert re.search(r'^(sensor|binary_sensor)\..+$', sensor.extra_data)
+
+    mock_g90alarm.return_value.listen_notifications.assert_called_once()
 
     # Unload the integration
     await hass.config_entries.async_unload(config_entry.entry_id)
