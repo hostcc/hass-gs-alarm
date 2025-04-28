@@ -26,7 +26,7 @@
                     "notifications_protocol": "Notifications protocol"
                 },
                 "data_description": {
-                    "notifications_protocol": "Notifications protocols\n* Local: The panel has '10.10.10.250' IP address\n* Cloud: Panel traffic to cloud could be diverted on network level, no traffic sent to cloud servers\n* Chained cloud: Panel traffic could be diverted and traffic sent to cloud servers"
+                    "notifications_protocol": "* **Local**: The panel has `10.10.10.250` IP address\n* **Cloud**: Panel traffic to cloud could be diverted to\nHome Assistant on network level, no traffic sent to cloud servers\n* **Chained cloud**: Same as **Cloud**, but traffic is also sent to cloud servers\nfor mobile application to work"
                 }
             },
             "cloud": {
@@ -44,14 +44,14 @@
                 }
             }
         }
-  },
-  "selector": {
-    "notifications_protocol": {
-        "options": {
-            "local": "Local",
-            "cloud": "Cloud",
-            "cloud_upstream": "Chained cloud"
+    },
+    "selector": {
+        "notifications_protocol": {
+            "options": {
+                "local": "Local",
+                "cloud": "Cloud",
+                "cloud_upstream": "Chained cloud"
+            }
         }
     }
-  }
 }
