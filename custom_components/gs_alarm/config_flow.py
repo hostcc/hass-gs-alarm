@@ -38,9 +38,9 @@ from .const import (
     CONF_CLOUD_LOCAL_PORT,
     CONF_CLOUD_UPSTREAM_HOST,
     CONF_CLOUD_UPSTREAM_PORT,
-    CONF_OPT_NOTTIICATIONS_LOCAL,
-    CONF_OPT_NOTTIICATIONS_CLOUD,
-    CONF_OPT_NOTTIICATIONS_CLOUD_UPSTREAM,
+    CONF_OPT_NOTIFICATIONS_LOCAL,
+    CONF_OPT_NOTIFICATIONS_CLOUD,
+    CONF_OPT_NOTIFICATIONS_CLOUD_UPSTREAM,
 )
 
 _LOGGER = logging.getLogger(__name__)
@@ -188,14 +188,14 @@ class OptionsFlowHandler(OptionsFlow):
             vol.Required(
                 CONF_NOTIFICATIONS_PROTOCOL,
                 default=self.config_entry.options.get(
-                    CONF_NOTIFICATIONS_PROTOCOL, CONF_OPT_NOTTIICATIONS_LOCAL
+                    CONF_NOTIFICATIONS_PROTOCOL, CONF_OPT_NOTIFICATIONS_LOCAL
                 ),
             ): SelectSelector(
                 SelectSelectorConfig(
                     options=[
-                        CONF_OPT_NOTTIICATIONS_LOCAL,
-                        CONF_OPT_NOTTIICATIONS_CLOUD,
-                        CONF_OPT_NOTTIICATIONS_CLOUD_UPSTREAM,
+                        CONF_OPT_NOTIFICATIONS_LOCAL,
+                        CONF_OPT_NOTIFICATIONS_CLOUD,
+                        CONF_OPT_NOTIFICATIONS_CLOUD_UPSTREAM,
                     ],
                     multiple=False,
                     mode=SelectSelectorMode.LIST,
@@ -253,12 +253,12 @@ class OptionsFlowHandler(OptionsFlow):
         # Store the user input from the first step
         self.init_step_data = user_input
         if user_input.get(CONF_NOTIFICATIONS_PROTOCOL) == (
-            CONF_OPT_NOTTIICATIONS_CLOUD
+            CONF_OPT_NOTIFICATIONS_CLOUD
         ):
             return await self.async_step_cloud()
 
         if user_input.get(CONF_NOTIFICATIONS_PROTOCOL) == (
-            CONF_OPT_NOTTIICATIONS_CLOUD_UPSTREAM
+            CONF_OPT_NOTIFICATIONS_CLOUD_UPSTREAM
         ):
             return await self.async_step_cloud_upstream()
 
