@@ -2,14 +2,15 @@
 The `gs_alarm` integration.
 """
 from __future__ import annotations
-from typing import List
+from typing import List, Any, cast
+from types import MappingProxyType
 from dataclasses import dataclass
 import asyncio
 import logging
 
 from pyg90alarm import (
     G90Alarm, G90Sensor, G90Device, G90HostInfo,
-    G90Error, G90TimeoutError
+    G90Error, G90TimeoutError,
 )
 from homeassistant.config_entries import ConfigEntry
 from homeassistant.helpers.device_registry import DeviceInfo
@@ -53,7 +54,7 @@ class GsAlarmData:
     device: DeviceInfo
 
 
-async def _enable_disable_sensors(
+async def _options_enable_disable_sensors(
     g90_client: G90Alarm, disabled_sensors: List[str]
 ) -> None:
     """
@@ -86,6 +87,68 @@ async def _enable_disable_sensors(
             'enabled' if enable_sensor else 'disabled'
         )
         await sensor.set_enabled(enable_sensor)
+
+
+async def _options_notifications_protocol(
+    g90_client: G90Alarm, options: MappingProxyType[str, Any]
+) -> None:
+    """
+    Configure the selected notifications protocol during options (configure)
+    flow
+    """
+    # Protocol defaults to local notifications if not set in the options
+    # (e.g. during initial component setup)
+    notifications_protocol = options.get(
+        CONF_NOTIFICATIONS_PROTOCOL, CONF_OPT_NOTIFICATIONS_LOCAL
+    )
+
+    # Local notifications protocol has been selected
+    if notifications_protocol == CONF_OPT_NOTIFICATIONS_LOCAL:
+        _LOGGER.debug(
+            'Using local notifications protocol'
+        )
+        await g90_client.use_local_notifications()
+
+    if notifications_protocol in [CONF_OPT_NOTIFICATIONS_CLOUD,
+                                  CONF_OPT_NOTIFICATIONS_CLOUD_UPSTREAM]:
+        # Cloud notifications protocol requires local port to be set
+        cloud_local_port = options.get(CONF_CLOUD_LOCAL_PORT)
+        if cloud_local_port is None:
+            raise ConfigEntryError(
+                f"'{CONF_CLOUD_LOCAL_PORT}' option is required"
+            )
+
+        cloud_upstream_host = options.get(CONF_CLOUD_UPSTREAM_HOST)
+        cloud_upstream_port = options.get(CONF_CLOUD_UPSTREAM_PORT)
+
+    # Cloud notifications protocol has been selected
+    if notifications_protocol == CONF_OPT_NOTIFICATIONS_CLOUD:
+        _LOGGER.debug(
+            'Using cloud notifications protocol:'
+            ' local port %d',
+            cloud_local_port
+        )
+        await g90_client.use_cloud_notifications(
+            cloud_local_port=cast(int, cloud_local_port),
+            upstream_host=None,
+            upstream_port=None
+        )
+
+    # Chained cloud notifications protocol has been selected
+    if notifications_protocol == CONF_OPT_NOTIFICATIONS_CLOUD_UPSTREAM:
+        _LOGGER.debug(
+            'Using chained cloud notifications protocol:'
+            " local port %d, host '%s', port %d",
+            cloud_local_port, cloud_upstream_host, cloud_upstream_port
+        )
+        await g90_client.use_cloud_notifications(
+            cloud_local_port=cast(int, cloud_local_port),
+            upstream_host=cloud_upstream_host,
+            upstream_port=cloud_upstream_port
+        )
+
+    # Start listening for notifications
+    await g90_client.listen_notifications()
 
 
 async def options_update_listener(
@@ -142,53 +205,10 @@ async def options_update_listener(
         disabled_sensors = entry.options.get(CONF_DISABLED_SENSORS)
         # See the comment above
         if disabled_sensors is not None:
-            await _enable_disable_sensors(g90_client, disabled_sensors)
+            await _options_enable_disable_sensors(g90_client, disabled_sensors)
 
-        # Protocol defaults to local notifications if not set in the options
-        # (e.g. during initial component setup)
-        notifications_protocol = entry.options.get(
-            CONF_NOTIFICATIONS_PROTOCOL, CONF_OPT_NOTIFICATIONS_LOCAL
-        )
-
-        cloud_local_port = entry.options.get(CONF_CLOUD_LOCAL_PORT)
-        cloud_upstream_host = entry.options.get(CONF_CLOUD_UPSTREAM_HOST)
-        cloud_upstream_port = entry.options.get(CONF_CLOUD_UPSTREAM_PORT)
-
-        # Local notifications protocol has been selected
-        if notifications_protocol == CONF_OPT_NOTIFICATIONS_LOCAL:
-            _LOGGER.debug(
-                'Using local notifications protocol'
-            )
-            await g90_client.use_local_notifications()
-
-        # Cloud notifications protocol has been selected
-        if notifications_protocol == CONF_OPT_NOTIFICATIONS_CLOUD:
-            _LOGGER.debug(
-                'Using cloud notifications protocol:'
-                ' local port %d',
-                cloud_local_port
-            )
-            await g90_client.use_cloud_notifications(
-                cloud_local_port=cloud_local_port,
-                upstream_host=None,
-                upstream_port=None
-            )
-
-        # Chained cloud notifications protocol has been selected
-        if notifications_protocol == CONF_OPT_NOTIFICATIONS_CLOUD_UPSTREAM:
-            _LOGGER.debug(
-                'Using chained cloud notifications protocol:'
-                " local port %d, host '%s', port %d",
-                cloud_local_port, cloud_upstream_host, cloud_upstream_port
-            )
-            await g90_client.use_cloud_notifications(
-                cloud_local_port=cloud_local_port,
-                upstream_host=cloud_upstream_host,
-                upstream_port=cloud_upstream_port
-            )
-
-        # Start listening for notifications
-        await g90_client.listen_notifications()
+        # Configure the selected notifications protocol
+        await _options_notifications_protocol(g90_client, entry.options)
     except G90TimeoutError as exc:
         raise ConfigEntryNotReady(
             f"Timeout while connecting to '{g90_client.host}'"
