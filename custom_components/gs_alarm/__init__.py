@@ -28,9 +28,9 @@ from .const import (
     CONF_CLOUD_LOCAL_PORT,
     CONF_CLOUD_UPSTREAM_HOST,
     CONF_CLOUD_UPSTREAM_PORT,
-    CONF_OPT_NOTTIICATIONS_LOCAL,
-    CONF_OPT_NOTTIICATIONS_CLOUD,
-    CONF_OPT_NOTTIICATIONS_CLOUD_UPSTREAM,
+    CONF_OPT_NOTIFICATIONS_LOCAL,
+    CONF_OPT_NOTIFICATIONS_CLOUD,
+    CONF_OPT_NOTIFICATIONS_CLOUD_UPSTREAM,
 )
 
 _LOGGER = logging.getLogger(__name__)
@@ -94,96 +94,107 @@ async def options_update_listener(
     """
     Handles options update.
     """
-    g90_client = hass.data[DOMAIN][entry.entry_id].client
-    _LOGGER.debug(
-        'Updating alarm panel from config_entry options %s',
-        entry.options
-    )
-
-    sms_alert_when_armed = entry.options.get(CONF_SMS_ALERT_WHEN_ARMED)
-    # Skip updating the property if integration has no options persisted (just
-    # added to HASS)
-    if sms_alert_when_armed is not None:
-        g90_client.sms_alert_when_armed = entry.options.get(
-            CONF_SMS_ALERT_WHEN_ARMED, False
-        )
+    try:
+        g90_client = hass.data[DOMAIN][entry.entry_id].client
         _LOGGER.debug(
-            'G90Alarm.sms_alert_when_armed: %s',
-            g90_client.sms_alert_when_armed
+            'Updating alarm panel from config_entry options %s',
+            entry.options
         )
 
-    simulate_alerts_from_history = entry.options.get(
-        CONF_SIMULATE_ALERTS_FROM_HISTORY
-    )
-    # See the comment above
-    if simulate_alerts_from_history is not None:
-        try:
-            if simulate_alerts_from_history:
-                _LOGGER.debug(
-                    'Starting to simulate device alerts from history'
-                )
-                await g90_client.start_simulating_alerts_from_history()
-            else:
-                _LOGGER.debug(
-                    'Stopping to simulate device alerts from history'
-                )
-                await g90_client.stop_simulating_alerts_from_history()
-        except (G90Error, G90TimeoutError) as exc:
-            _LOGGER.error(
-                "Error %s simulate device alerts from history"
-                " for panel '%s': %s",
-                'enabling' if simulate_alerts_from_history else 'disabling',
-                entry.title,
-                repr(exc)
+        sms_alert_when_armed = entry.options.get(CONF_SMS_ALERT_WHEN_ARMED)
+        # Skip updating the property if integration has no options persisted
+        # (just added to HASS)
+        if sms_alert_when_armed is not None:
+            g90_client.sms_alert_when_armed = entry.options.get(
+                CONF_SMS_ALERT_WHEN_ARMED, False
+            )
+            _LOGGER.debug(
+                'G90Alarm.sms_alert_when_armed: %s',
+                g90_client.sms_alert_when_armed
             )
 
-    disabled_sensors = entry.options.get(CONF_DISABLED_SENSORS)
-    # See the comment above
-    if disabled_sensors is not None:
-        await _enable_disable_sensors(g90_client, disabled_sensors)
-
-    # Protocol defaults to local notifications if not set in the options
-    # (e.g. during initial component setup)
-    notifications_protocol = entry.options.get(
-        CONF_NOTIFICATIONS_PROTOCOL, CONF_OPT_NOTTIICATIONS_LOCAL
-    )
-
-    cloud_local_port = entry.options.get(CONF_CLOUD_LOCAL_PORT)
-    cloud_upstream_host = entry.options.get(CONF_CLOUD_UPSTREAM_HOST)
-    cloud_upstream_port = entry.options.get(CONF_CLOUD_UPSTREAM_PORT)
-
-    # Local notifications protocol has been selected
-    if notifications_protocol == CONF_OPT_NOTTIICATIONS_LOCAL:
-        _LOGGER.debug(
-            'Using local notifications protocol'
+        simulate_alerts_from_history = entry.options.get(
+            CONF_SIMULATE_ALERTS_FROM_HISTORY
         )
-        await g90_client.use_local_notifications()
+        # See the comment above
+        if simulate_alerts_from_history is not None:
+            try:
+                if simulate_alerts_from_history:
+                    _LOGGER.debug(
+                        'Starting to simulate device alerts from history'
+                    )
+                    await g90_client.start_simulating_alerts_from_history()
+                else:
+                    _LOGGER.debug(
+                        'Stopping to simulate device alerts from history'
+                    )
+                    await g90_client.stop_simulating_alerts_from_history()
+            except (G90Error, G90TimeoutError) as exc:
+                _LOGGER.error(
+                    "Error %s simulate device alerts from history"
+                    " for panel '%s': %s",
+                    'enabling' if simulate_alerts_from_history
+                    else 'disabling',
+                    entry.title,
+                    repr(exc)
+                )
 
-    # Cloud notifications protocol has been selected
-    if notifications_protocol == CONF_OPT_NOTTIICATIONS_CLOUD:
-        _LOGGER.debug(
-            'Using cloud notifications protocol:'
-            ' local port %d',
-            cloud_local_port
-        )
-        await g90_client.use_cloud_notifications(
-            cloud_local_port=cloud_local_port,
-            upstream_host=None,
-            upstream_port=None
+        disabled_sensors = entry.options.get(CONF_DISABLED_SENSORS)
+        # See the comment above
+        if disabled_sensors is not None:
+            await _enable_disable_sensors(g90_client, disabled_sensors)
+
+        # Protocol defaults to local notifications if not set in the options
+        # (e.g. during initial component setup)
+        notifications_protocol = entry.options.get(
+            CONF_NOTIFICATIONS_PROTOCOL, CONF_OPT_NOTIFICATIONS_LOCAL
         )
 
-    # Chained cloud notifications protocol has been selected
-    if notifications_protocol == CONF_OPT_NOTTIICATIONS_CLOUD_UPSTREAM:
-        _LOGGER.debug(
-            'Using chained cloud notifications protocol:'
-            " local port %d, host '%s', port %d",
-            cloud_local_port, cloud_upstream_host, cloud_upstream_port
-        )
-        await g90_client.use_cloud_notifications(
-            cloud_local_port=cloud_local_port,
-            upstream_host=cloud_upstream_host,
-            upstream_port=cloud_upstream_port
-        )
+        cloud_local_port = entry.options.get(CONF_CLOUD_LOCAL_PORT)
+        cloud_upstream_host = entry.options.get(CONF_CLOUD_UPSTREAM_HOST)
+        cloud_upstream_port = entry.options.get(CONF_CLOUD_UPSTREAM_PORT)
+
+        # Local notifications protocol has been selected
+        if notifications_protocol == CONF_OPT_NOTIFICATIONS_LOCAL:
+            _LOGGER.debug(
+                'Using local notifications protocol'
+            )
+            await g90_client.use_local_notifications()
+
+        # Cloud notifications protocol has been selected
+        if notifications_protocol == CONF_OPT_NOTIFICATIONS_CLOUD:
+            _LOGGER.debug(
+                'Using cloud notifications protocol:'
+                ' local port %d',
+                cloud_local_port
+            )
+            await g90_client.use_cloud_notifications(
+                cloud_local_port=cloud_local_port,
+                upstream_host=None,
+                upstream_port=None
+            )
+
+        # Chained cloud notifications protocol has been selected
+        if notifications_protocol == CONF_OPT_NOTIFICATIONS_CLOUD_UPSTREAM:
+            _LOGGER.debug(
+                'Using chained cloud notifications protocol:'
+                " local port %d, host '%s', port %d",
+                cloud_local_port, cloud_upstream_host, cloud_upstream_port
+            )
+            await g90_client.use_cloud_notifications(
+                cloud_local_port=cloud_local_port,
+                upstream_host=cloud_upstream_host,
+                upstream_port=cloud_upstream_port
+            )
+
+        # Start listening for notifications
+        await g90_client.listen_notifications()
+    except G90TimeoutError as exc:
+        raise ConfigEntryNotReady(
+            f"Timeout while connecting to '{g90_client.host}'"
+        ) from exc
+    except G90Error as exc:
+        raise ConfigEntryError(f"'{g90_client.host}': {repr(exc)}") from exc
 
 
 async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry) -> bool:
@@ -237,17 +248,6 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry) -> bool:
         # Force setting options upon entry added, but only of title update
         # didn't result in the change thus triggering the listener
         await options_update_listener(hass, entry)
-
-    # Listening for notifications could only be done after the entry has
-    # its options processed and corresponding protocol has been set up
-    try:
-        await g90_client.listen_notifications()
-    except G90TimeoutError as exc:
-        raise ConfigEntryNotReady(
-            f"Timeout while connecting to '{host}'"
-        ) from exc
-    except G90Error as exc:
-        raise ConfigEntryError(f"'{host}': {repr(exc)}") from exc
 
     return True
 
