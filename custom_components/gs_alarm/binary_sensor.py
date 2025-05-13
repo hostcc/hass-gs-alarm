@@ -196,6 +196,7 @@ class G90BinarySensor(BinarySensorEntity):
         Indicates if sensor is active.
         """
         val = (
+            # None translates to unknown state in HASS for disabled sensor
             None if not self._g90_sensor.enabled
             else self._g90_sensor.occupancy
         )
