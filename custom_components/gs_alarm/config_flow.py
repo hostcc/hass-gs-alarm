@@ -20,7 +20,6 @@ from homeassistant.helpers.selector import (
     BooleanSelector,
     SelectSelector,
     SelectSelectorConfig,
-    SelectOptionDict,
     SelectSelectorMode,
 )
 from pyg90alarm import G90Alarm
@@ -32,7 +31,6 @@ from .const import (
     DOMAIN,
     CONF_SMS_ALERT_WHEN_ARMED,
     CONF_SIMULATE_ALERTS_FROM_HISTORY,
-    CONF_DISABLED_SENSORS,
     CONF_NOTIFICATIONS_PROTOCOL,
     CONF_IP_ADDR,
     CONF_CLOUD_LOCAL_PORT,
@@ -163,12 +161,6 @@ class OptionsFlowHandler(OptionsFlow):
         """
         Manage the options.
         """
-        # Attempt to retrieve `G90Alarm()` instance from integration data
-        g90_client = getattr(
-            self.hass.data[DOMAIN].get(self.config_entry.entry_id, None),
-            'client', None
-        )
-
         schema: dict[
             vol.Required | vol.Optional,
             SelectSelector | BooleanSelector
@@ -203,42 +195,6 @@ class OptionsFlowHandler(OptionsFlow):
                 )
             ),
         }
-
-        # `G90Alarm` instance might be missing, for example if integration has
-        # failed to load, not configuration is possible then for
-        # enabling/disabling the sensors
-        if g90_client:
-            # Retrieve all sensors support enabling/disabling
-            g90_sensors = await g90_client.get_sensors()
-            all_sensors = [
-                SelectOptionDict(label=x.name, value=str(x.index))
-                for x in g90_sensors
-                if x.supports_enable_disable
-            ]
-            _LOGGER.debug(
-                'configure: all sensor entries for selector: %s', all_sensors
-            )
-            # Determine currently sensors currently disabled, out of those
-            # supports altering the state.
-            # NOTE: If sensor doesn't support enabling/disabling thru
-            # `pyg90alarm` it will not be shown on the form, thus requiring
-            # mobile application to be managed
-            disabled_sensors = [
-                str(x.index) for x in g90_sensors if not x.enabled
-            ]
-            _LOGGER.debug('configure: disabled sensors: %s', disabled_sensors)
-            # Add form element
-            schema.update({
-                vol.Optional(
-                    CONF_DISABLED_SENSORS,
-                    default=disabled_sensors
-                ): SelectSelector(
-                    SelectSelectorConfig(
-                        options=all_sensors,
-                        multiple=True
-                    )
-                ),
-            })
 
         # Present the form back if no user input
         if user_input is None:
