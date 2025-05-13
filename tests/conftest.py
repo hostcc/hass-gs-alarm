@@ -4,7 +4,7 @@ Pytest configuration and fixtures
 from __future__ import annotations
 from typing import Iterator, TypeVar
 import asyncio
-from unittest.mock import patch, AsyncMock, PropertyMock
+from unittest.mock import patch, AsyncMock
 import pytest
 
 from homeassistant.core import HomeAssistant
@@ -115,7 +115,10 @@ def mock_g90alarm(request: pytest.FixtureRequest) -> Iterator[AlarmMockT]:
             type_id=1,
             subtype=0,
             timeout=0,
-            user_flag_data=255,
+            user_flags_data=(
+                pyg90alarm.G90SensorUserFlags.ENABLED
+                | pyg90alarm.G90SensorUserFlags.ALERT_WHEN_AWAY
+            ),
             baudrate=0,
             protocol_id=0,
             reserved_data=0,
@@ -123,17 +126,8 @@ def mock_g90alarm(request: pytest.FixtureRequest) -> Iterator[AlarmMockT]:
             mask=0,
             private_data=0,
         )
-        # Mock `set_enabled()` method of the sensor, will be used in test
-        # assertions
-        mock_sensor.set_enabled = AsyncMock()  # type: ignore[method-assign]
-        # Mock `supports_enable_disable` property of the sensor defaulting to
-        # `True`, will later be used by tests to simulate a sensor no
-        # supporting enabling/disabling
-        type(
-            mock_sensor
-        ).supports_enable_disable = (  # type: ignore[method-assign]
-            PropertyMock(return_value=True)
-        )
+        mock_sensor.set_flag = AsyncMock()  # type: ignore[method-assign]
+        mock_sensor.set_alert_mode = AsyncMock()  # type: ignore[method-assign]
 
         # Mock `G90Alarm().get_sensors()` method pretenting to return single
         # sensor above
@@ -155,7 +149,7 @@ def mock_g90alarm(request: pytest.FixtureRequest) -> Iterator[AlarmMockT]:
                     type_id=128,
                     subtype=0,
                     timeout=0,
-                    user_flag_data=0,
+                    user_flags_data=0,
                     baudrate=0,
                     protocol_id=0,
                     reserved_data=0,
@@ -194,9 +188,12 @@ def mock_g90alarm(request: pytest.FixtureRequest) -> Iterator[AlarmMockT]:
             ]
         )
 
-        mock.return_value.get_alert_config = AsyncMock(
-            return_value=pyg90alarm.local.config.G90AlertConfig(255)
-        )
+        (
+            mock.return_value.alert_config.get_flag
+        ) = AsyncMock(return_value=True)
+        (
+            mock.return_value.alert_config.set_flag
+        ) = AsyncMock()
 
         # pylint:disable=protected-access
         mock.return_value._alert_simulation_task = AsyncMock(spec=asyncio.Task)

@@ -59,6 +59,22 @@ async def test_setup_unload_and_reload_entry_afresh(
     assert integration_entity_ids == unordered([
         'alarm_control_panel.dummy_guid',
         'binary_sensor.dummy_sensor_1',
+        'switch.dummy_sensor_1_enabled',
+        'switch.dummy_sensor_1_arm_delay',
+        'switch.dummy_sensor_1_detect_door',
+        'switch.dummy_sensor_1_door_chime',
+        'switch.dummy_sensor_1_independent_zone',
+        'select.dummy_sensor_1_alert_mode',
+        'switch.alert_ac_power_failure',
+        'switch.alert_ac_power_recover',
+        'switch.alert_arm_disarm',
+        'switch.alert_host_low_voltage',
+        'switch.alert_sensor_low_voltage',
+        'switch.alert_wifi_available',
+        'switch.alert_wifi_unavailable',
+        'switch.alert_door_open',
+        'switch.alert_door_close',
+        'switch.alert_sms_push',
         'switch.dummy_switch_1',
         'sensor.gs_alarm_wifi_signal',
         'binary_sensor.gs_alarm_wifi_status',
@@ -68,6 +84,20 @@ async def test_setup_unload_and_reload_entry_afresh(
         'sensor.gs_alarm_last_upstream_packet',
     ])
 
+    # Verify the switches and selects correspond to the binary sensor have
+    # proper states
+    for entity_id, expected_state in [
+        ('switch.dummy_sensor_1_enabled', 'on'),
+        ('switch.dummy_sensor_1_arm_delay', 'off'),
+        ('switch.dummy_sensor_1_detect_door', 'off'),
+        ('switch.dummy_sensor_1_door_chime', 'off'),
+        ('switch.dummy_sensor_1_independent_zone', 'off'),
+        ('select.dummy_sensor_1_alert_mode', 'Alert when away'),
+    ]:
+        entity = hass.states.get(entity_id)
+        assert entity is not None
+        assert entity.state == expected_state
+
     # Verify binary sensor has expected extra attributes
     dummy_sensor_1 = hass.states.get('binary_sensor.dummy_sensor_1')
     assert dummy_sensor_1 is not None
@@ -75,14 +105,6 @@ async def test_setup_unload_and_reload_entry_afresh(
     assert 'panel_sensor_number' in dummy_sensor_1.attributes
     assert 'protocol' in dummy_sensor_1.attributes
     assert 'flags' in dummy_sensor_1.attributes
-
-    # Verify options haven't been propagated to `G90Alarm` instance
-    mock_g90alarm.return_value.sms_alert_when_armed.assert_not_called()
-    (
-        mock_g90alarm.return_value
-        .get_sensors.return_value[0]
-        .set_enabled
-    ).assert_not_called()
 
     # Verify `G90Alarm` sensors received the HASS entity IDs as `extra_data`
     for sensor in await mock_g90alarm.return_value.get_sensors():
@@ -108,7 +130,6 @@ async def test_setup_entry_with_persisted_options(
         domain=DOMAIN,
         data={'ip_addr': 'dummy-ip'},
         options={
-            'disabled_sensors': ['0'],
             'sms_alert_when_armed': True,
         },
         entry_id="test"
@@ -121,8 +142,3 @@ async def test_setup_entry_with_persisted_options(
     # Verify `G90Alarm` instance has been configured according to integration
     # options
     assert mock_g90alarm.return_value.sms_alert_when_armed is True
-    (
-        mock_g90alarm.return_value
-        .get_sensors.return_value[0]
-        .set_enabled
-    ).assert_called_once_with(False)

@@ -24,7 +24,6 @@ from .const import (
     CONF_IP_ADDR,
     CONF_SMS_ALERT_WHEN_ARMED,
     CONF_SIMULATE_ALERTS_FROM_HISTORY,
-    CONF_DISABLED_SENSORS,
     CONF_NOTIFICATIONS_PROTOCOL,
     CONF_CLOUD_LOCAL_PORT,
     CONF_CLOUD_UPSTREAM_HOST,
@@ -35,7 +34,9 @@ from .const import (
 )
 
 _LOGGER = logging.getLogger(__name__)
-PLATFORMS = ["alarm_control_panel", "switch", "binary_sensor", "sensor"]
+PLATFORMS = [
+    "alarm_control_panel", "switch", "binary_sensor", "sensor", "select"
+]
 
 
 @dataclass
@@ -52,41 +53,6 @@ class GsAlarmData:
     panel_sensors: List[G90Sensor]
     # HASS device information
     device: DeviceInfo
-
-
-async def _options_enable_disable_sensors(
-    g90_client: G90Alarm, disabled_sensors: List[str]
-) -> None:
-    """
-    Perform enabling/disabling sensors support that during options (configure)
-    flow
-    """
-    _LOGGER.debug('Sensors to disable: %s', disabled_sensors)
-    for sensor in await g90_client.get_sensors():
-        # Ensure no attempts made to disable sensors not supporting that
-        if not sensor.supports_enable_disable:
-            continue
-        # Calculate target state for the sensor, depending on whether it has
-        # been included into `disabled_sensors` configure result or not
-        enable_sensor = (
-            str(sensor.index) not in disabled_sensors
-        )
-        # Skip changing the sensor if already in target state
-        if sensor.enabled == enable_sensor:
-            _LOGGER.debug(
-                'Not changing state for sensor idx=%s name=%s,'
-                ' already in target state (enabled=%s)',
-                sensor.index, sensor.name, enable_sensor
-            )
-            continue
-
-        # Update the state of the sensor
-        _LOGGER.debug(
-            'Changing state of sensor idx=%s name=%s to %s',
-            sensor.index, sensor.name,
-            'enabled' if enable_sensor else 'disabled'
-        )
-        await sensor.set_enabled(enable_sensor)
 
 
 async def _options_notifications_protocol(
@@ -202,11 +168,6 @@ async def options_update_listener(
                     repr(exc)
                 )
 
-        disabled_sensors = entry.options.get(CONF_DISABLED_SENSORS)
-        # See the comment above
-        if disabled_sensors is not None:
-            await _options_enable_disable_sensors(g90_client, disabled_sensors)
-
         # Configure the selected notifications protocol
         await _options_notifications_protocol(g90_client, entry.options)
     except G90TimeoutError as exc:
@@ -288,7 +249,7 @@ async def async_unload_entry(hass: HomeAssistant, entry: ConfigEntry) -> bool:
         )
     )
     _LOGGER.debug(
-        'Platforms unloaded %successfully', '' if unload_ok else 'un'
+        'Platforms unloaded %ssuccessfully', '' if unload_ok else 'un'
     )
     if unload_ok:
         g90_client = hass.data[DOMAIN][entry.entry_id].client

@@ -68,10 +68,9 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry,
     for sensor in (
         hass.data[DOMAIN][entry.entry_id].panel_sensors
     ):
-        if sensor.enabled:
-            g90sensors.append(
-                G90BinarySensor(sensor, hass.data[DOMAIN][entry.entry_id])
-            )
+        g90sensors.append(
+            G90BinarySensor(sensor, hass.data[DOMAIN][entry.entry_id])
+        )
     g90sensors.append(
         G90WifiStatusSensor(hass.data[DOMAIN][entry.entry_id])
     )
@@ -98,7 +97,7 @@ class G90BinarySensor(BinarySensorEntity):
         self._attr_extra_state_attributes = {
             'panel_sensor_number': g90_sensor.index,
             'protocol': g90_sensor.protocol.name,
-            'flags': g90_sensor.user_flag.name,
+            'flags': g90_sensor.user_flags.name,
             'wireless': g90_sensor.is_wireless,
         }
         hass_sensor_type = HASS_SENSOR_TYPES_MAPPING.get(g90_sensor.type, None)
@@ -192,11 +191,16 @@ class G90BinarySensor(BinarySensorEntity):
         return extra_attrs
 
     @property
-    def is_on(self) -> bool:
+    def is_on(self) -> bool | None:
         """
         Indicates if sensor is active.
         """
-        val: bool = self._g90_sensor.occupancy
+        val = (
+            # None translates to unknown state in HASS for disabled sensor
+            None if not self._g90_sensor.enabled
+            else self._g90_sensor.occupancy
+        )
+
         _LOGGER.debug('%s: Providing state %s', self.unique_id, val)
         return val
 
