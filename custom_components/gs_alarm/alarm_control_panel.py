@@ -56,7 +56,9 @@ class G90AlarmPanel(AlarmControlPanelEntity):
             | AlarmControlPanelEntityFeature.ARM_AWAY
         )
         self._attr_code_arm_required = False
-        self._attr_name = hass_data.guid
+        # Derive name from the device GUID, will be used to compose
+        # entity ID comprising of the GUID alone
+        self._attr_name = None
         self._attr_has_entity_name = True
         self._attr_device_info = hass_data.device
         self._attr_changed_by = None
