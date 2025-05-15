@@ -7,7 +7,7 @@ import asyncio
 from unittest.mock import patch, AsyncMock
 import pytest
 
-from homeassistant.core import HomeAssistant
+from homeassistant.core import HomeAssistant, State
 import homeassistant.helpers.entity_registry as er
 
 import pyg90alarm
@@ -226,7 +226,7 @@ def hass_get_state_by_unique_id(
     hass: HomeAssistant,
     platform: str,
     unique_id: str,
-) -> str:
+) -> State:
     """
     Returns entity state for given unique ID.
     """
