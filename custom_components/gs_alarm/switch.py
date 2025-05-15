@@ -7,6 +7,7 @@ import logging
 
 from homeassistant.config_entries import ConfigEntry
 from homeassistant.core import HomeAssistant
+from homeassistant.util import slugify
 from homeassistant.const import (
     EntityCategory,
 )
@@ -45,66 +46,66 @@ async def async_setup_entry(
             g90switches.extend([
                 G90SensorFlag(
                     sensor, hass.data[DOMAIN][entry.entry_id],
-                    G90SensorUserFlags.ENABLED, "Enabled"
+                    G90SensorUserFlags.ENABLED,
                 ),
                 G90SensorFlag(
                     sensor, hass.data[DOMAIN][entry.entry_id],
-                    G90SensorUserFlags.ARM_DELAY, "Arm delay"
+                    G90SensorUserFlags.ARM_DELAY,
                 ),
                 G90SensorFlag(
                     sensor, hass.data[DOMAIN][entry.entry_id],
-                    G90SensorUserFlags.DETECT_DOOR, "Detect door"
+                    G90SensorUserFlags.DETECT_DOOR,
                 ),
                 G90SensorFlag(
                     sensor, hass.data[DOMAIN][entry.entry_id],
-                    G90SensorUserFlags.DOOR_CHIME, "Door chime"
+                    G90SensorUserFlags.DOOR_CHIME,
                 ),
                 G90SensorFlag(
                     sensor, hass.data[DOMAIN][entry.entry_id],
-                    G90SensorUserFlags.INDEPENDENT_ZONE, "Independent zone"
+                    G90SensorUserFlags.INDEPENDENT_ZONE,
                 ),
             ])
 
     g90switches.extend([
         G90AlertConfigFlag(
             hass.data[DOMAIN][entry.entry_id],
-            G90AlertConfigFlags.AC_POWER_FAILURE, "AC Power failure"
+            G90AlertConfigFlags.AC_POWER_FAILURE,
         ),
         G90AlertConfigFlag(
             hass.data[DOMAIN][entry.entry_id],
-            G90AlertConfigFlags.AC_POWER_RECOVER, "AC Power recover"
+            G90AlertConfigFlags.AC_POWER_RECOVER,
         ),
         G90AlertConfigFlag(
             hass.data[DOMAIN][entry.entry_id],
-            G90AlertConfigFlags.ARM_DISARM, "Arm disarm"
+            G90AlertConfigFlags.ARM_DISARM,
         ),
         G90AlertConfigFlag(
             hass.data[DOMAIN][entry.entry_id],
-            G90AlertConfigFlags.HOST_LOW_VOLTAGE, "Host low voltage"
+            G90AlertConfigFlags.HOST_LOW_VOLTAGE
         ),
         G90AlertConfigFlag(
             hass.data[DOMAIN][entry.entry_id],
-            G90AlertConfigFlags.SENSOR_LOW_VOLTAGE, "Sensor low voltage"
+            G90AlertConfigFlags.SENSOR_LOW_VOLTAGE,
         ),
         G90AlertConfigFlag(
             hass.data[DOMAIN][entry.entry_id],
-            G90AlertConfigFlags.WIFI_AVAILABLE, "WiFi available"
+            G90AlertConfigFlags.WIFI_AVAILABLE,
         ),
         G90AlertConfigFlag(
             hass.data[DOMAIN][entry.entry_id],
-            G90AlertConfigFlags.WIFI_UNAVAILABLE, "WiFi unavailable"
+            G90AlertConfigFlags.WIFI_UNAVAILABLE,
         ),
         G90AlertConfigFlag(
             hass.data[DOMAIN][entry.entry_id],
-            G90AlertConfigFlags.DOOR_OPEN, "Door open"
+            G90AlertConfigFlags.DOOR_OPEN,
         ),
         G90AlertConfigFlag(
             hass.data[DOMAIN][entry.entry_id],
-            G90AlertConfigFlags.DOOR_CLOSE, "Door close"
+            G90AlertConfigFlags.DOOR_CLOSE,
         ),
         G90AlertConfigFlag(
             hass.data[DOMAIN][entry.entry_id],
-            G90AlertConfigFlags.SMS_PUSH, "SMS push"
+            G90AlertConfigFlags.SMS_PUSH,
         ),
     ])
 
@@ -112,21 +113,24 @@ async def async_setup_entry(
 
 
 class G90Switch(SwitchEntity):
-    # Not all base class methods are meaningfull in the context of the
-    # integration, silence the `pylint` for those
-    # pylint: disable=abstract-method
     """
     Switch specific to the alarm panel's device (relay).
     """
+    # Not all base class methods are meaningfull in the context of the
+    # integration, silence the `pylint` for those
+    # pylint: disable=abstract-method,too-many-instance-attributes
     def __init__(self, device: G90Device, hass_data: GsAlarmData) -> None:
         self._device = device
         self._state = False
-        self._attr_unique_id = (
+        self._attr_device_info = hass_data.device
+        self._attr_has_entity_name = True
+        self._attr_unique_id = slugify(
             f"{hass_data.guid}_switch_{device.index}_{device.subindex + 1}"
         )
-        self._attr_name = device.name
-        self._attr_device_info = hass_data.device
-        self._hass_data = hass_data
+        self._attr_translation_key = 'relay'
+        self._attr_translation_placeholders = {
+            'relay': device.name,
+        }
 
     @property
     def is_on(self) -> bool:
@@ -172,25 +176,28 @@ class G90Switch(SwitchEntity):
 
 
 class G90SensorFlag(SwitchEntity):
-    # Not all base class methods are meaningfull in the context of the
-    # integration, silence the `pylint` for those
-    # pylint: disable=abstract-method
     """
     Switch entity for configuration option of the sensor.
     """
+    # Not all base class methods are meaningfull in the context of the
+    # integration, silence the `pylint` for those
+    # pylint: disable=abstract-method,too-many-instance-attributes
     def __init__(
         self, sensor: G90Sensor, hass_data: GsAlarmData,
-        flag: G90SensorUserFlags, flag_name: str
+        flag: G90SensorUserFlags,
     ) -> None:
         self._sensor = sensor
         self._flag = flag
-        self._attr_unique_id = (
-            f"{hass_data.guid}_sensor_{sensor.index}_{flag_name.lower()}"
-        )
-        self._attr_name = f"{sensor.name}: {flag_name}"
         self._attr_device_info = hass_data.device
-        self._hass_data = hass_data
         self._attr_entity_category = EntityCategory.CONFIG
+        self._attr_unique_id = slugify(
+            f"{hass_data.guid}_sensor_{sensor.index}_{flag.name}"
+        )
+        self._attr_has_entity_name = True
+        self._attr_translation_key = slugify(f'sensor_flag_{flag.name}')
+        self._attr_translation_placeholders = {
+            'sensor': sensor.name,
+        }
 
     @property
     def is_on(self) -> bool:
@@ -240,18 +247,21 @@ class G90SensorFlag(SwitchEntity):
 
 
 class G90AlertConfigFlag(SwitchEntity):
-    # Not all base class methods are meaningfull in the context of the
-    # integration, silence the `pylint` for those
-    # pylint: disable=abstract-method
     """
     Switch entity for alert configuration option of the panel.
     """
+    # Not all base class methods are meaningfull in the context of the
+    # integration, silence the `pylint` for those
+    # pylint: disable=abstract-method,too-many-instance-attributes
     def __init__(
-        self, hass_data: GsAlarmData, flag: G90AlertConfigFlags, flag_name: str
+        self, hass_data: GsAlarmData, flag: G90AlertConfigFlags
     ) -> None:
         self._flag = flag
-        self._attr_unique_id = f"{hass_data.guid}_{flag_name.lower()}"
-        self._attr_name = f"Alert: {flag_name}"
+        self._attr_has_entity_name = True
+        self._attr_unique_id = slugify(
+            f"{hass_data.guid}_alert_config_flag_{flag.name}"
+        )
+        self._attr_translation_key = slugify(f'alert_config_flag_{flag.name}')
         self._attr_device_info = hass_data.device
         self._hass_data = hass_data
         self._attr_entity_category = EntityCategory.CONFIG

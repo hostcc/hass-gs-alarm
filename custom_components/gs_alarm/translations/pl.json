@@ -1,0 +1,176 @@
+{
+    "config": {
+        "abort": {
+            "no_devices_found": "Nie znaleziono urządzeń w sieci",
+            "single_instance_allowed": "Już skonfigurowano. Możliwa jest tylko jedna konfiguracja."
+        },
+        "step": {
+            "custom_host": {
+                "data": {
+                    "ip_addr": "Adres IP"
+                },
+                "description": "Nie wykryto żadnych urządzeń, przejdź do konfiguracji ręcznej"
+            },
+            "confirm": {
+                "description": "Czy chcesz rozpocząć konfigurację?"
+            }
+        }
+    },
+    "options": {
+        "step": {
+            "init": {
+                "data": {
+                    "sms_alert_when_armed": "Powiadomienia SMS tylko gdy urządzenie jest uzbrojone",
+                    "simulate_alerts_from_history": "Symuluj alerty urządzenia z historii",
+                    "notifications_protocol": "Protokół powiadomień"
+                },
+                "data_description": {
+                    "notifications_protocol": "* **Lokalny**: Panel ma adres IP `10.10.10.250`\n* **Chmura**: Ruch panelu do chmury może być przekierowany do\nHome Assistant na poziomie sieci, żaden ruch nie jest wysyłany do serwerów chmury\n* **Połączona chmura**: Tak samo jak **Chmura**, ale ruch jest również wysyłany do serwerów chmury,\naby aplikacja mobilna działała"
+                }
+            },
+            "cloud": {
+                "description": "Protokół chmury",
+                "data": {
+                    "cloud_local_port": "Port do nasłuchiwania ruchu panelu"
+                }
+            },
+            "cloud_upstream": {
+                "description": "Protokół połączonej chmury",
+                "data": {
+                    "cloud_local_port": "Port do nasłuchiwania ruchu panelu",
+                    "cloud_upstream_host": "Host, do którego wysyłane są powiadomienia panelu po przetworzeniu",
+                    "cloud_upstream_port": "Port, do którego wysyłane są powiadomienia panelu po przetworzeniu"
+                }
+            }
+        }
+    },
+    "selector": {
+        "notifications_protocol": {
+            "options": {
+                "local": "Lokalny",
+                "cloud": "Chmura",
+                "cloud_upstream": "Połączona chmura"
+            }
+        }
+    },
+    "entity": {
+        "binary_sensor": {
+            "sensor": {
+                "name": "{sensor}",
+                "state_attributes": {
+                    "low_battery": {
+                        "name": "Niski poziom baterii",
+                        "state": {
+                            "true": "Tak",
+                            "false": "Nie"
+                        }
+                    },
+                    "tampered": {
+                        "name": "Naruszony",
+                        "state": {
+                            "true": "Tak",
+                            "false": "Nie"
+                        }
+                    },
+                    "door_open_when_arming": {
+                        "name": "Aktywny podczas uzbrajania",
+                        "state": {
+                            "true": "Tak",
+                            "false": "Nie"
+                        }
+                    },
+                    "panel_sensor_number": {"name": "Numer czujnika panelu"},
+                    "protocol": {"name": "Protokół"},
+                    "flags": {"name": "Flagi"},
+                    "wireless": {
+                        "name": "Bezprzewodowy",
+                        "state": {
+                            "true": "Tak",
+                            "false": "Nie"
+                        }
+                    }
+                }
+            },
+            "wifi_status": {
+                "name": "Status WiFi"
+            },
+            "gsm_status": {
+                "name": "Status GSM"
+            }
+        },
+        "switch": {
+            "relay": {
+                "name": "{relay}"
+            },
+            "sensor_flag_arm_delay": {
+                "name": "{sensor}: Opóźnienie uzbrojenia"
+            },
+            "sensor_flag_detect_door": {
+                "name": "{sensor}: Sprawdź aktywność podczas uzbrajania"
+            },
+            "sensor_flag_independent_zone": {
+                "name": "{sensor}: Rozbrajanie tylko z aplikacji"
+            },
+            "sensor_flag_enabled": {
+                "name": "{sensor}: Włączony"
+            },
+            "sensor_flag_door_chime": {
+                "name": "{sensor}: Dzwonek do drzwi"
+            },
+            "alert_config_flag_sms_push": {
+                "name": "Alert: Powiadomienie SMS"
+            },
+            "alert_config_flag_ac_power_failure": {
+                "name": "Alert: Awaria zasilania AC"
+            },
+            "alert_config_flag_ac_power_recover": {
+                "name": "Alert: Przywrócenie zasilania AC"
+            },
+            "alert_config_flag_host_low_voltage": {
+                "name": "Alert: Niskie napięcie hosta"
+            },
+            "alert_config_flag_sensor_low_voltage": {
+                "name": "Alert: Niskie napięcie czujnika"
+            },
+            "alert_config_flag_arm_disarm": {
+                "name": "Alert: Uzbrojenie/rozbrojenie"
+            },
+            "alert_config_flag_door_open": {
+                "name": "Alert: Drzwi otwarte"
+            },
+            "alert_config_flag_door_close": {
+                "name": "Alert: Drzwi zamknięte"
+            },
+            "alert_config_flag_wifi_available": {
+                "name": "Alert: WiFi dostępne"
+            },
+            "alert_config_flag_wifi_unavailable": {
+                "name": "Alert: WiFi niedostępne"
+            }
+        },
+        "sensor": {
+           "wifi_signal": {
+                "name": "Sygnał WiFi"
+            },
+            "gsm_signal": {
+                "name": "Sygnał GSM"
+            },
+            "last_device_packet": {
+                "name": "Ostatni pakiet urządzenia"
+            },
+            "last_upstream_packet": {
+                "name": "Czas ostatniego pakietu urządzenia"
+            }
+        },
+        "select": {
+            "sensor_alert_mode": {
+                "name": "{sensor}: Tryb alertu",
+                "state": {
+                    "alert_always": "Zawsze",
+                    "alert_when_away": "Gdy poza domem",
+                    "alert_when_away_and_home": "Gdy poza domem i w domu"
+                }
+            }
+        }
+    }
+}

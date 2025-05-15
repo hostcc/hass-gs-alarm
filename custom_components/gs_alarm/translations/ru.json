@@ -1,0 +1,176 @@
+{
+    "config": {
+        "abort": {
+            "no_devices_found": "В сети не найдено ни одного устройства",
+            "single_instance_allowed": "Устройство уже сконфигурировано."
+        },
+        "step": {
+            "custom_host": {
+                "data": {
+                    "ip_addr": "IP адрес"
+                },
+                "description": "Устройства не обнаружены - пожалуйста, выполните ручную настройку"
+            },
+            "confirm": {
+                "description": "Вы хотите начать процесс настройки?"
+            }
+        }
+    },
+    "options": {
+        "step": {
+            "init": {
+                "data": {
+                    "sms_alert_when_armed": "SMS оповещения только в режиме охраны",
+                    "simulate_alerts_from_history": "Симуляция событий из истории",
+                    "notifications_protocol": "Протокол уведомлений"
+                },
+                "data_description": {
+                    "notifications_protocol": "* **Локальный**: Панель имеет IP-адрес `10.10.10.250`\n* **Облачный**: Трафик панели в облако может быть перенаправлен в\nHome Assistant на уровне сети, трафик не отправляется на облачные серверы\n* **Связанное облако**: То же, что и **Облачный**, но трафик также отправляется на облачные серверы,\nчтобы мобильное приложение работало"
+                }
+            },
+            "cloud": {
+                "description": "Облачный протокол",
+                "data": {
+                    "cloud_local_port": "Порт для отслеживания трафика панели"
+                }
+            },
+            "cloud_upstream": {
+                "description": "Протокол связанного облака",
+                "data": {
+                    "cloud_local_port": "Порт для отслеживания трафика панели",
+                    "cloud_upstream_host": "Хост для отправки уведомлений панели после обработки",
+                    "cloud_upstream_port": "Порт для отправки уведомлений панели после обработки"
+                }
+            }
+        }
+    },
+    "selector": {
+        "notifications_protocol": {
+            "options": {
+                "local": "Локальный",
+                "cloud": "Облачный",
+                "cloud_upstream": "Связанное облако"
+            }
+        }
+    },
+    "entity": {
+        "binary_sensor": {
+            "sensor": {
+                "name": "{sensor}",
+                 "state_attributes": {
+                    "low_battery": {
+                        "name": "Низкий заряд батареи",
+                        "state": {
+                            "true": "Да",
+                            "false": "Нет"
+                        }
+                    },
+                    "tampered": {
+                        "name": "Вскрытие",
+                        "state": {
+                            "true": "Да",
+                            "false": "Нет"
+                        }
+                    },
+                    "door_open_when_arming": {
+                        "name": "Активен при постановке на охрану",
+                        "state": {
+                            "true": "Да",
+                            "false": "Нет"
+                        }
+                    },
+                    "panel_sensor_number": {"name": "Номер сенсора в панели"},
+                    "protocol": {"name": "Протокол"},
+                    "flags": {"name": "Флаги"},
+                    "wireless": {
+                        "name": "Беспроводной",
+                        "state": {
+                            "true": "Да",
+                            "false": "Нет"
+                        }
+                    }
+                }
+            },
+            "wifi_status": {
+                "name": "WiFi статус"
+            },
+            "gsm_status": {
+                "name": "GSM статус"
+            }
+        },
+        "switch": {
+            "relay": {
+                "name": "{relay}"
+            },
+            "sensor_flag_arm_delay": {
+                "name": "{sensor}: Задержка постановки на охрану"
+            },
+            "sensor_flag_detect_door": {
+                "name": "{sensor}: Проверка при постановке на охрану"
+            },
+            "sensor_flag_independent_zone": {
+                "name": "{sensor}: Снятие с охраны только из приложения"
+            },
+            "sensor_flag_enabled": {
+                "name": "{sensor}: Включен"
+            },
+            "sensor_flag_door_chime": {
+                "name": "{sensor}: Звук открытия двери"
+            },
+            "alert_config_flag_sms_push": {
+                "name": "Оповещение: SMS сообщение"
+            },
+            "alert_config_flag_ac_power_failure": {
+                "name": "Оповещение: пропадание сетевого питания"
+            },
+            "alert_config_flag_ac_power_recover": {
+                "name": "Оповещение: появление сетевого питания"
+            },
+            "alert_config_flag_host_low_voltage": {
+                "name": "Оповещение: низкое напряжение аккумулятора панели"
+            },
+            "alert_config_flag_sensor_low_voltage": {
+                "name": "Оповещение: низкое напряжение батареи сенсора"
+            },
+            "alert_config_flag_arm_disarm": {
+                "name": "Оповещение: постановка и снятие с охраны"
+            },
+            "alert_config_flag_door_open": {
+                "name": "Оповещение: открытие двери"
+            },
+            "alert_config_flag_door_close": {
+                "name": "Оповещение: закрытие двери"
+            },
+            "alert_config_flag_wifi_available": {
+                "name": "Оповещение: WiFi доступен"
+            },
+            "alert_config_flag_wifi_unavailable": {
+                "name": "Оповещение: WiFi недоступен"
+            }
+        },
+        "sensor": {
+           "wifi_signal": {
+                "name": "WiFi сигнал"
+            },
+            "gsm_signal": {
+                "name": "GSM сигнал"
+            },
+            "last_device_packet": {
+                "name": "Последний пакет от устройства"
+            },
+            "last_upstream_packet": {
+                "name": "Последний пакет из облака"
+            }
+        },
+        "select": {
+            "sensor_alert_mode": {
+                "name": "{sensor}: Режим охраны",
+                "state": {
+                    "alert_always": "Всегда",
+                    "alert_when_away": "Вне дома",
+                    "alert_when_away_and_home": "Дома и вне дома"
+                }
+            }
+        }
+    }
+}

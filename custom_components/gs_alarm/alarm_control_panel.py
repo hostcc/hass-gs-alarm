@@ -6,6 +6,7 @@ from typing import TYPE_CHECKING
 import logging
 
 from homeassistant.config_entries import ConfigEntry
+from homeassistant.util import slugify
 from homeassistant.core import HomeAssistant
 from homeassistant.components.alarm_control_panel import (
     AlarmControlPanelEntity,
@@ -49,13 +50,16 @@ class G90AlarmPanel(AlarmControlPanelEntity):
     Instantiate entity for alarm control panel.
     """
     def __init__(self, hass_data: GsAlarmData) -> None:
-        self._attr_unique_id = hass_data.guid
+        self._attr_unique_id = slugify(hass_data.guid)
         self._attr_supported_features = (
             AlarmControlPanelEntityFeature.ARM_HOME
             | AlarmControlPanelEntityFeature.ARM_AWAY
         )
         self._attr_code_arm_required = False
-        self._attr_name = hass_data.guid
+        # Derive name from the device GUID, will be used to compose
+        # entity ID comprising of the GUID alone
+        self._attr_name = None
+        self._attr_has_entity_name = True
         self._attr_device_info = hass_data.device
         self._attr_changed_by = None
         self._attr_alarm_state = None

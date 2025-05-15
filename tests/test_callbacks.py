@@ -13,7 +13,7 @@ from homeassistant.components.alarm_control_panel.const import (
 from pyg90alarm import G90ArmDisarmTypes
 
 from custom_components.gs_alarm.const import DOMAIN
-from .conftest import AlarmMockT
+from .conftest import AlarmMockT, hass_get_state_by_unique_id
 
 
 @pytest.mark.g90host_status(
@@ -41,8 +41,10 @@ async def test_alarm_callback(
     )
 
     # Verify panel state and attributes reflect that
-    panel_state = hass.states.get('alarm_control_panel.dummy_guid')
-    assert panel_state is not None
+    panel_state = hass_get_state_by_unique_id(
+        hass, 'alarm_control_panel', 'dummy_guid'
+    )
+
     assert panel_state.state == AlarmControlPanelState.TRIGGERED
     assert panel_state.attributes is not None
     assert panel_state.attributes.get('changed_by') == (
@@ -53,9 +55,12 @@ async def test_alarm_callback(
     mock_g90alarm.return_value.armdisarm_callback(
         G90ArmDisarmTypes.ARM_AWAY
     )
+
     # Verify `changed_by` attribute has been reset
-    panel_state = hass.states.get('alarm_control_panel.dummy_guid')
-    assert panel_state is not None
+    panel_state = hass_get_state_by_unique_id(
+        hass, 'alarm_control_panel', 'dummy_guid'
+    )
+
     assert panel_state.attributes is not None
     assert panel_state.attributes.get('changed_by') is None
 
@@ -86,8 +91,10 @@ async def test_arm_callback(
     )
 
     # Verify panel state reflects that
-    panel_state = hass.states.get('alarm_control_panel.dummy_guid')
-    assert panel_state is not None
+    panel_state = hass_get_state_by_unique_id(
+        hass, 'alarm_control_panel', 'dummy_guid'
+    )
+
     assert panel_state.state == AlarmControlPanelState.ARMED_AWAY
 
 
@@ -118,8 +125,10 @@ async def test_disarm_callback(
     )
 
     # Verify panel state reflects that
-    panel_state = hass.states.get('alarm_control_panel.dummy_guid')
-    assert panel_state is not None
+    panel_state = hass_get_state_by_unique_id(
+        hass, 'alarm_control_panel', 'dummy_guid'
+    )
+
     assert panel_state.state == AlarmControlPanelState.DISARMED
 
 
@@ -153,8 +162,10 @@ async def test_low_battery_callback(
     await hass.async_block_till_done()
 
     # Verify sensor state reflects the low battery status
-    sensor_state = hass.states.get('binary_sensor.dummy_sensor_1')
-    assert sensor_state is not None
+    sensor_state = hass_get_state_by_unique_id(
+        hass, 'binary_sensor', 'dummy_guid_sensor_0'
+    )
+
     assert sensor_state.attributes != {}
     assert sensor_state.attributes.get('low_battery') is True
 
@@ -187,8 +198,10 @@ async def test_tamper_callback(
     await hass.async_block_till_done()
 
     # Verify sensor state reflects the low battery status
-    sensor_state = hass.states.get('binary_sensor.dummy_sensor_1')
-    assert sensor_state is not None
+    sensor_state = hass_get_state_by_unique_id(
+        hass, 'binary_sensor', 'dummy_guid_sensor_0'
+    )
+
     assert sensor_state.attributes != {}
     assert sensor_state.attributes.get('tampered') is True
 
@@ -221,7 +234,9 @@ async def test_door_open_when_arming_callback(
     await hass.async_block_till_done()
 
     # Verify sensor state reflects the low battery status
-    sensor_state = hass.states.get('binary_sensor.dummy_sensor_1')
-    assert sensor_state is not None
+    sensor_state = hass_get_state_by_unique_id(
+        hass, 'binary_sensor', 'dummy_guid_sensor_0'
+    )
+
     assert sensor_state.attributes != {}
     assert sensor_state.attributes.get('door_open_when_arming') is True

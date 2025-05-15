@@ -1,0 +1,176 @@
+{
+    "config": {
+        "abort": {
+            "no_devices_found": "Прылады ў сетцы не знойдзены",
+            "single_instance_allowed": "Ужо наладжана. Магчыма толькі адна канфігурацыя."
+        },
+        "step": {
+            "custom_host": {
+                "data": {
+                    "ip_addr": "IP-адрас"
+                },
+                "description": "Прылады не выяўлены, калі ласка, перайдзіце да ручной наладкі"
+            },
+            "confirm": {
+                "description": "Жадаеце пачаць наладку?"
+            }
+        }
+    },
+    "options": {
+        "step": {
+            "init": {
+                "data": {
+                    "sms_alert_when_armed": "SMS-апавяшчэнні толькі калі прылада ўключана",
+                    "simulate_alerts_from_history": "Сімуляваць апавяшчэнні прылады з гісторыі",
+                    "notifications_protocol": "Пратакол апавяшчэнняў"
+                },
+                "data_description": {
+                    "notifications_protocol": "* **Лакальны**: Панэль мае IP-адрас `10.10.10.250`\n* **Воблака**: Трафік панэлі ў воблака можна перанакіраваць да\nHome Assistant на ўзроўні сеткі, трафік не адпраўляецца на воблачныя серверы\n* **Звязанае воблака**: Тое ж, што і **Воблака**, але трафік таксама адпраўляецца на воблачныя серверы,\nкаб мабільны дадатак працаваў"
+                }
+            },
+            "cloud": {
+                "description": "Воблачны пратакол",
+                "data": {
+                    "cloud_local_port": "Порт для праслухоўвання трафіку панэлі"
+                }
+            },
+            "cloud_upstream": {
+                "description": "Пратакол звязанага воблака",
+                "data": {
+                    "cloud_local_port": "Порт для праслухоўвання трафіку панэлі",
+                    "cloud_upstream_host": "Хост для адпраўкі апавяшчэнняў панэлі пасля апрацоўкі",
+                    "cloud_upstream_port": "Порт для адпраўкі апавяшчэнняў панэлі пасля апрацоўкі"
+                }
+            }
+        }
+    },
+    "selector": {
+        "notifications_protocol": {
+            "options": {
+                "local": "Лакальны",
+                "cloud": "Воблака",
+                "cloud_upstream": "Звязанае воблака"
+            }
+        }
+    },
+    "entity": {
+        "binary_sensor": {
+            "sensor": {
+                "name": "{sensor}",
+                "state_attributes": {
+                    "low_battery": {
+                        "name": "Нізкі зарад батарэі",
+                        "state": {
+                            "true": "Так",
+                            "false": "Не"
+                        }
+                    },
+                    "tampered": {
+                        "name": "Умяшанне",
+                        "state": {
+                            "true": "Так",
+                            "false": "Не"
+                        }
+                    },
+                    "door_open_when_arming": {
+                        "name": "Актыўны пры пастаноўцы на ахову",
+                        "state": {
+                            "true": "Так",
+                            "false": "Не"
+                        }
+                    },
+                    "panel_sensor_number": {"name": "Нумар датчыка панэлі"},
+                    "protocol": {"name": "Пратакол"},
+                    "flags": {"name": "Сцяжкі"},
+                    "wireless": {
+                        "name": "Бесправадны",
+                        "state": {
+                            "true": "Так",
+                            "false": "Не"
+                        }
+                    }
+                }
+            },
+            "wifi_status": {
+                "name": "Статус WiFi"
+            },
+            "gsm_status": {
+                "name": "Статус GSM"
+            }
+        },
+        "switch": {
+            "relay": {
+                "name": "{relay}"
+            },
+            "sensor_flag_arm_delay": {
+                "name": "{sensor}: Затрымка пастаноўкі на ахову"
+            },
+            "sensor_flag_detect_door": {
+                "name": "{sensor}: Праверка актыўнасці пры пастаноўцы на ахову"
+            },
+            "sensor_flag_independent_zone": {
+                "name": "{sensor}: Зняцце з аховы толькі праз дадатак"
+            },
+            "sensor_flag_enabled": {
+                "name": "{sensor}: Уключана"
+            },
+            "sensor_flag_door_chime": {
+                "name": "{sensor}: Дзверны званок"
+            },
+            "alert_config_flag_sms_push": {
+                "name": "Апавяшчэнне: SMS-паведамленне"
+            },
+            "alert_config_flag_ac_power_failure": {
+                "name": "Апавяшчэнне: Збой электрасілкавання"
+            },
+            "alert_config_flag_ac_power_recover": {
+                "name": "Апавяшчэнне: Аднаўленне электрасілкавання"
+            },
+            "alert_config_flag_host_low_voltage": {
+                "name": "Апавяшчэнне: Нізкае напружанне хоста"
+            },
+            "alert_config_flag_sensor_low_voltage": {
+                "name": "Апавяшчэнне: Нізкае напружанне датчыка"
+            },
+            "alert_config_flag_arm_disarm": {
+                "name": "Апавяшчэнне: Пастаноўка/зняцце з аховы"
+            },
+            "alert_config_flag_door_open": {
+                "name": "Апавяшчэнне: Дзверы адчынены"
+            },
+            "alert_config_flag_door_close": {
+                "name": "Апавяшчэнне: Дзверы зачынены"
+            },
+            "alert_config_flag_wifi_available": {
+                "name": "Апавяшчэнне: WiFi даступны"
+            },
+            "alert_config_flag_wifi_unavailable": {
+                "name": "Апавяшчэнне: WiFi недаступны"
+            }
+        },
+        "sensor": {
+           "wifi_signal": {
+                "name": "Сігнал WiFi"
+            },
+            "gsm_signal": {
+                "name": "Сігнал GSM"
+            },
+            "last_device_packet": {
+                "name": "Апошні пакет прылады"
+            },
+            "last_upstream_packet": {
+                "name": "Апошні пакета з воблака"
+            }
+        },
+        "select": {
+            "sensor_alert_mode": {
+                "name": "{sensor}: Рэжым апавяшчэння",
+                "state": {
+                    "alert_always": "Заўсёды",
+                    "alert_when_away": "Калі няма дома",
+                    "alert_when_away_and_home": "Калі няма дома і дома"
+                }
+            }
+        }
+    }
+}

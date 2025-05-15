@@ -1,0 +1,176 @@
+{
+    "config": {
+        "abort": {
+            "no_devices_found": "Пристроїв у мережі не знайдено",
+            "single_instance_allowed": "Вже налаштовано. Можлива лише одна конфігурація."
+        },
+        "step": {
+            "custom_host": {
+                "data": {
+                    "ip_addr": "IP-адреса"
+                },
+                "description": "Пристроїв не виявлено, будь ласка, перейдіть до ручного налаштування"
+            },
+            "confirm": {
+                "description": "Бажаєте розпочати налаштування?"
+            }
+        }
+    },
+    "options": {
+        "step": {
+            "init": {
+                "data": {
+                    "sms_alert_when_armed": "SMS-сповіщення тільки коли пристрій увімкнено",
+                    "simulate_alerts_from_history": "Симулювати сповіщення пристрою з історії",
+                    "notifications_protocol": "Протокол сповіщень"
+                },
+                "data_description": {
+                    "notifications_protocol": "* **Локальний**: Панель має IP-адресу `10.10.10.250`\n* **Хмара**: Трафік панелі в хмару можна перенаправити до\nHome Assistant на рівні мережі, трафік не надсилається на хмарні сервери\n* **Ланцюгова хмара**: Те саме, що й **Хмара**, але трафік також надсилається на хмарні сервери,\nщоб мобільний додаток працював"
+                }
+            },
+            "cloud": {
+                "description": "Хмарний протокол",
+                "data": {
+                    "cloud_local_port": "Порт для прослуховування трафіку панелі"
+                }
+            },
+            "cloud_upstream": {
+                "description": "Протокол ланцюгової хмари",
+                "data": {
+                    "cloud_local_port": "Порт для прослуховування трафіку панелі",
+                    "cloud_upstream_host": "Хост для надсилання сповіщень панелі після обробки",
+                    "cloud_upstream_port": "Порт для надсилання сповіщень панелі після обробки"
+                }
+            }
+        }
+    },
+    "selector": {
+        "notifications_protocol": {
+            "options": {
+                "local": "Локальний",
+                "cloud": "Хмара",
+                "cloud_upstream": "Ланцюгова хмара"
+            }
+        }
+    },
+    "entity": {
+        "binary_sensor": {
+            "sensor": {
+                "name": "{sensor}",
+                "state_attributes": {
+                    "low_battery": {
+                        "name": "Низький заряд батареї",
+                        "state": {
+                            "true": "Так",
+                            "false": "Ні"
+                        }
+                    },
+                    "tampered": {
+                        "name": "Втручання",
+                        "state": {
+                            "true": "Так",
+                            "false": "Ні"
+                        }
+                    },
+                    "door_open_when_arming": {
+                        "name": "Активний при постановці на охорону",
+                        "state": {
+                            "true": "Так",
+                            "false": "Ні"
+                        }
+                    },
+                    "panel_sensor_number": {"name": "Номер датчика панелі"},
+                    "protocol": {"name": "Протокол"},
+                    "flags": {"name": "Прапорці"},
+                    "wireless": {
+                        "name": "Бездротовий",
+                        "state": {
+                            "true": "Так",
+                            "false": "Ні"
+                        }
+                    }
+                }
+            },
+            "wifi_status": {
+                "name": "Статус WiFi"
+            },
+            "gsm_status": {
+                "name": "Статус GSM"
+            }
+        },
+        "switch": {
+            "relay": {
+                "name": "{relay}"
+            },
+            "sensor_flag_arm_delay": {
+                "name": "{sensor}: Затримка постановки на охорону"
+            },
+            "sensor_flag_detect_door": {
+                "name": "{sensor}: Перевіряти активність при постановці на охорону"
+            },
+            "sensor_flag_independent_zone": {
+                "name": "{sensor}: Зняття з охорони тільки через додаток"
+            },
+            "sensor_flag_enabled": {
+                "name": "{sensor}: Увімкнено"
+            },
+            "sensor_flag_door_chime": {
+                "name": "{sensor}: Дверний дзвінок"
+            },
+            "alert_config_flag_sms_push": {
+                "name": "Сповіщення: SMS-push"
+            },
+            "alert_config_flag_ac_power_failure": {
+                "name": "Сповіщення: Збій живлення змінного струму"
+            },
+            "alert_config_flag_ac_power_recover": {
+                "name": "Сповіщення: Відновлення живлення змінного струму"
+            },
+            "alert_config_flag_host_low_voltage": {
+                "name": "Сповіщення: Низька напруга хоста"
+            },
+            "alert_config_flag_sensor_low_voltage": {
+                "name": "Сповіщення: Низька напруга датчика"
+            },
+            "alert_config_flag_arm_disarm": {
+                "name": "Сповіщення: Постановка/зняття з охорони"
+            },
+            "alert_config_flag_door_open": {
+                "name": "Сповіщення: Двері відкриті"
+            },
+            "alert_config_flag_door_close": {
+                "name": "Сповіщення: Двері закриті"
+            },
+            "alert_config_flag_wifi_available": {
+                "name": "Сповіщення: WiFi доступний"
+            },
+            "alert_config_flag_wifi_unavailable": {
+                "name": "Сповіщення: WiFi недоступний"
+            }
+        },
+        "sensor": {
+           "wifi_signal": {
+                "name": "Сигнал WiFi"
+            },
+            "gsm_signal": {
+                "name": "Сигнал GSM"
+            },
+            "last_device_packet": {
+                "name": "Останній пакет пристрою"
+            },
+            "last_upstream_packet": {
+                "name": "Час останнього пакету пристрою"
+            }
+        },
+        "select": {
+            "sensor_alert_mode": {
+                "name": "{sensor}: Режим сповіщення",
+                "state": {
+                    "alert_always": "Завжди",
+                    "alert_when_away": "Коли немає вдома",
+                    "alert_when_away_and_home": "Коли немає вдома та вдома"
+                }
+            }
+        }
+    }
+}

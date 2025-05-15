@@ -6,6 +6,7 @@ from typing import TYPE_CHECKING
 import logging
 
 from homeassistant.config_entries import ConfigEntry
+from homeassistant.util import slugify
 from homeassistant.core import HomeAssistant
 
 from homeassistant.components.sensor import (
@@ -39,15 +40,16 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry,
     async_add_entities(g90sensors)
 
 
-# pylint:disable=too-few-public-methods
 class G90BaseSensor(SensorEntity):
     """
     Base class for sensors.
     """
+    # pylint:disable=too-few-public-methods
     def __init__(self, hass_data: GsAlarmData) -> None:
         self._hass_data = hass_data
         self._attr_device_info = hass_data.device
         self._attr_native_value = None
+        self._attr_has_entity_name = True
 
     async def async_update(self) -> None:
         """
@@ -57,15 +59,17 @@ class G90BaseSensor(SensorEntity):
         _LOGGER.debug('Updating state')
 
 
-# pylint:disable=too-few-public-methods
 class G90WifiSignal(G90BaseSensor):
     """
     Sensor for WiFi signal strength.
     """
+    # pylint:disable=too-few-public-methods,too-many-instance-attributes
     def __init__(self, hass_data: GsAlarmData) -> None:
         super().__init__(hass_data)
-        self._attr_name = f'{DOMAIN}: WiFi Signal'
-        self._attr_unique_id = f"{self._hass_data.guid}_sensor_wifi_signal"
+        self._attr_translation_key = 'wifi_signal'
+        self._attr_unique_id = slugify(
+            f"{self._hass_data.guid}_sensor_wifi_signal"
+        )
         self._attr_icon = 'mdi:wifi'
         self._attr_native_unit_of_measurement = PERCENTAGE
         self._attr_state_class = SensorStateClass.MEASUREMENT
@@ -85,10 +89,13 @@ class G90GsmSignal(G90BaseSensor):
     """
     Sensor for GSM signal strength.
     """
+    # pylint:disable=too-many-instance-attributes
     def __init__(self, hass_data: GsAlarmData) -> None:
         super().__init__(hass_data)
-        self._attr_name = f'{DOMAIN}: GSM Signal'
-        self._attr_unique_id = f"{self._hass_data.guid}_sensor_gsm_signal"
+        self._attr_translation_key = 'gsm_signal'
+        self._attr_unique_id = slugify(
+            f"{self._hass_data.guid}_sensor_gsm_signal"
+        )
         self._attr_icon = 'mdi:signal'
         self._attr_native_unit_of_measurement = PERCENTAGE
         self._attr_state_class = SensorStateClass.MEASUREMENT
@@ -110,8 +117,8 @@ class G90LastDevicePacket(G90BaseSensor):
     """
     def __init__(self, hass_data: GsAlarmData) -> None:
         super().__init__(hass_data)
-        self._attr_name = f'{DOMAIN}: Last device packet'
-        self._attr_unique_id = (
+        self._attr_translation_key = 'last_device_packet'
+        self._attr_unique_id = slugify(
             f"{self._hass_data.guid}_sensor_last_device_packet"
         )
         self._attr_icon = 'mdi:clock-check'
@@ -133,8 +140,8 @@ class G90LastUpstreamPacket(G90BaseSensor):
     """
     def __init__(self, hass_data: GsAlarmData) -> None:
         super().__init__(hass_data)
-        self._attr_name = f'{DOMAIN}: Last upstream packet'
-        self._attr_unique_id = (
+        self._attr_translation_key = 'last_upstream_packet'
+        self._attr_unique_id = slugify(
             f"{self._hass_data.guid}_sensor_last_upstream_packet"
         )
         self._attr_icon = 'mdi:cloud-clock'
