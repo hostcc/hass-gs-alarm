@@ -15,7 +15,7 @@ import homeassistant.helpers.device_registry as dr
 import homeassistant.helpers.entity_registry as er
 
 from custom_components.gs_alarm.const import DOMAIN
-from .conftest import AlarmMockT, hass_get_entity_id_by_unique_id
+from .conftest import AlarmMockT, hass_get_state_by_unique_id
 
 
 # pylint: disable=too-many-locals
@@ -96,24 +96,16 @@ async def test_setup_unload_and_reload_entry_afresh(
         ('switch', 'dummy_guid_sensor_0_independent_zone', 'off'),
         ('select', 'dummy_guid_sensor_0_alert_mode', 'alert_when_away'),
     ]:
-        entity_id = hass_get_entity_id_by_unique_id(
+        entity = hass_get_state_by_unique_id(
             hass, platform, unique_id
-        )
-        entity = hass.states.get(entity_id)
-        assert entity is not None, (
-            f'State for entity {entity_id} not found'
         )
         assert entity.state == expected_state
 
     # Verify binary sensor has expected extra attributes
-    dummy_sensor_id = hass_get_entity_id_by_unique_id(
+    dummy_sensor = hass_get_state_by_unique_id(
         hass, 'binary_sensor', 'dummy_guid_sensor_0'
     )
-    dummy_sensor = hass.states.get(dummy_sensor_id)
 
-    assert dummy_sensor is not None, (
-        f"State for entity {dummy_sensor_id} not found"
-    )
     assert 'wireless' in dummy_sensor.attributes
     assert 'panel_sensor_number' in dummy_sensor.attributes
     assert 'protocol' in dummy_sensor.attributes

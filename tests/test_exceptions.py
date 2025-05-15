@@ -29,7 +29,9 @@ from homeassistant.components.switch.const import (
 
 from pyg90alarm import G90TimeoutError, G90Error
 from custom_components.gs_alarm.const import DOMAIN
-from .conftest import AlarmMockT, hass_get_entity_id_by_unique_id
+from .conftest import (
+    AlarmMockT, hass_get_entity_id_by_unique_id, hass_get_state_by_unique_id
+)
 
 
 @pytest.mark.parametrize(
@@ -109,13 +111,10 @@ async def test_alarm_panel_state_update_exception(
     await hass.async_block_till_done()
 
     # Verify the panel's state is unknown
-    entity_id = hass_get_entity_id_by_unique_id(
+    panel_state = hass_get_state_by_unique_id(
         hass, 'alarm_control_panel', 'dummy_guid'
     )
-    panel_state = hass.states.get(entity_id)
-    assert panel_state is not None, (
-        f'State for entity {entity_id} not found'
-    )
+
     assert panel_state.state == AlarmControlPanelState.DISARMED
 
 
@@ -159,6 +158,7 @@ async def test_alarm_panel_service_exception(
     assert entity is not None, (
         f'State for entity {entity_id} not found'
     )
+
     # Perform the call
     await hass.services.async_call(
         ALARM_DOMAIN, failed_service,
@@ -212,7 +212,9 @@ async def test_switch_service_exception(
         hass, 'switch', 'dummy_guid_switch_0_1'
     )
     entity = hass.states.get(entity_id)
-    assert entity is not None, f'Entity {entity_id} not found'
+    assert entity is not None, (
+        f'State for entity {entity_id} not found'
+    )
 
     await hass.services.async_call(
         SWITCH_DOMAIN, failed_service,

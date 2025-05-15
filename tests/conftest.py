@@ -220,3 +220,22 @@ def hass_get_entity_id_by_unique_id(
         'platform'
     )
     return entity_id
+
+
+def hass_get_state_by_unique_id(
+    hass: HomeAssistant,
+    platform: str,
+    unique_id: str,
+) -> str:
+    """
+    Returns entity state for given unique ID.
+    """
+    entity_id = hass_get_entity_id_by_unique_id(hass, platform, unique_id)
+
+    state = hass.states.get(entity_id)
+    assert state is not None, (
+        f'State for entity with unique ID {unique_id} not found in'
+        f' {platform} platform'
+    )
+
+    return state
