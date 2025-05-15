@@ -22,27 +22,27 @@ from homeassistant.components.select import (
 from pyg90alarm import G90SensorAlertModes, G90Error
 
 from custom_components.gs_alarm.const import DOMAIN
-from .conftest import AlarmMockT
+from .conftest import AlarmMockT, hass_get_entity_id_by_unique_id
 
 
 @pytest.mark.parametrize(
-    "entity_id,service_call,option,expected_value",
+    "unique_id,service_call,option,expected_value",
     [
         pytest.param(
-            "select.dummy_sensor_1_alert_mode", SERVICE_SELECT_OPTION,
-            "Alert always",
+            "dummy_guid_sensor_0_alert_mode", SERVICE_SELECT_OPTION,
+            "alert_always",
             G90SensorAlertModes.ALERT_ALWAYS,
             id="Alert always"
         ),
         pytest.param(
-            "select.dummy_sensor_1_alert_mode", SERVICE_SELECT_OPTION,
-            "Alert when away",
+            "dummy_guid_sensor_0_alert_mode", SERVICE_SELECT_OPTION,
+            "alert_when_away",
             G90SensorAlertModes.ALERT_WHEN_AWAY,
             id="Alert when away"
         ),
         pytest.param(
-            "select.dummy_sensor_1_alert_mode", SERVICE_SELECT_OPTION,
-            "Alert when away and home",
+            "dummy_guid_sensor_0_alert_mode", SERVICE_SELECT_OPTION,
+            "alert_when_away_and_home",
             G90SensorAlertModes.ALERT_WHEN_AWAY_AND_HOME,
             id="Alert when away and home"
         ),
@@ -50,7 +50,7 @@ from .conftest import AlarmMockT
 )
 # pylint: disable=too-many-arguments
 async def test_sensor_alert_modes(
-    entity_id: str, service_call: str,
+    unique_id: str, service_call: str,
     option: str,
     expected_value: G90SensorAlertModes,
     hass: HomeAssistant, mock_g90alarm: AlarmMockT
@@ -67,6 +67,8 @@ async def test_sensor_alert_modes(
     config_entry.add_to_hass(hass)
     await hass.config_entries.async_setup(config_entry.entry_id)
     await hass.async_block_till_done()
+
+    entity_id = hass_get_entity_id_by_unique_id(hass, 'select', unique_id)
 
     # Change the sensor alert mode thru state of corresponding select
     await hass.services.async_call(
@@ -101,7 +103,10 @@ async def test_sensor_alert_modes_exception(
     # Simulate an exception when setting the sensor alert mode
     sensor.set_alert_mode.side_effect = G90Error('dummy exception')
 
-    entity_id = 'select.dummy_sensor_1_alert_mode'
+    entity_id = hass_get_entity_id_by_unique_id(
+        hass, 'select', 'dummy_guid_sensor_0_alert_mode'
+    )
+
     # Attempt to change the alert mode of the sensor, which shouldn't raise
     # an exception
     await hass.services.async_call(
@@ -109,7 +114,7 @@ async def test_sensor_alert_modes_exception(
         SERVICE_SELECT_OPTION,
         {
             ATTR_ENTITY_ID: entity_id,
-            ATTR_OPTION: 'Alert always'
+            ATTR_OPTION: 'alert_always'
         },
         blocking=True,
     )
@@ -117,4 +122,4 @@ async def test_sensor_alert_modes_exception(
     # Verify the switch for the sensor mode is still in previous state
     dummy_sensor_1_alert_mode = hass.states.get(entity_id)
     assert dummy_sensor_1_alert_mode is not None
-    assert dummy_sensor_1_alert_mode.state == 'Alert when away'
+    assert dummy_sensor_1_alert_mode.state == 'alert_when_away'

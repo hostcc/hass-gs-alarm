@@ -22,7 +22,6 @@
                 "data": {
                     "sms_alert_when_armed": "SMS alerts only when device is armed",
                     "simulate_alerts_from_history": "Simulate device alerts from history",
-                    "disabled_sensors": "Disabled sensors",
                     "notifications_protocol": "Notifications protocol"
                 },
                 "data_description": {
@@ -51,6 +50,126 @@
                 "local": "Local",
                 "cloud": "Cloud",
                 "cloud_upstream": "Chained cloud"
+            }
+        }
+    },
+    "entity": {
+        "binary_sensor": {
+            "sensor": {
+                "name": "{sensor}",
+                "state_attributes": {
+                    "low_battery": {
+                        "name": "Low battery",
+                        "state": {
+                            "true": "Yes",
+                            "false": "No"
+                        }
+                    },
+                    "tampered": {
+                        "name": "Tampered",
+                        "state": {
+                            "true": "Yes",
+                            "false": "No"
+                        }
+                    },
+                    "door_open_when_arming": {
+                        "name": "Active when arming",
+                        "state": {
+                            "true": "Yes",
+                            "false": "No"
+                        }
+                    },
+                    "panel_sensor_number": {"name": "Panel sensor number"},
+                    "protocol": {"name": "Protocol"},
+                    "flags": {"name": "Flags"},
+                    "wireless": {
+                        "name": "Wireless",
+                        "state": {
+                            "true": "Yes",
+                            "false": "No"
+                        }
+                    }
+                }
+            },
+            "wifi_status": {
+                "name": "WiFi status"
+            },
+            "gsm_status": {
+                "name": "GSM status"
+            }
+        },
+        "switch": {
+            "relay": {
+                "name": "{relay}"
+            },
+            "sensor_flag_arm_delay": {
+                "name": "{sensor}: Arm delay"
+            },
+            "sensor_flag_detect_door": {
+                "name": "{sensor}: Check active when arming"
+            },
+            "sensor_flag_independent_zone": {
+                "name": "{sensor}: Disarm from app only"
+            },
+            "sensor_flag_enabled": {
+                "name": "{sensor}: Enabled"
+            },
+            "sensor_flag_door_chime": {
+                "name": "{sensor}: Door chime"
+            },
+            "alert_config_flag_sms_push": {
+                "name": "Alert: SMS push"
+            },
+            "alert_config_flag_ac_power_failure": {
+                "name": "Alert: AC power failure"
+            },
+            "alert_config_flag_ac_power_recover": {
+                "name": "Alert: AC power recover"
+            },
+            "alert_config_flag_host_low_voltage": {
+                "name": "Alert: Host low voltage"
+            },
+            "alert_config_flag_sensor_low_voltage": {
+                "name": "Alert: Sensor low voltage"
+            },
+            "alert_config_flag_arm_disarm": {
+                "name": "Alert: Arm/disarm"
+            },
+            "alert_config_flag_door_open": {
+                "name": "Alert: Door open"
+            },
+            "alert_config_flag_door_close": {
+                "name": "Alert: Door close"
+            },
+            "alert_config_flag_wifi_available": {
+                "name": "Alert: WiFi available"
+            },
+            "alert_config_flag_wifi_unavailable": {
+                "name": "Alert: WiFi unavailable"
+            }
+        },
+        "sensor": {
+           "wifi_signal": {
+                "name": "WiFi signal"
+            },
+            "gsm_signal": {
+                "name": "GSM signal"
+            },
+            "last_device_packet": {
+                "name": "Last device packet"
+            },
+            "last_upstream_packet": {
+                "name": "Last device packet time"
+            }
+        },
+        "select": {
+            "sensor_alert_mode": {
+                "name": "{sensor}: Alert mode",
+                "state": {
+                    "alert_always": "Always",
+                    "alert_when_away": "When away",
+                    "alert_when_away_and_home": "When away and home"
+                }
             }
         }
     }

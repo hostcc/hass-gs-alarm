@@ -21,59 +21,59 @@ from homeassistant.components.switch.const import (
 from pyg90alarm import G90SensorUserFlags, G90AlertConfigFlags, G90Error
 
 from custom_components.gs_alarm.const import DOMAIN
-from .conftest import AlarmMockT
+from .conftest import AlarmMockT, hass_get_entity_id_by_unique_id
 
 
 @pytest.mark.parametrize(
-    "entity_id,service_call,expected_flag,expected_value",
+    "unique_id,service_call,expected_flag,expected_value",
     [
         pytest.param(
-            "switch.dummy_sensor_1_enabled", SERVICE_TURN_ON,
+            "dummy_guid_sensor_0_enabled", SERVICE_TURN_ON,
             G90SensorUserFlags.ENABLED, True,
             id="Enable sensor"
         ),
         pytest.param(
-            "switch.dummy_sensor_1_enabled", SERVICE_TURN_OFF,
+            "dummy_guid_sensor_0_enabled", SERVICE_TURN_OFF,
             G90SensorUserFlags.ENABLED, False,
             id="Disable sensor"
         ),
         pytest.param(
-            "switch.dummy_sensor_1_arm_delay", SERVICE_TURN_ON,
+            "dummy_guid_sensor_0_arm_delay", SERVICE_TURN_ON,
             G90SensorUserFlags.ARM_DELAY, True,
             id="Enable arm delay"
         ),
         pytest.param(
-            "switch.dummy_sensor_1_arm_delay", SERVICE_TURN_OFF,
+            "dummy_guid_sensor_0_arm_delay", SERVICE_TURN_OFF,
             G90SensorUserFlags.ARM_DELAY, False,
             id="Disable arm delay"
         ),
         pytest.param(
-            "switch.dummy_sensor_1_detect_door", SERVICE_TURN_ON,
+            "dummy_guid_sensor_0_detect_door", SERVICE_TURN_ON,
             G90SensorUserFlags.DETECT_DOOR, True,
             id="Enable detect door"
         ),
         pytest.param(
-            "switch.dummy_sensor_1_detect_door", SERVICE_TURN_OFF,
+            "dummy_guid_sensor_0_detect_door", SERVICE_TURN_OFF,
             G90SensorUserFlags.DETECT_DOOR, False,
             id="Disable detect door"
         ),
         pytest.param(
-            "switch.dummy_sensor_1_door_chime", SERVICE_TURN_ON,
+            "dummy_guid_sensor_0_door_chime", SERVICE_TURN_ON,
             G90SensorUserFlags.DOOR_CHIME, True,
             id="Enable door chime"
         ),
         pytest.param(
-            "switch.dummy_sensor_1_door_chime", SERVICE_TURN_OFF,
+            "dummy_guid_sensor_0_door_chime", SERVICE_TURN_OFF,
             G90SensorUserFlags.DOOR_CHIME, False,
             id="Disable door chime"
         ),
         pytest.param(
-            "switch.dummy_sensor_1_independent_zone", SERVICE_TURN_ON,
+            "dummy_guid_sensor_0_independent_zone", SERVICE_TURN_ON,
             G90SensorUserFlags.INDEPENDENT_ZONE, True,
             id="Enable independent zone"
         ),
         pytest.param(
-            "switch.dummy_sensor_1_independent_zone", SERVICE_TURN_OFF,
+            "dummy_guid_sensor_0_independent_zone", SERVICE_TURN_OFF,
             G90SensorUserFlags.INDEPENDENT_ZONE, False,
             id="Disable independent zone"
         ),
@@ -81,7 +81,7 @@ from .conftest import AlarmMockT
 )
 # pylint: disable=too-many-arguments
 async def test_sensor_flags(
-    entity_id: str, service_call: str,
+    unique_id: str, service_call: str,
     expected_flag: G90SensorUserFlags, expected_value: bool,
     hass: HomeAssistant, mock_g90alarm: AlarmMockT
 ) -> None:
@@ -97,6 +97,10 @@ async def test_sensor_flags(
     config_entry.add_to_hass(hass)
     await hass.config_entries.async_setup(config_entry.entry_id)
     await hass.async_block_till_done()
+
+    entity_id = hass_get_entity_id_by_unique_id(
+        hass, 'switch', unique_id
+    )
 
     # Change the sensor flag thru state of corresponding switch
     await hass.services.async_call(
@@ -131,7 +135,10 @@ async def test_sensor_flags_exception(
     sensor = mock_g90alarm.return_value.get_sensors.return_value[0]
     sensor.set_flag.side_effect = G90Error('dummy exception')
 
-    entity_id = 'switch.dummy_sensor_1_enabled'
+    entity_id = hass_get_entity_id_by_unique_id(
+        hass, 'switch', 'dummy_guid_sensor_0_enabled'
+    )
+
     # Attempt to turn off the switch for the sensor enabled flag
     await hass.services.async_call(
         SWITCH_DOMAIN,
@@ -155,95 +162,96 @@ async def test_sensor_flags_exception(
 
 
 @pytest.mark.parametrize(
-    "entity_id,service_call,expected_flag,expected_value",
+    "unique_id,service_call,expected_flag,expected_value",
     [
         pytest.param(
-            "switch.alert_ac_power_failure", SERVICE_TURN_ON,
+            "dummy_guid_alert_config_flag_ac_power_failure", SERVICE_TURN_ON,
             G90AlertConfigFlags.AC_POWER_FAILURE, True,
             id="AC power failure enabled"
         ),
         pytest.param(
-            "switch.alert_ac_power_failure", SERVICE_TURN_OFF,
+            "dummy_guid_alert_config_flag_ac_power_failure", SERVICE_TURN_OFF,
             G90AlertConfigFlags.AC_POWER_FAILURE, False,
             id="AC power failure disabled"
         ),
         pytest.param(
-            "switch.alert_wifi_available", SERVICE_TURN_ON,
+            "dummy_guid_alert_config_flag_wifi_available", SERVICE_TURN_ON,
             G90AlertConfigFlags.WIFI_AVAILABLE, True,
             id="WiFi available enabled"
         ),
         pytest.param(
-            "switch.alert_wifi_available", SERVICE_TURN_OFF,
+            "dummy_guid_alert_config_flag_wifi_available", SERVICE_TURN_OFF,
             G90AlertConfigFlags.WIFI_AVAILABLE, False,
             id="WiFi available disabled"
         ),
         pytest.param(
-            "switch.alert_wifi_unavailable", SERVICE_TURN_ON,
+            "dummy_guid_alert_config_flag_wifi_unavailable", SERVICE_TURN_ON,
             G90AlertConfigFlags.WIFI_UNAVAILABLE, True,
             id="WiFi unavailable enabled"
         ),
         pytest.param(
-            "switch.alert_wifi_unavailable", SERVICE_TURN_OFF,
+            "dummy_guid_alert_config_flag_wifi_unavailable", SERVICE_TURN_OFF,
             G90AlertConfigFlags.WIFI_UNAVAILABLE, False,
             id="WiFi unavailable disabled"
         ),
         pytest.param(
-            "switch.alert_door_open", SERVICE_TURN_ON,
+            "dummy_guid_alert_config_flag_door_open", SERVICE_TURN_ON,
             G90AlertConfigFlags.DOOR_OPEN, True,
             id="Door open enabled"
         ),
         pytest.param(
-            "switch.alert_door_open", SERVICE_TURN_OFF,
+            "dummy_guid_alert_config_flag_door_open", SERVICE_TURN_OFF,
             G90AlertConfigFlags.DOOR_OPEN, False,
             id="Door open disabled"
         ),
         pytest.param(
-            "switch.alert_door_close", SERVICE_TURN_ON,
+            "dummy_guid_alert_config_flag_door_close", SERVICE_TURN_ON,
             G90AlertConfigFlags.DOOR_CLOSE, True,
             id="Door close enabled"
         ),
         pytest.param(
-            "switch.alert_door_close", SERVICE_TURN_OFF,
+            "dummy_guid_alert_config_flag_door_close", SERVICE_TURN_OFF,
             G90AlertConfigFlags.DOOR_CLOSE, False,
             id="Door close disabled"
         ),
         pytest.param(
-            "switch.alert_sms_push", SERVICE_TURN_ON,
+            "dummy_guid_alert_config_flag_sms_push", SERVICE_TURN_ON,
             G90AlertConfigFlags.SMS_PUSH, True,
             id="SMS push enabled"
         ),
         pytest.param(
-            "switch.alert_sms_push", SERVICE_TURN_OFF,
+            "dummy_guid_alert_config_flag_sms_push", SERVICE_TURN_OFF,
             G90AlertConfigFlags.SMS_PUSH, False,
             id="SMS push disabled"
         ),
         pytest.param(
-            "switch.alert_arm_disarm", SERVICE_TURN_ON,
+            "dummy_guid_alert_config_flag_arm_disarm", SERVICE_TURN_ON,
             G90AlertConfigFlags.ARM_DISARM, True,
             id="Arm disarm enabled"
         ),
         pytest.param(
-            "switch.alert_arm_disarm", SERVICE_TURN_OFF,
+            "dummy_guid_alert_config_flag_arm_disarm", SERVICE_TURN_OFF,
             G90AlertConfigFlags.ARM_DISARM, False,
             id="Arm disarm disabled"
         ),
         pytest.param(
-            "switch.alert_host_low_voltage", SERVICE_TURN_ON,
+            "dummy_guid_alert_config_flag_host_low_voltage", SERVICE_TURN_ON,
             G90AlertConfigFlags.HOST_LOW_VOLTAGE, True,
             id="Host low voltage enabled"
         ),
         pytest.param(
-            "switch.alert_host_low_voltage", SERVICE_TURN_OFF,
+            "dummy_guid_alert_config_flag_host_low_voltage", SERVICE_TURN_OFF,
             G90AlertConfigFlags.HOST_LOW_VOLTAGE, False,
             id="Host low voltage disabled"
         ),
         pytest.param(
-            "switch.alert_sensor_low_voltage", SERVICE_TURN_ON,
+            "dummy_guid_alert_config_flag_sensor_low_voltage", SERVICE_TURN_ON,
             G90AlertConfigFlags.SENSOR_LOW_VOLTAGE, True,
             id="Sensor low voltage enabled"
         ),
         pytest.param(
-            "switch.alert_sensor_low_voltage", SERVICE_TURN_OFF,
+            "dummy_guid_alert_config_flag_sensor_low_voltage",
+            SERVICE_TURN_OFF,
             G90AlertConfigFlags.SENSOR_LOW_VOLTAGE, False,
             id="Sensor low voltage disabled"
         ),
@@ -251,7 +259,7 @@ async def test_sensor_flags_exception(
 )
 # pylint: disable=too-many-arguments
 async def test_alert_config_flags(
-    entity_id: str, service_call: str,
+    unique_id: str, service_call: str,
     expected_flag: G90AlertConfigFlags, expected_value: bool,
     hass: HomeAssistant, mock_g90alarm: AlarmMockT
 ) -> None:
@@ -267,6 +275,10 @@ async def test_alert_config_flags(
     config_entry.add_to_hass(hass)
     await hass.config_entries.async_setup(config_entry.entry_id)
     await hass.async_block_till_done()
+
+    entity_id = hass_get_entity_id_by_unique_id(
+        hass, 'switch', unique_id
+    )
 
     # Change the alert config flag thru state of corresponding switch
     await hass.services.async_call(
@@ -304,7 +316,10 @@ async def test_alert_config_flags_exception(
         'dummy exception'
     )
 
-    entity_id = 'switch.alert_host_low_voltage'
+    entity_id = hass_get_entity_id_by_unique_id(
+        hass, 'switch', 'dummy_guid_alert_config_flag_host_low_voltage'
+    )
+
     # Attempt to turn off the switch for the alert config flag
     await hass.services.async_call(
         SWITCH_DOMAIN,

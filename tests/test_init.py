@@ -15,9 +15,10 @@ import homeassistant.helpers.device_registry as dr
 import homeassistant.helpers.entity_registry as er
 
 from custom_components.gs_alarm.const import DOMAIN
-from .conftest import AlarmMockT
+from .conftest import AlarmMockT, hass_get_entity_id_by_unique_id
 
 
+# pylint: disable=too-many-locals
 async def test_setup_unload_and_reload_entry_afresh(
     hass: HomeAssistant, mock_g90alarm: AlarmMockT
 ) -> None:
@@ -52,59 +53,71 @@ async def test_setup_unload_and_reload_entry_afresh(
 
     # Verify corresponding entities (platforms) have been added under the
     # device
+    entity_registry = er.async_get(hass)
     integration_entities = er.async_entries_for_device(
-        er.async_get(hass), integration_device_id
+        entity_registry, integration_device_id
     )
-    integration_entity_ids = [x.entity_id for x in integration_entities]
+    integration_entity_ids = [x.unique_id for x in integration_entities]
     assert integration_entity_ids == unordered([
-        'alarm_control_panel.dummy_guid',
-        'binary_sensor.dummy_sensor_1',
-        'switch.dummy_sensor_1_enabled',
-        'switch.dummy_sensor_1_arm_delay',
-        'switch.dummy_sensor_1_detect_door',
-        'switch.dummy_sensor_1_door_chime',
-        'switch.dummy_sensor_1_independent_zone',
-        'select.dummy_sensor_1_alert_mode',
-        'switch.alert_ac_power_failure',
-        'switch.alert_ac_power_recover',
-        'switch.alert_arm_disarm',
-        'switch.alert_host_low_voltage',
-        'switch.alert_sensor_low_voltage',
-        'switch.alert_wifi_available',
-        'switch.alert_wifi_unavailable',
-        'switch.alert_door_open',
-        'switch.alert_door_close',
-        'switch.alert_sms_push',
-        'switch.dummy_switch_1',
-        'sensor.gs_alarm_wifi_signal',
-        'binary_sensor.gs_alarm_wifi_status',
-        'sensor.gs_alarm_gsm_signal',
-        'binary_sensor.gs_alarm_gsm_status',
-        'sensor.gs_alarm_last_device_packet',
-        'sensor.gs_alarm_last_upstream_packet',
+        'dummy_guid',
+        'dummy_guid_sensor_0',
+        'dummy_guid_sensor_0_enabled',
+        'dummy_guid_sensor_0_arm_delay',
+        'dummy_guid_sensor_0_detect_door',
+        'dummy_guid_sensor_0_door_chime',
+        'dummy_guid_sensor_0_independent_zone',
+        'dummy_guid_sensor_0_alert_mode',
+        'dummy_guid_alert_config_flag_ac_power_failure',
+        'dummy_guid_alert_config_flag_ac_power_recover',
+        'dummy_guid_alert_config_flag_arm_disarm',
+        'dummy_guid_alert_config_flag_host_low_voltage',
+        'dummy_guid_alert_config_flag_sensor_low_voltage',
+        'dummy_guid_alert_config_flag_wifi_available',
+        'dummy_guid_alert_config_flag_wifi_unavailable',
+        'dummy_guid_alert_config_flag_door_open',
+        'dummy_guid_alert_config_flag_door_close',
+        'dummy_guid_alert_config_flag_sms_push',
+        'dummy_guid_switch_0_1',
+        'dummy_guid_sensor_wifi_signal',
+        'dummy_guid_sensor_wifi_status',
+        'dummy_guid_sensor_gsm_signal',
+        'dummy_guid_sensor_gsm_status',
+        'dummy_guid_sensor_last_device_packet',
+        'dummy_guid_sensor_last_upstream_packet',
     ])
 
     # Verify the switches and selects correspond to the binary sensor have
     # proper states
-    for entity_id, expected_state in [
-        ('switch.dummy_sensor_1_enabled', 'on'),
-        ('switch.dummy_sensor_1_arm_delay', 'off'),
-        ('switch.dummy_sensor_1_detect_door', 'off'),
-        ('switch.dummy_sensor_1_door_chime', 'off'),
-        ('switch.dummy_sensor_1_independent_zone', 'off'),
-        ('select.dummy_sensor_1_alert_mode', 'Alert when away'),
+    for platform, unique_id, expected_state in [
+        ('switch', 'dummy_guid_sensor_0_enabled', 'on'),
+        ('switch', 'dummy_guid_sensor_0_arm_delay', 'off'),
+        ('switch', 'dummy_guid_sensor_0_detect_door', 'off'),
+        ('switch', 'dummy_guid_sensor_0_door_chime', 'off'),
+        ('switch', 'dummy_guid_sensor_0_independent_zone', 'off'),
+        ('select', 'dummy_guid_sensor_0_alert_mode', 'alert_when_away'),
     ]:
+        entity_id = hass_get_entity_id_by_unique_id(
+            hass, platform, unique_id
+        )
         entity = hass.states.get(entity_id)
-        assert entity is not None
+        assert entity is not None, (
+            f'State for entity {entity_id} not found'
+        )
         assert entity.state == expected_state
 
     # Verify binary sensor has expected extra attributes
-    dummy_sensor_1 = hass.states.get('binary_sensor.dummy_sensor_1')
-    assert dummy_sensor_1 is not None
-    assert 'wireless' in dummy_sensor_1.attributes
-    assert 'panel_sensor_number' in dummy_sensor_1.attributes
-    assert 'protocol' in dummy_sensor_1.attributes
-    assert 'flags' in dummy_sensor_1.attributes
+    dummy_sensor_id = hass_get_entity_id_by_unique_id(
+        hass, 'binary_sensor', 'dummy_guid_sensor_0'
+    )
+    dummy_sensor = hass.states.get(dummy_sensor_id)
+
+    assert dummy_sensor is not None, (
+        f"State for entity {dummy_sensor_id} not found"
+    )
+    assert 'wireless' in dummy_sensor.attributes
+    assert 'panel_sensor_number' in dummy_sensor.attributes
+    assert 'protocol' in dummy_sensor.attributes
+    assert 'flags' in dummy_sensor.attributes
 
     # Verify `G90Alarm` sensors received the HASS entity IDs as `extra_data`
     for sensor in await mock_g90alarm.return_value.get_sensors():

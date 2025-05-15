@@ -8,6 +8,7 @@ from unittest.mock import patch, AsyncMock
 import pytest
 
 from homeassistant.core import HomeAssistant
+import homeassistant.helpers.entity_registry as er
 
 import pyg90alarm
 
@@ -199,3 +200,23 @@ def mock_g90alarm(request: pytest.FixtureRequest) -> Iterator[AlarmMockT]:
         mock.return_value._alert_simulation_task = AsyncMock(spec=asyncio.Task)
 
         yield mock
+
+
+def hass_get_entity_id_by_unique_id(
+    hass: HomeAssistant,
+    platform: str,
+    unique_id: str,
+) -> str:
+    """
+    Returns entity ID for given unique ID.
+    """
+    entity_registry = er.async_get(hass)
+
+    entity_id: str = entity_registry.async_get_entity_id(
+        platform, 'gs_alarm', unique_id
+    )
+    assert entity_id is not None, (
+        f'Entity with unique ID {unique_id} not found in {platform} '
+        'platform'
+    )
+    return entity_id

@@ -6,6 +6,7 @@ from typing import TYPE_CHECKING, List
 import logging
 
 from homeassistant.config_entries import ConfigEntry
+from homeassistant.util import slugify
 from homeassistant.core import HomeAssistant
 from homeassistant.const import (
     EntityCategory,
@@ -41,20 +42,19 @@ async def async_setup_entry(
 
 
 class G90SensorAlertMode(SelectEntity):
-    # Not all base class methods are meaningfull in the context of the
-    # integration, silence the `pylint` for those
-    # pylint: disable=abstract-method
-    # pylint: disable=too-many-instance-attributes
     """
     Select entity for alert mode of the sensor.
     """
+    # Not all base class methods are meaningfull in the context of the
+    # integration, silence the `pylint` for those
+    # pylint: disable=abstract-method,too-many-instance-attributes
     states_map = {
         G90SensorAlertModes.ALERT_ALWAYS:
-            "Alert always",
+            "alert_always",
         G90SensorAlertModes.ALERT_WHEN_AWAY:
-            "Alert when away",
+            "alert_when_away",
         G90SensorAlertModes.ALERT_WHEN_AWAY_AND_HOME:
-            "Alert when away and home",
+            "alert_when_away_and_home",
     }
     reverse_states_map = dict(
         zip(states_map.values(), states_map.keys())
@@ -62,13 +62,16 @@ class G90SensorAlertMode(SelectEntity):
 
     def __init__(self, sensor: G90Sensor, hass_data: GsAlarmData) -> None:
         self._sensor = sensor
-        self._attr_unique_id = (
+        self._attr_device_info = hass_data.device
+        self._attr_entity_category = EntityCategory.CONFIG
+        self._attr_unique_id = slugify(
             f"{hass_data.guid}_sensor_{sensor.index}_alert_mode"
         )
-        self._attr_name = f"{sensor.name}: Alert mode"
-        self._attr_device_info = hass_data.device
-        self._hass_data = hass_data
-        self._attr_entity_category = EntityCategory.CONFIG
+        self._attr_has_entity_name = True
+        self._attr_translation_key = 'sensor_alert_mode'
+        self._attr_translation_placeholders = {
+            'sensor': sensor.name,
+        }
         self._attr_options = list(self.states_map.values())
 
     @property

@@ -146,11 +146,11 @@ class G90ConfigFlow(ConfigFlow, domain=DOMAIN):
         raise NotImplementedError
 
 
-# pylint:disable=too-few-public-methods
 class OptionsFlowHandler(OptionsFlow):
     """
     Handle options (configure) flows.
     """
+    # pylint:disable=too-few-public-methods
     # Data from the initial step is stored here, since cloud options will
     # use second step merging the input with the data from the first step
     init_step_data: Dict[str, Any] = {}

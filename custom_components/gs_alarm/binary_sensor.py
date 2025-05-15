@@ -6,6 +6,7 @@ from typing import List, TYPE_CHECKING, Mapping, Any
 import logging
 
 from homeassistant.config_entries import ConfigEntry
+from homeassistant.util import slugify
 from homeassistant.core import HomeAssistant
 from homeassistant.const import EntityCategory
 
@@ -85,12 +86,19 @@ class G90BinarySensor(BinarySensorEntity):
     """
     Binary sensor specific to alarm panel.
     """
+    # pylint:disable=too-many-instance-attributes
     def __init__(
         self, g90_sensor: G90Sensor, hass_data: GsAlarmData
     ) -> None:
         self._g90_sensor = g90_sensor
-        self._attr_unique_id = f"{hass_data.guid}_sensor_{g90_sensor.index}"
-        self._attr_name = g90_sensor.name
+        self._attr_unique_id = slugify(
+            f"{hass_data.guid}_sensor_{g90_sensor.index}"
+        )
+        self._attr_has_entity_name = True
+        self._attr_translation_key = 'sensor'
+        self._attr_translation_placeholders = {
+            'sensor': g90_sensor.name,
+        }
         # Extra attributes over sensor characteristics, useful for
         # troubleshooting to identify sensor type and its number as panel
         # reports it
@@ -205,14 +213,17 @@ class G90BinarySensor(BinarySensorEntity):
         return val
 
 
-# pylint:disable=too-few-public-methods
 class G90WifiStatusSensor(BinarySensorEntity):
     """
     WiFi status sensor.
     """
+    # pylint:disable=too-few-public-methods
     def __init__(self, hass_data: GsAlarmData) -> None:
-        self._attr_name = f'{DOMAIN}: WiFi Status'
-        self._attr_unique_id = f"{hass_data.guid}_sensor_wifi_status"
+        self._attr_has_entity_name = True
+        self._attr_translation_key = 'wifi_status'
+        self._attr_unique_id = slugify(
+            f"{hass_data.guid}_sensor_wifi_status"
+        )
         self._attr_device_class = BinarySensorDeviceClass.CONNECTIVITY
         self._attr_entity_category = EntityCategory.DIAGNOSTIC
         self._attr_device_info = hass_data.device
@@ -228,14 +239,17 @@ class G90WifiStatusSensor(BinarySensorEntity):
         return status == G90HostInfoWifiStatus.OPERATIONAL
 
 
-# pylint:disable=too-few-public-methods
 class G90GsmStatusSensor(BinarySensorEntity):
     """
     GSM status sensor.
     """
+    # pylint:disable=too-few-public-methods
     def __init__(self, hass_data: GsAlarmData) -> None:
-        self._attr_name = f'{DOMAIN}: GSM Status'
-        self._attr_unique_id = f"{hass_data.guid}_sensor_gsm_status"
+        self._attr_has_entity_name = True
+        self._attr_translation_key = 'gsm_status'
+        self._attr_unique_id = slugify(
+            f"{hass_data.guid}_sensor_gsm_status"
+        )
         self._attr_device_class = BinarySensorDeviceClass.CONNECTIVITY
         self._attr_entity_category = EntityCategory.DIAGNOSTIC
         self._attr_device_info = hass_data.device

@@ -1,0 +1,176 @@
+{
+    "config": {
+        "abort": {
+            "no_devices_found": "Aucun appareil trouvé sur le réseau",
+            "single_instance_allowed": "Déjà configuré. Une seule configuration possible."
+        },
+        "step": {
+            "custom_host": {
+                "data": {
+                    "ip_addr": "Adresse IP"
+                },
+                "description": "Aucun appareil n'a été découvert, veuillez procéder à la configuration manuelle"
+            },
+            "confirm": {
+                "description": "Voulez-vous commencer la configuration ?"
+            }
+        }
+    },
+    "options": {
+        "step": {
+            "init": {
+                "data": {
+                    "sms_alert_when_armed": "Alertes SMS uniquement lorsque l'appareil est armé",
+                    "simulate_alerts_from_history": "Simuler les alertes de l'appareil à partir de l'historique",
+                    "notifications_protocol": "Protocole de notifications"
+                },
+                "data_description": {
+                    "notifications_protocol": "* **Local**: Le panneau a l'adresse IP `10.10.10.250`\n* **Cloud**: Le trafic du panneau vers le cloud peut être redirigé vers\nHome Assistant au niveau du réseau, aucun trafic n'est envoyé aux serveurs cloud\n* **Cloud chaîné**: Identique à **Cloud**, mais le trafic est également envoyé aux serveurs cloud\npour que l'application mobile fonctionne"
+                }
+            },
+            "cloud": {
+                "description": "Protocole Cloud",
+                "data": {
+                    "cloud_local_port": "Port pour écouter le trafic du panneau"
+                }
+            },
+            "cloud_upstream": {
+                "description": "Protocole Cloud chaîné",
+                "data": {
+                    "cloud_local_port": "Port pour écouter le trafic du panneau",
+                    "cloud_upstream_host": "Hôte vers lequel envoyer les notifications du panneau après traitement",
+                    "cloud_upstream_port": "Port vers lequel envoyer les notifications du panneau après traitement"
+                }
+            }
+        }
+    },
+    "selector": {
+        "notifications_protocol": {
+            "options": {
+                "local": "Local",
+                "cloud": "Cloud",
+                "cloud_upstream": "Cloud chaîné"
+            }
+        }
+    },
+    "entity": {
+        "binary_sensor": {
+            "sensor": {
+                "name": "{sensor}",
+                "state_attributes": {
+                    "low_battery": {
+                        "name": "Batterie faible",
+                        "state": {
+                            "true": "Oui",
+                            "false": "Non"
+                        }
+                    },
+                    "tampered": {
+                        "name": "Altéré",
+                        "state": {
+                            "true": "Oui",
+                            "false": "Non"
+                        }
+                    },
+                    "door_open_when_arming": {
+                        "name": "Actif lors de l'armement",
+                        "state": {
+                            "true": "Oui",
+                            "false": "Non"
+                        }
+                    },
+                    "panel_sensor_number": {"name": "Numéro de capteur du panneau"},
+                    "protocol": {"name": "Protocole"},
+                    "flags": {"name": "Indicateurs"},
+                    "wireless": {
+                        "name": "Sans fil",
+                        "state": {
+                            "true": "Oui",
+                            "false": "Non"
+                        }
+                    }
+                }
+            },
+            "wifi_status": {
+                "name": "État WiFi"
+            },
+            "gsm_status": {
+                "name": "État GSM"
+            }
+        },
+        "switch": {
+            "relay": {
+                "name": "{relay}"
+            },
+            "sensor_flag_arm_delay": {
+                "name": "{sensor}: Délai d'armement"
+            },
+            "sensor_flag_detect_door": {
+                "name": "{sensor}: Vérifier l'activité lors de l'armement"
+            },
+            "sensor_flag_independent_zone": {
+                "name": "{sensor}: Désarmement uniquement depuis l'application"
+            },
+            "sensor_flag_enabled": {
+                "name": "{sensor}: Activé"
+            },
+            "sensor_flag_door_chime": {
+                "name": "{sensor}: Carillon de porte"
+            },
+            "alert_config_flag_sms_push": {
+                "name": "Alerte: Notification SMS"
+            },
+            "alert_config_flag_ac_power_failure": {
+                "name": "Alerte: Panne d'alimentation secteur"
+            },
+            "alert_config_flag_ac_power_recover": {
+                "name": "Alerte: Rétablissement de l'alimentation secteur"
+            },
+            "alert_config_flag_host_low_voltage": {
+                "name": "Alerte: Tension faible de l'hôte"
+            },
+            "alert_config_flag_sensor_low_voltage": {
+                "name": "Alerte: Tension faible du capteur"
+            },
+            "alert_config_flag_arm_disarm": {
+                "name": "Alerte: Armement/désarmement"
+            },
+            "alert_config_flag_door_open": {
+                "name": "Alerte: Porte ouverte"
+            },
+            "alert_config_flag_door_close": {
+                "name": "Alerte: Porte fermée"
+            },
+            "alert_config_flag_wifi_available": {
+                "name": "Alerte: WiFi disponible"
+            },
+            "alert_config_flag_wifi_unavailable": {
+                "name": "Alerte: WiFi indisponible"
+            }
+        },
+        "sensor": {
+           "wifi_signal": {
+                "name": "Signal WiFi"
+            },
+            "gsm_signal": {
+                "name": "Signal GSM"
+            },
+            "last_device_packet": {
+                "name": "Dernier paquet de l'appareil"
+            },
+            "last_upstream_packet": {
+                "name": "Heure du dernier paquet de l'appareil"
+            }
+        },
+        "select": {
+            "sensor_alert_mode": {
+                "name": "{sensor}: Mode d'alerte",
+                "state": {
+                    "alert_always": "Toujours",
+                    "alert_when_away": "En absence",
+                    "alert_when_away_and_home": "En absence et en présence"
+                }
+            }
+        }
+    }
+}
