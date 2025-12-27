@@ -1,3 +1,5 @@
+# SPDX-License-Identifier: MIT
+# Copyright (c) 2022 Ilia Sotnikov
 """
 Tests config flow for the custom component.
 """

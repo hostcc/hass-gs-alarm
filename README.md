@@ -164,14 +164,6 @@ exposes additional sensors:
 * Download `Golden Security Alarm` integration in HACS
 * Add the `Golden Security Alarm` integration in Home Assistant
 
-## Specifics
-
-* The integration doesn't manage most of settings for the alarm panel, including
-  adding/removing sensors - you can only enable/disable sensors/realy. For the
-  rest you will still need the mobile application
-* Changes in alarm panel with regards to sensors and switches require the
-  integration to be reloaded, it currently does not support making those
-  updates available in Home Assistant without the restart
 
 ## Troubleshooting
 

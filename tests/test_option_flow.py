@@ -1,3 +1,5 @@
+# SPDX-License-Identifier: MIT
+# Copyright (c) 2024 Ilia Sotnikov
 """
 Tests for option (configure) flow for the custom component.
 """
@@ -101,7 +103,7 @@ async def test_config_flow_options(
         ),
     ],
 )
-# pylint: disable=too-many-arguments
+# pylint: disable=too-many-positional-arguments,too-many-arguments
 async def test_config_flow_options_notifications_protocol(
     protocol: str,
     user_input: Dict[str, Any],

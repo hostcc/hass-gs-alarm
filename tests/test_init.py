@@ -1,8 +1,11 @@
+# SPDX-License-Identifier: MIT
+# Copyright (c) 2022 Ilia Sotnikov
 """
 Tests for loading/unloading the custom component.
 """
 import re
 from datetime import timedelta
+from unittest.mock import ANY
 from pytest_unordered import unordered
 
 from pytest_homeassistant_custom_component.common import (
@@ -11,11 +14,11 @@ from pytest_homeassistant_custom_component.common import (
 )
 from homeassistant.core import HomeAssistant
 from homeassistant.util import dt
-import homeassistant.helpers.device_registry as dr
-import homeassistant.helpers.entity_registry as er
 
 from custom_components.gs_alarm.const import DOMAIN
-from .conftest import AlarmMockT, hass_get_state_by_unique_id
+from .conftest import (
+    AlarmMockT, hass_get_state_by_unique_id, entry_ids_for_integration_devices
+)
 
 
 # pylint: disable=too-many-locals
@@ -36,7 +39,7 @@ async def test_setup_unload_and_reload_entry_afresh(
     await hass.config_entries.async_setup(config_entry.entry_id)
 
     # Simulate some time has passed for HomeAssistant to invoke
-    # `async_update()` for components
+    # update for components
     async_fire_time_changed(hass, dt.utcnow() + timedelta(hours=1))
     await hass.async_block_till_done()
 
@@ -44,47 +47,217 @@ async def test_setup_unload_and_reload_entry_afresh(
 
     mock_g90alarm.assert_called_once_with(host='dummy-ip')
 
-    # Verify single device has been added
-    integration_devices = dr.async_entries_for_config_entry(
-        dr.async_get(hass), config_entry.entry_id
-    )
-    assert len(integration_devices) == 1
-    integration_device_id = integration_devices[0].id
-
-    # Verify corresponding entities (platforms) have been added under the
-    # device
-    entity_registry = er.async_get(hass)
-    integration_entities = er.async_entries_for_device(
-        entity_registry, integration_device_id
-    )
-    integration_entity_ids = [x.unique_id for x in integration_entities]
-    assert integration_entity_ids == unordered([
-        'dummy_guid',
-        'dummy_guid_sensor_0',
-        'dummy_guid_sensor_0_enabled',
-        'dummy_guid_sensor_0_arm_delay',
-        'dummy_guid_sensor_0_detect_door',
-        'dummy_guid_sensor_0_door_chime',
-        'dummy_guid_sensor_0_independent_zone',
-        'dummy_guid_sensor_0_alert_mode',
-        'dummy_guid_alert_config_flag_ac_power_failure',
-        'dummy_guid_alert_config_flag_ac_power_recover',
-        'dummy_guid_alert_config_flag_arm_disarm',
-        'dummy_guid_alert_config_flag_host_low_voltage',
-        'dummy_guid_alert_config_flag_sensor_low_voltage',
-        'dummy_guid_alert_config_flag_wifi_available',
-        'dummy_guid_alert_config_flag_wifi_unavailable',
-        'dummy_guid_alert_config_flag_door_open',
-        'dummy_guid_alert_config_flag_door_close',
-        'dummy_guid_alert_config_flag_sms_push',
-        'dummy_guid_switch_0_1',
-        'dummy_guid_sensor_wifi_signal',
-        'dummy_guid_sensor_wifi_status',
-        'dummy_guid_sensor_gsm_signal',
-        'dummy_guid_sensor_gsm_status',
-        'dummy_guid_sensor_last_device_packet',
-        'dummy_guid_sensor_last_upstream_packet',
-    ])
+    # Verify entities and devices have been added with proper IDs and names
+    assert entry_ids_for_integration_devices(hass, config_entry.entry_id) == [
+        {
+            'device': 'Dummy GUID',
+            'device_id': ANY,
+            'entities': unordered([{
+                'unique_id': 'dummy_guid',
+                'entity_id': 'alarm_control_panel.dummy_guid',
+                'name': None,
+            }, {
+                'unique_id': 'dummy_guid_alert_config_flag_ac_power_failure',
+                'entity_id':
+                    'switch.dummy_guid_alert_config_flag_ac_power_failure',
+                'name': 'Alert: AC power failure',
+            }, {
+                'unique_id': 'dummy_guid_alert_config_flag_ac_power_recover',
+                'entity_id':
+                    'switch.dummy_guid_alert_config_flag_ac_power_recover',
+                'name': 'Alert: AC power recover',
+            }, {
+                'unique_id': 'dummy_guid_alert_config_flag_arm_disarm',
+                'entity_id':
+                    'switch.dummy_guid_alert_config_flag_arm_disarm',
+                'name': 'Alert: Arm/disarm',
+            }, {
+                'unique_id': 'dummy_guid_alert_config_flag_host_low_voltage',
+                'entity_id':
+                    'switch.dummy_guid_alert_config_flag_host_low_voltage',
+                'name': 'Alert: Host low voltage',
+            }, {
+                'unique_id': 'dummy_guid_alert_config_flag_sensor_low_voltage',
+                'entity_id':
+                    'switch.dummy_guid_alert_config_flag_sensor_low_voltage',
+                'name': 'Alert: Sensor low voltage',
+            }, {
+                'unique_id': 'dummy_guid_alert_config_flag_wifi_available',
+                'entity_id':
+                    'switch.dummy_guid_alert_config_flag_wifi_available',
+                'name': 'Alert: WiFi available',
+            }, {
+                'unique_id': 'dummy_guid_alert_config_flag_wifi_unavailable',
+                'entity_id':
+                    'switch.dummy_guid_alert_config_flag_wifi_unavailable',
+                'name': 'Alert: WiFi unavailable',
+            }, {
+                'unique_id': 'dummy_guid_alert_config_flag_door_open',
+                'entity_id': 'switch.dummy_guid_alert_config_flag_door_open',
+                'name': 'Alert: Door open',
+            }, {
+                'unique_id': 'dummy_guid_alert_config_flag_door_close',
+                'entity_id': 'switch.dummy_guid_alert_config_flag_door_close',
+                'name': 'Alert: Door close',
+            }, {
+                'unique_id': 'dummy_guid_alert_config_flag_sms_push',
+                'entity_id': 'switch.dummy_guid_alert_config_flag_sms_push',
+                'name': 'Alert: SMS push',
+            }, {
+                'unique_id': 'dummy_guid_sensor_wifi_signal',
+                'entity_id': 'sensor.dummy_guid_wifi_signal',
+                'name': 'WiFi signal',
+            }, {
+                'unique_id': 'dummy_guid_sensor_wifi_status',
+                'entity_id': 'binary_sensor.dummy_guid_wifi_status',
+                'name': 'WiFi status',
+            }, {
+                'unique_id': 'dummy_guid_sensor_gsm_signal',
+                'entity_id': 'sensor.dummy_guid_gsm_signal',
+                'name': 'GSM signal',
+            }, {
+                'unique_id': 'dummy_guid_sensor_gsm_status',
+                'entity_id': 'binary_sensor.dummy_guid_gsm_status',
+                'name': 'GSM status',
+            }, {
+                'unique_id': 'dummy_guid_sensor_last_device_packet',
+                'entity_id': 'sensor.dummy_guid_last_device_packet',
+                'name': 'Last device packet',
+            }, {
+                'unique_id': 'dummy_guid_sensor_last_upstream_packet',
+                'entity_id': 'sensor.dummy_guid_last_upstream_packet',
+                'name': 'Last upstream packet',
+            }, {
+                'unique_id': 'dummy_guid_new_sensor_type',
+                'entity_id': 'select.dummy_guid_new_sensor_type',
+                'name': 'New sensor type',
+            }, {
+                'unique_id': 'dummy_guid_new_sensor_name',
+                'entity_id': 'text.dummy_guid_new_sensor_name',
+                'name': 'New sensor name',
+            }, {
+                'unique_id': 'dummy_guid_new_sensor_register',
+                'entity_id': 'button.dummy_guid_new_sensor_register',
+                'name': 'Register new sensor',
+            }, {
+                'unique_id': 'dummy_guid_new_device_type',
+                'entity_id': 'select.dummy_guid_new_device_type',
+                'name': 'New relay type',
+            }, {
+                'unique_id': 'dummy_guid_new_device_name',
+                'entity_id': 'text.dummy_guid_new_device_name',
+                'name': 'New relay name',
+            }, {
+                'unique_id': 'dummy_guid_new_device_register',
+                'entity_id': 'button.dummy_guid_new_device_register',
+                'name': 'Register new relay',
+            },])
+        },
+        {
+            'device': 'Dummy sensor',
+            'device_id': ANY,
+            'entities': unordered([{
+                'unique_id': 'dummy_guid_sensor_0',
+                'entity_id': 'binary_sensor.dummy_guid_dummy_sensor',
+                'name': None,
+            }, {
+                'unique_id': 'dummy_guid_sensor_0_enabled',
+                'entity_id': 'switch.dummy_guid_dummy_sensor_enabled',
+                'name': 'Enabled',
+            }, {
+                'unique_id': 'dummy_guid_sensor_0_arm_delay',
+                'entity_id': 'switch.dummy_guid_dummy_sensor_arm_delay',
+                'name': 'Arm delay',
+            }, {
+                'unique_id': 'dummy_guid_sensor_0_detect_door',
+                'entity_id': 'switch.dummy_guid_dummy_sensor_detect_door',
+                'name': 'Check active when arming',
+            }, {
+                'unique_id': 'dummy_guid_sensor_0_door_chime',
+                'entity_id': 'switch.dummy_guid_dummy_sensor_door_chime',
+                'name': 'Door chime',
+            }, {
+                'unique_id': 'dummy_guid_sensor_0_independent_zone',
+                'entity_id': 'switch.dummy_guid_dummy_sensor_independent_zone',
+                'name': 'Disarm from app only',
+            }, {
+                'unique_id': 'dummy_guid_sensor_0_alert_mode',
+                'entity_id': 'select.dummy_guid_dummy_sensor_alert_mode',
+                'name': 'Alert mode',
+            }, {
+                'unique_id': 'dummy_guid_sensor_0_tampered',
+                'entity_id': 'binary_sensor.dummy_guid_dummy_sensor_tampered',
+                'name': 'Tampered',
+            }, {
+                'unique_id': 'dummy_guid_sensor_0_low_battery',
+                'entity_id':
+                    'binary_sensor.dummy_guid_dummy_sensor_low_battery',
+                'name': 'Low battery',
+            }, {
+                'unique_id': 'dummy_guid_sensor_0_open_when_armed',
+                'entity_id':
+                    'binary_sensor.dummy_guid_dummy_sensor_open_when_armed',
+                'name': 'Active when arming',
+            }, {
+                'unique_id': 'dummy_guid_sensor_0_delete',
+                'entity_id': 'button.dummy_guid_dummy_sensor_delete',
+                'name': 'Delete',
+            }, ])
+        },
+        {
+            'device': 'Dummy switch 1',
+            'device_id': ANY,
+            'entities': unordered([{
+                'unique_id': 'dummy_guid_switch_0_1',
+                'entity_id': 'switch.dummy_guid_dummy_switch_1',
+                'name': None,
+            }, {
+                'unique_id': 'dummy_guid_switch_0_delete',
+                'entity_id': 'button.dummy_guid_dummy_switch_1_delete',
+                'name': 'Delete',
+            }, ])
+        },
+        {
+            'device': 'Dummy switch 2 multi-node',
+            'device_id': ANY,
+            'entities': unordered([{
+                'unique_id': 'dummy_guid_switch_1_1',
+                'entity_id': 'switch.dummy_guid_dummy_switch_2_multi_node_1',
+                'name': 'Dummy switch 2 multi-node#1',
+            }, {
+                'unique_id': 'dummy_guid_switch_1_2',
+                'entity_id': 'switch.dummy_guid_dummy_switch_2_multi_node_2',
+                'name': 'Dummy switch 2 multi-node#2',
+            }, {
+                'unique_id': 'dummy_guid_switch_1_delete',
+                'entity_id':
+                    'button.dummy_guid_dummy_switch_2_multi_node_1_delete',
+                'name': 'Delete',
+            }, ])
+        },
+        {
+            'device': 'Dummy switch 3 multi-node',
+            'device_id': ANY,
+            'entities': unordered([
+                {
+                    'unique_id': 'dummy_guid_switch_2_1',
+                    'entity_id':
+                        'switch.dummy_guid_dummy_switch_3_multi_node_1',
+                    'name': 'Dummy switch 3 multi-node#1',
+                }, {
+                    'unique_id': 'dummy_guid_switch_2_2',
+                    'entity_id':
+                        'switch.dummy_guid_dummy_switch_3_multi_node_2',
+                    'name': 'Dummy switch 3 multi-node#2',
+                }, {
+                    'unique_id': 'dummy_guid_switch_2_delete',
+                    'entity_id':
+                        'button.dummy_guid_dummy_switch_3_multi_node_1_delete',
+                    'name': 'Delete',
+                },
+            ])
+        },
+    ]
 
     # Verify the switches and selects correspond to the binary sensor have
     # proper states
@@ -120,8 +293,6 @@ async def test_setup_unload_and_reload_entry_afresh(
     # Unload the integration
     await hass.config_entries.async_unload(config_entry.entry_id)
     await hass.async_block_till_done()
-    # Verify the component cleaned up its data upon unloading
-    assert not hass.data[DOMAIN]
 
 
 async def test_setup_entry_with_persisted_options(

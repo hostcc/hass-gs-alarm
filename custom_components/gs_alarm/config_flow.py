@@ -1,3 +1,5 @@
+# SPDX-License-Identifier: MIT
+# Copyright (c) 2024 Ilia Sotnikov
 """
 Config flow for `gs_alarm` integrarion.
 """
@@ -22,6 +24,7 @@ from homeassistant.helpers.selector import (
     SelectSelectorConfig,
     SelectSelectorMode,
 )
+
 from pyg90alarm import G90Alarm
 from pyg90alarm.const import (
     CLOUD_NOTIFICATIONS_PORT, REMOTE_CLOUD_HOST, REMOTE_CLOUD_PORT

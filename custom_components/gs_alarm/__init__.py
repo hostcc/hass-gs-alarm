@@ -1,26 +1,25 @@
+# SPDX-License-Identifier: MIT
+# Copyright (c) 2021 Ilia Sotnikov
 """
 The `gs_alarm` integration.
 """
 from __future__ import annotations
-from typing import List, Any, cast
+from typing import Any, cast, TYPE_CHECKING
 from types import MappingProxyType
-from dataclasses import dataclass
 import asyncio
 import logging
 
 from pyg90alarm import (
-    G90Alarm, G90Sensor, G90Device, G90HostInfo,
-    G90Error, G90TimeoutError,
+    G90Alarm, G90Error, G90TimeoutError,
 )
 from homeassistant.config_entries import ConfigEntry
-from homeassistant.helpers.device_registry import DeviceInfo
+
 from homeassistant.core import HomeAssistant
 from homeassistant.exceptions import (
     ConfigEntryNotReady, ConfigEntryError
 )
 
 from .const import (
-    DOMAIN,
     CONF_IP_ADDR,
     CONF_SMS_ALERT_WHEN_ARMED,
     CONF_SIMULATE_ALERTS_FROM_HISTORY,
@@ -32,27 +31,15 @@ from .const import (
     CONF_OPT_NOTIFICATIONS_CLOUD,
     CONF_OPT_NOTIFICATIONS_CLOUD_UPSTREAM,
 )
+from .coordinator import GsAlarmCoordinator
+if TYPE_CHECKING:
+    type GsAlarmConfigEntry = ConfigEntry[GsAlarmCoordinator]
 
 _LOGGER = logging.getLogger(__name__)
 PLATFORMS = [
-    "alarm_control_panel", "switch", "binary_sensor", "sensor", "select"
+    "alarm_control_panel", "switch", "binary_sensor", "sensor", "select",
+    "button", "text"
 ]
-
-
-@dataclass
-class GsAlarmData:
-    """
-    tb
-    """
-    client: G90Alarm
-    guid: str
-    # Will periodically be updated by `G90AlarmPanel`
-    host_info: G90HostInfo
-    # Store panel sensors/devices for switch and sensor platforms
-    panel_devices: List[G90Device]
-    panel_sensors: List[G90Sensor]
-    # HASS device information
-    device: DeviceInfo
 
 
 async def _options_notifications_protocol(
@@ -84,9 +71,6 @@ async def _options_notifications_protocol(
                 f"'{CONF_CLOUD_LOCAL_PORT}' option is required"
             )
 
-        cloud_upstream_host = options.get(CONF_CLOUD_UPSTREAM_HOST)
-        cloud_upstream_port = options.get(CONF_CLOUD_UPSTREAM_PORT)
-
     # Cloud notifications protocol has been selected
     if notifications_protocol == CONF_OPT_NOTIFICATIONS_CLOUD:
         _LOGGER.debug(
@@ -102,6 +86,9 @@ async def _options_notifications_protocol(
 
     # Chained cloud notifications protocol has been selected
     if notifications_protocol == CONF_OPT_NOTIFICATIONS_CLOUD_UPSTREAM:
+        cloud_upstream_host = options.get(CONF_CLOUD_UPSTREAM_HOST)
+        cloud_upstream_port = options.get(CONF_CLOUD_UPSTREAM_PORT)
+
         _LOGGER.debug(
             'Using chained cloud notifications protocol:'
             " local port %d, host '%s', port %d",
@@ -118,13 +105,13 @@ async def _options_notifications_protocol(
 
 
 async def options_update_listener(
-    hass: HomeAssistant, entry: ConfigEntry
+    _hass: HomeAssistant, entry: GsAlarmConfigEntry
 ) -> None:
     """
     Handles options update.
     """
     try:
-        g90_client = hass.data[DOMAIN][entry.entry_id].client
+        g90_client = entry.runtime_data.client
         _LOGGER.debug(
             'Updating alarm panel from config_entry options %s',
             entry.options
@@ -153,6 +140,9 @@ async def options_update_listener(
                         'Starting to simulate device alerts from history'
                     )
                     await g90_client.start_simulating_alerts_from_history()
+                    entry.async_on_unload(
+                        g90_client.stop_simulating_alerts_from_history
+                    )
                 else:
                     _LOGGER.debug(
                         'Stopping to simulate device alerts from history'
@@ -178,17 +168,20 @@ async def options_update_listener(
         raise ConfigEntryError(f"'{g90_client.host}': {repr(exc)}") from exc
 
 
-async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry) -> bool:
+async def async_setup_entry(
+    hass: HomeAssistant, entry: GsAlarmConfigEntry
+) -> bool:
     """
     Sets up gs_alarm from a config entry.
     """
-    hass.data.setdefault(DOMAIN, {})
     host = entry.data.get(CONF_IP_ADDR, None)
     try:
         g90_client = G90Alarm(host)
-        host_info = await g90_client.get_host_info()
-        devices = await g90_client.get_devices()
-        sensors = await g90_client.get_sensors()
+        coordinator = GsAlarmCoordinator(hass, entry, g90_client)
+        # Fetch essential data into the coordinator, since setting up the
+        # below platforms depend on it to generate IDs and device info
+        await coordinator.init_essential_data()
+        entry.runtime_data = coordinator
     except G90TimeoutError as exc:
         raise ConfigEntryNotReady(
             f"Timeout while connecting to '{host}'"
@@ -196,35 +189,18 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry) -> bool:
     except G90Error as exc:
         raise ConfigEntryError(f"'{host}': {repr(exc)}") from exc
 
-    hass.data[DOMAIN][entry.entry_id] = GsAlarmData(
-        client=g90_client,
-        guid=host_info.host_guid,
-        # Will periodically be updated by `G90AlarmPanel`
-        host_info=host_info,
-        # Store panel sensors/devices for switch and sensor platforms
-        panel_devices=devices,
-        panel_sensors=sensors,
-        # HASS device information
-        device=DeviceInfo(
-            identifiers={
-                (DOMAIN, host_info.host_guid)
-            },
-            manufacturer='Golden Security',
-            model=host_info.product_name,
-            name=host_info.host_guid,
-            serial_number=host_info.host_guid,
-            sw_version=f'MCU: {host_info.mcu_hw_version},'
-                       f' WiFi: {host_info.wifi_hw_version}',
-        )
-    )
-
+    # Should be called before coordinator initial refresh to have callbacks
+    # registered for sensor and device lists, otherwise corresponding HASS
+    # entities won't get added
     await hass.config_entries.async_forward_entry_setups(entry, PLATFORMS)
-
     entry.async_on_unload(entry.add_update_listener(options_update_listener))
+
+    # Perform the initial data refresh
+    await entry.runtime_data.async_config_entry_first_refresh()
 
     # Update the entry's title
     if not hass.config_entries.async_update_entry(
-        entry, title=host_info.host_guid
+        entry, title=coordinator.data.host_info.host_guid
     ):
         # Force setting options upon entry added, but only of title update
         # didn't result in the change thus triggering the listener
@@ -233,7 +209,9 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry) -> bool:
     return True
 
 
-async def async_unload_entry(hass: HomeAssistant, entry: ConfigEntry) -> bool:
+async def async_unload_entry(
+    hass: HomeAssistant, entry: GsAlarmConfigEntry
+) -> bool:
     """
     Unloads the config entry.
     """
@@ -252,9 +230,7 @@ async def async_unload_entry(hass: HomeAssistant, entry: ConfigEntry) -> bool:
         'Platforms unloaded %ssuccessfully', '' if unload_ok else 'un'
     )
     if unload_ok:
-        g90_client = hass.data[DOMAIN][entry.entry_id].client
-        await g90_client.close_notifications()
-        hass.data[DOMAIN].pop(entry.entry_id)
+        await entry.runtime_data.client.close_notifications()
         _LOGGER.debug('Custom component unloaded')
 
     return unload_ok

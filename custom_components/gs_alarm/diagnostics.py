@@ -1,18 +1,20 @@
+# SPDX-License-Identifier: MIT
+# Copyright (c) 2024 Ilia Sotnikov
 """
-Diagnostics support for the integration.
+Diagnostics support for the `gs-alarm` integration.
 """
 from __future__ import annotations
-from typing import Any, cast
-
+from typing import Any, cast, TYPE_CHECKING
 import logging
+
 from homeassistant.core import HomeAssistant
-from homeassistant.config_entries import ConfigEntry
 from homeassistant.helpers.device_registry import DeviceEntry
 from homeassistant.components.diagnostics.util import async_redact_data
-from pyg90alarm import (
-    G90Error, G90TimeoutError
-)
-from .const import DOMAIN
+
+from pyg90alarm import G90Error, G90TimeoutError
+
+if TYPE_CHECKING:
+    from . import GsAlarmConfigEntry
 
 _LOGGER = logging.getLogger(__name__)
 # Redact the properties could contain sensitive information
@@ -23,7 +25,7 @@ TO_REDACT = [
 
 
 async def async_get_config_entry_diagnostics(
-    hass: HomeAssistant, entry: ConfigEntry
+    hass: HomeAssistant, entry: GsAlarmConfigEntry
 ) -> dict[str, Any]:
     """
     Returns diagnostics for the config entry.
@@ -34,15 +36,14 @@ async def async_get_config_entry_diagnostics(
 
 
 async def async_get_device_diagnostics(
-    hass: HomeAssistant, entry: ConfigEntry, device: DeviceEntry
+    _hass: HomeAssistant, entry: GsAlarmConfigEntry, device: DeviceEntry
 ) -> dict[str, Any]:
     """
     Returns diagnostics for the device entry.
     """
 
     try:
-        hass_data = hass.data[DOMAIN][entry.entry_id]
-        g90_client = hass_data.client
+        g90_client = entry.runtime_data.client
 
         result = {
             'config_entry': entry.as_dict(),
@@ -65,9 +66,6 @@ async def async_get_device_diagnostics(
                 'host_info': (await g90_client.get_host_info())._asdict(),
                 'host_status': (await g90_client.get_host_status())._asdict(),
                 'alert_config': repr(await g90_client.get_alert_config()),
-                # pylint:disable=protected-access
-                'alert_simulation_task':
-                    repr(g90_client._alert_simulation_task),
             },
         }
 

@@ -96,6 +96,15 @@
             },
             "gsm_status": {
                 "name": "Status GSM"
+            },
+            "sensor_tampered": {
+                "name": "Uszkodzony"
+            },
+            "sensor_low_battery": {
+                "name": "Niski poziom baterii"
+            },
+            "sensor_active_when_arming": {
+                "name": "Aktywny podczas uzbrajania"
             }
         },
         "switch": {
@@ -103,19 +112,19 @@
                 "name": "{relay}"
             },
             "sensor_flag_arm_delay": {
-                "name": "{sensor}: Opóźnienie uzbrojenia"
+                "name": "Opóźnienie uzbrojenia"
             },
             "sensor_flag_detect_door": {
-                "name": "{sensor}: Sprawdź aktywność podczas uzbrajania"
+                "name": "Sprawdź aktywność podczas uzbrajania"
             },
             "sensor_flag_independent_zone": {
-                "name": "{sensor}: Rozbrajanie tylko z aplikacji"
+                "name": "Rozbrajanie tylko z aplikacji"
             },
             "sensor_flag_enabled": {
-                "name": "{sensor}: Włączony"
+                "name": "Włączony"
             },
             "sensor_flag_door_chime": {
-                "name": "{sensor}: Dzwonek do drzwi"
+                "name": "Dzwonek do drzwi"
             },
             "alert_config_flag_sms_push": {
                 "name": "Alert: Powiadomienie SMS"
@@ -159,17 +168,77 @@
                 "name": "Ostatni pakiet urządzenia"
             },
             "last_upstream_packet": {
-                "name": "Czas ostatniego pakietu urządzenia"
+                "name": "Czas ostatniego odebranego pakietu z chmury"
             }
         },
         "select": {
             "sensor_alert_mode": {
-                "name": "{sensor}: Tryb alertu",
+                "name": "Tryb alarmu",
                 "state": {
                     "alert_always": "Zawsze",
-                    "alert_when_away": "Gdy poza domem",
-                    "alert_when_away_and_home": "Gdy poza domem i w domu"
+                    "alert_when_away": "Gdy nieobecny",
+                    "alert_when_away_and_home": "Gdy nieobecny i w domu"
                 }
+            },
+            "new_sensor_type": {
+                "name": "Nowy typ czujnika"
+            },
+            "new_device_type": {
+                "name": "Nowy typ przekaźnika"
+            }
+        },
+        "button": {
+            "sensor_register": {
+                "name": "Zarejestruj nowy czujnik"
+            },
+            "device_register": {
+                "name": "Zarejestruj nowy przekaźnik"
+            },
+            "device_delete": {
+                "name": "Usuń"
+            },
+            "sensor_delete": {
+                "name": "Usuń"
+            }
+        },
+        "text": {
+            "new_sensor_name": {
+                "name": "Nowa nazwa czujnika"
+            },
+            "new_device_name": {
+                "name": "Nowa nazwa przekaźnika"
+            }
+        },
+        "notifications": {
+            "register_device_starting": {
+                "name": "Rejestrowanie nowego urządzenia typu \"{type}\", upewnij się, że jest w trybie uczenia się"
+            },
+            "register_device_finished": {
+                "name": "Nowe urządzenie \"{name}\" (typ=\"{type}\") z indeksem {index} zostało pomyślnie zarejestrowane"
+            },
+            "register_device_error": {
+                "name": "Błąd podczas rejestrowania nowego urządzenia \"{name}\" (typ=\"{type}\"): {error}"
+            },
+            "register_device_type_not_set": {
+                "name": "Typ nowego urządzenia nie jest ustawiony, nie można go zarejestrować"
+            },
+            "register_device_name_not_set": {
+                "name": "Nazwa nowego urządzenia nie jest ustawiona, nie można go zarejestrować"
+            },
+            "register_sensor_starting": {
+                "name": "Rejestrowanie nowego czujnika typu \"{type}\", proszę aktywować czujnik"
+            },
+            "register_sensor_finished": {
+                "name": "Nowy czujnik \"{name}\" (typ=\"{type}\") z indeksem {index} został pomyślnie zarejestrowany"
+            },
+            "register_sensor_error": {
+                "name": "Błąd podczas rejestrowania nowego czujnika \"{name}\" (typ=\"{type}\"): {error}"
+            },
+            "register_sensor_type_not_set": {
+                "name": "Typ nowego czujnika nie jest ustawiony, nie można go zarejestrować"
+            },
+            "register_sensor_name_not_set": {
+                "name": "Nazwa nowego czujnika nie jest ustawiona, nie można go zarejestrować"
             }
         }
     }

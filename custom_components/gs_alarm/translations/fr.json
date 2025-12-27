@@ -9,7 +9,7 @@
                 "data": {
                     "ip_addr": "Adresse IP"
                 },
-                "description": "Aucun appareil n'a été découvert, veuillez procéder à la configuration manuelle"
+                "description": "Aucun appareil n\"a été découvert, veuillez procéder à la configuration manuelle"
             },
             "confirm": {
                 "description": "Voulez-vous commencer la configuration ?"
@@ -20,12 +20,12 @@
         "step": {
             "init": {
                 "data": {
-                    "sms_alert_when_armed": "Alertes SMS uniquement lorsque l'appareil est armé",
-                    "simulate_alerts_from_history": "Simuler les alertes de l'appareil à partir de l'historique",
+                    "sms_alert_when_armed": "Alertes SMS uniquement lorsque l\"appareil est armé",
+                    "simulate_alerts_from_history": "Simuler les alertes de l\"appareil à partir de l\"historique",
                     "notifications_protocol": "Protocole de notifications"
                 },
                 "data_description": {
-                    "notifications_protocol": "* **Local**: Le panneau a l'adresse IP `10.10.10.250`\n* **Cloud**: Le trafic du panneau vers le cloud peut être redirigé vers\nHome Assistant au niveau du réseau, aucun trafic n'est envoyé aux serveurs cloud\n* **Cloud chaîné**: Identique à **Cloud**, mais le trafic est également envoyé aux serveurs cloud\npour que l'application mobile fonctionne"
+                    "notifications_protocol": "* **Local**: Le panneau a l\"adresse IP `10.10.10.250`\n* **Cloud**: Le trafic du panneau vers le cloud peut être redirigé vers\nHome Assistant au niveau du réseau, aucun trafic n\"est envoyé aux serveurs cloud\n* **Cloud chaîné**: Identique à **Cloud**, mais le trafic est également envoyé aux serveurs cloud\npour que l\"application mobile fonctionne"
                 }
             },
             "cloud": {
@@ -73,7 +73,7 @@
                         }
                     },
                     "door_open_when_arming": {
-                        "name": "Actif lors de l'armement",
+                        "name": "Actif lors de l\"armement",
                         "state": {
                             "true": "Oui",
                             "false": "Non"
@@ -96,6 +96,15 @@
             },
             "gsm_status": {
                 "name": "État GSM"
+            },
+            "sensor_tampered": {
+                "name": "Altéré"
+            },
+            "sensor_low_battery": {
+                "name": "Batterie faible"
+            },
+            "sensor_active_when_arming": {
+                "name": "Actif lors de l\"armement"
             }
         },
         "switch": {
@@ -103,31 +112,31 @@
                 "name": "{relay}"
             },
             "sensor_flag_arm_delay": {
-                "name": "{sensor}: Délai d'armement"
+                "name": "Délai d\"armement"
             },
             "sensor_flag_detect_door": {
-                "name": "{sensor}: Vérifier l'activité lors de l'armement"
+                "name": "Vérifier l\"activité lors de l\"armement"
             },
             "sensor_flag_independent_zone": {
-                "name": "{sensor}: Désarmement uniquement depuis l'application"
+                "name": "Désarmement uniquement depuis l\"application"
             },
             "sensor_flag_enabled": {
-                "name": "{sensor}: Activé"
+                "name": "Activé"
             },
             "sensor_flag_door_chime": {
-                "name": "{sensor}: Carillon de porte"
+                "name": "Carillon de porte"
             },
             "alert_config_flag_sms_push": {
                 "name": "Alerte: Notification SMS"
             },
             "alert_config_flag_ac_power_failure": {
-                "name": "Alerte: Panne d'alimentation secteur"
+                "name": "Alerte: Panne d\"alimentation secteur"
             },
             "alert_config_flag_ac_power_recover": {
-                "name": "Alerte: Rétablissement de l'alimentation secteur"
+                "name": "Alerte: Rétablissement de l\"alimentation secteur"
             },
             "alert_config_flag_host_low_voltage": {
-                "name": "Alerte: Tension faible de l'hôte"
+                "name": "Alerte: Tension faible de l\"hôte"
             },
             "alert_config_flag_sensor_low_voltage": {
                 "name": "Alerte: Tension faible du capteur"
@@ -156,20 +165,80 @@
                 "name": "Signal GSM"
             },
             "last_device_packet": {
-                "name": "Dernier paquet de l'appareil"
+                "name": "Dernier paquet de l\"appareil"
             },
             "last_upstream_packet": {
-                "name": "Heure du dernier paquet de l'appareil"
+                "name": "Heure du dernier paquet reçu depuis le cloud"
             }
         },
         "select": {
             "sensor_alert_mode": {
-                "name": "{sensor}: Mode d'alerte",
+                "name": "Mode d\"alerte",
                 "state": {
                     "alert_always": "Toujours",
                     "alert_when_away": "En absence",
                     "alert_when_away_and_home": "En absence et en présence"
                 }
+            },
+            "new_sensor_type": {
+                "name": "Nouveau type de capteur"
+            },
+            "new_device_type": {
+                "name": "Nouveau type de relais"
+            }
+        },
+        "button": {
+            "sensor_register": {
+                "name": "Enregistrer un nouveau capteur"
+            },
+            "device_register": {
+                "name": "Enregistrer un nouveau relais"
+            },
+            "device_delete": {
+                "name": "Supprimer"
+            },
+            "sensor_delete": {
+                "name": "Supprimer"
+            }
+        },
+        "text": {
+            "new_sensor_name": {
+                "name": "Nouveau nom de capteur"
+            },
+            "new_device_name": {
+                "name": "Nouveau nom de relais"
+            }
+        },
+        "notifications": {
+            "register_device_starting": {
+                "name": "Enregistrement d\"un nouvel appareil de type \"{type}\", veuillez vous assurer qu\"il est en mode apprentissage"
+            },
+            "register_device_finished": {
+                "name": "Nouvel appareil \"{name}\" (type=\"{type}\") avec index {index} enregistré avec succès"
+            },
+            "register_device_error": {
+                "name": "Erreur lors de l\"enregistrement du nouvel appareil \"{name}\" (type=\"{type}\") : {error}"
+            },
+            "register_device_type_not_set": {
+                "name": "Le type du nouvel appareil n\"est pas défini, impossible de l\"enregistrer"
+            },
+            "register_device_name_not_set": {
+                "name": "Le nom du nouvel appareil n\"est pas défini, impossible de l\"enregistrer"
+            },
+            "register_sensor_starting": {
+                "name": "Enregistrement d\"un nouveau capteur de type \"{type}\", veuillez déclencher le capteur"
+            },
+            "register_sensor_finished": {
+                "name": "Nouveau capteur \"{name}\" (type=\"{type}\") avec index {index} enregistré avec succès"
+            },
+            "register_sensor_error": {
+                "name": "Erreur lors de l\"enregistrement du nouveau capteur \"{name}\" (type=\"{type}\") : {error}"
+            },
+            "register_sensor_type_not_set": {
+                "name": "Le type du nouveau capteur n\"est pas défini, impossible de l\"enregistrer"
+            },
+            "register_sensor_name_not_set": {
+                "name": "Le nom du nouveau capteur n\"est pas défini, impossible de l\"enregistrer"
             }
         }
     }

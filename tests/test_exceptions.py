@@ -1,3 +1,5 @@
+# SPDX-License-Identifier: MIT
+# Copyright (c) 2024 Ilia Sotnikov
 """
 Tests for exception handling by the custom component.
 """
@@ -13,12 +15,13 @@ from homeassistant.core import HomeAssistant
 from homeassistant.util import dt
 from homeassistant.config_entries import ConfigEntryState
 from homeassistant.const import (
-   SERVICE_ALARM_ARM_AWAY,
-   SERVICE_ALARM_ARM_HOME,
-   SERVICE_ALARM_DISARM,
-   SERVICE_TURN_ON,
-   SERVICE_TURN_OFF,
-   STATE_OFF,
+    SERVICE_ALARM_ARM_AWAY,
+    SERVICE_ALARM_ARM_HOME,
+    SERVICE_ALARM_DISARM,
+    SERVICE_TURN_ON,
+    SERVICE_TURN_OFF,
+    STATE_OFF,
+    STATE_UNAVAILABLE,
 )
 from homeassistant.components.alarm_control_panel.const import (
     DOMAIN as ALARM_DOMAIN, AlarmControlPanelState,
@@ -39,9 +42,9 @@ from .conftest import (
         ('get_host_info', G90TimeoutError, ConfigEntryState.SETUP_RETRY),
         ('get_host_info', G90Error, ConfigEntryState.SETUP_ERROR),
         ('get_devices', G90TimeoutError, ConfigEntryState.SETUP_RETRY),
-        ('get_devices', G90Error, ConfigEntryState.SETUP_ERROR),
+        ('get_devices', G90Error, ConfigEntryState.SETUP_RETRY),
         ('get_sensors', G90TimeoutError, ConfigEntryState.SETUP_RETRY),
-        ('get_sensors', G90Error, ConfigEntryState.SETUP_ERROR),
+        ('get_sensors', G90Error, ConfigEntryState.SETUP_RETRY),
         # The simulated errors below will trigger inside entry update listener,
         # and won't result in state being error
         (
@@ -106,7 +109,7 @@ async def test_alarm_panel_state_update_exception(
     mock_g90alarm.return_value.get_host_info.side_effect = G90Error
 
     # Simulate some time has passed for HomeAssistant to invoke
-    # `async_update()` for components
+    # update for components
     async_fire_time_changed(hass, dt.utcnow() + timedelta(hours=1))
     await hass.async_block_till_done()
 
@@ -115,7 +118,7 @@ async def test_alarm_panel_state_update_exception(
         hass, 'alarm_control_panel', 'dummy_guid'
     )
 
-    assert panel_state.state == AlarmControlPanelState.DISARMED
+    assert panel_state.state == STATE_UNAVAILABLE
 
 
 @pytest.mark.parametrize("failed_service,failed_g90_method", [
@@ -189,13 +192,6 @@ async def test_switch_service_exception(
     Tests the custom integration properly handles exceptions during service
     calls to switches of the alarm panel.
     """
-    if failed_g90_method:
-        # Simulate the error in specific `G90Alarm` method
-        setattr(
-            (await mock_g90alarm.return_value.get_devices())[0],
-            failed_g90_method,
-            AsyncMock(side_effect=simulated_error)
-        )
 
     config_entry = MockConfigEntry(
         domain=DOMAIN,
@@ -207,6 +203,16 @@ async def test_switch_service_exception(
     config_entry.add_to_hass(hass)
     await hass.config_entries.async_setup(config_entry.entry_id)
     await hass.async_block_till_done()
+
+    # Has to come after entries setup, otherwise `get_devices()` below
+    # will trigger callbacks too early
+    if failed_g90_method:
+        # Simulate the error in specific `G90Alarm` method
+        setattr(
+            (await mock_g90alarm.return_value.get_devices())[0],
+            failed_g90_method,
+            AsyncMock(side_effect=simulated_error)
+        )
 
     entity_id = hass_get_entity_id_by_unique_id(
         hass, 'switch', 'dummy_guid_switch_0_1'

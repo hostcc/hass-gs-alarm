@@ -1,3 +1,5 @@
+# SPDX-License-Identifier: MIT
+# Copyright (c) 2021 Ilia Sotnikov
 """
 Alarm control panel component.
 """
@@ -5,9 +7,7 @@ from __future__ import annotations
 from typing import TYPE_CHECKING
 import logging
 
-from homeassistant.config_entries import ConfigEntry
-from homeassistant.util import slugify
-from homeassistant.core import HomeAssistant
+from homeassistant.core import HomeAssistant, callback
 from homeassistant.components.alarm_control_panel import (
     AlarmControlPanelEntity,
 )
@@ -16,13 +16,12 @@ from homeassistant.components.alarm_control_panel.const import (
     AlarmControlPanelEntityFeature, AlarmControlPanelState,
 )
 
-from pyg90alarm import (
-    G90ArmDisarmTypes, G90Error, G90TimeoutError
-)
+from pyg90alarm import G90ArmDisarmTypes, G90Error, G90TimeoutError
 
-from .const import DOMAIN
+from .entity_base import GSAlarmEntityBase
+from .coordinator import GsAlarmCoordinator
 if TYPE_CHECKING:
-    from . import GsAlarmData
+    from . import GsAlarmConfigEntry
 
 _LOGGER = logging.getLogger(__name__)
 
@@ -36,21 +35,30 @@ STATE_MAPPING = {
 }
 
 
-async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry,
-                            async_add_entities: AddEntitiesCallback) -> None:
+async def async_setup_entry(
+    _hass: HomeAssistant, entry: GsAlarmConfigEntry,
+    async_add_entities: AddEntitiesCallback
+) -> None:
     """Set up a config entry."""
-    async_add_entities([G90AlarmPanel(hass.data[DOMAIN][entry.entry_id])])
+    async_add_entities([G90AlarmPanel(entry.runtime_data)])
 
 
-class G90AlarmPanel(AlarmControlPanelEntity):
-    # Not all base class methods are meaningfull in the context of the
-    # integration, silence the `pylint` for those
-    # pylint: disable=abstract-method, too-many-instance-attributes
+class G90AlarmPanel(
+    AlarmControlPanelEntity, GSAlarmEntityBase,
+):
     """
     Instantiate entity for alarm control panel.
+
+    :param coordinator: The coordinator to use.
     """
-    def __init__(self, hass_data: GsAlarmData) -> None:
-        self._attr_unique_id = slugify(hass_data.guid)
+    # pylint: disable=abstract-method, too-many-instance-attributes
+    # pylint: disable=too-many-ancestors
+    UNIQUE_ID_FMT = "{guid}"
+    ENTITY_ID_FMT = "{guid}"
+
+    def __init__(self, coordinator: GsAlarmCoordinator) -> None:
+        super().__init__(coordinator)
+
         self._attr_supported_features = (
             AlarmControlPanelEntityFeature.ARM_HOME
             | AlarmControlPanelEntityFeature.ARM_AWAY
@@ -60,23 +68,10 @@ class G90AlarmPanel(AlarmControlPanelEntity):
         # entity ID comprising of the GUID alone
         self._attr_name = None
         self._attr_has_entity_name = True
-        self._attr_device_info = hass_data.device
         self._attr_changed_by = None
         self._attr_alarm_state = None
-        self._hass_data = hass_data
-        self._hass_data.client.armdisarm_callback = self.armdisarm_callback
-        self._hass_data.client.alarm_callback = self.alarm_callback
-
-    async def add_to_platform_finish(self) -> None:
-        """
-        Invoked by HASS when platform is added.
-        """
-        # Read the state of the alarm panel upon entry is added to the
-        # platform, but before its state is persisted. This helps HomeAssistant
-        # to reflect the panel state right upon startup, not delaying to next
-        # poll cycle
-        await self.async_update()
-        await super().add_to_platform_finish()
+        self.coordinator.client.armdisarm_callback.add(self.armdisarm_callback)
+        self.coordinator.client.alarm_callback.add(self.alarm_callback)
 
     def armdisarm_callback(self, state: G90ArmDisarmTypes) -> None:
         """
@@ -119,39 +114,26 @@ class G90AlarmPanel(AlarmControlPanelEntity):
         # Update HA entity since the panel state has changed
         self.async_write_ha_state()
 
-    async def async_update(self) -> None:
+    @callback
+    def _handle_coordinator_update(self) -> None:
         """
-        Invoked by HASS when state needs an update.
+        Invoked by the coordinator when data is updated.
         """
         _LOGGER.debug('Updating state')
 
-        try:
-            host_status = await self._hass_data.client.get_host_status()
-            host_state = host_status.host_status
-            self._attr_alarm_state = STATE_MAPPING[host_state]
-            # Store alarm panel information (GSM/WiFi status/signal level etc.)
-            # so a sensor could use the data w/o duplicate access to
-            # `host_info` property of `G90Alarm`, which issues a device call
-            # internally
-            self._hass_data.host_info = (
-                await self._hass_data.client.get_host_info()
-            )
-        except (G90Error, G90TimeoutError) as exc:
-            # Log the error but retain the state, otherwise it might get noisy
-            # re: changing it between `unknown` and last state - the panel is
-            # known of leading to protocol errors somewhat often
-            _LOGGER.error(
-                "Error updating state of alarm panel '%s': %s",
-                self.unique_id,
-                repr(exc)
-            )
+        host_state = self.coordinator.data.host_status.host_status
+        self._attr_alarm_state = STATE_MAPPING[host_state]
+        _LOGGER.debug(
+            '%s: Providing state %s', self.unique_id, self._attr_alarm_state
+        )
+        self.async_write_ha_state()
 
     async def async_alarm_disarm(self, _code: str | None = None) -> None:
         """Send disarm command."""
         try:
-            await self._hass_data.client.disarm()
+            await self.coordinator.client.disarm()
         except (G90Error, G90TimeoutError) as exc:
-            # Log the error, the state is not altered since `async_update()`
+            # Log the error, the state is not altered since next update
             # should read back the previous state unchanged
             _LOGGER.error(
                 "Error disarming panel '%s': %s",
@@ -162,7 +144,7 @@ class G90AlarmPanel(AlarmControlPanelEntity):
     async def async_alarm_arm_home(self, _code: str | None = None) -> None:
         """Send arm home command."""
         try:
-            await self._hass_data.client.arm_home()
+            await self.coordinator.client.arm_home()
         except (G90Error, G90TimeoutError) as exc:
             # See comment above
             _LOGGER.error(
@@ -174,7 +156,7 @@ class G90AlarmPanel(AlarmControlPanelEntity):
     async def async_alarm_arm_away(self, _code: str | None = None) -> None:
         """Send arm away command."""
         try:
-            await self._hass_data.client.arm_away()
+            await self.coordinator.client.arm_away()
         except (G90Error, G90TimeoutError) as exc:
             # See comment above
             _LOGGER.error(

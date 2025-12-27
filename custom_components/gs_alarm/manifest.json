@@ -5,7 +5,10 @@
     "@hostcc"
   ],
   "config_flow": true,
-  "dependencies": [],
+  "dependencies": [
+    "persistent_notification",
+    "homeassistant"
+  ],
   "documentation": "https://github.com/hostcc/hass-gs-alarm/blob/master/README.md",
   "integration_type": "device",
   "iot_class": "local_polling",
@@ -16,7 +19,7 @@
   ],
   "quality_scale": "gold",
   "requirements": [
-    "pyg90alarm==2.1.1"
+    "pyg90alarm==2.3.1"
   ],
   "version": "2.2.0"
 }
