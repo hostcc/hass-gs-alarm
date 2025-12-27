@@ -1,7 +1,7 @@
 # SPDX-License-Identifier: MIT
 # Copyright (c) 2025 Ilia Sotnikov
 """
-Base class for common entities of `gs-alarm` integration.
+Base classes for common entities of `gs-alarm` integration.
 """
 from __future__ import annotations
 
@@ -17,6 +17,11 @@ class GSAlarmEntityBase(
 ):
     """
     Base class for common entities of `gs-alarm` integration.
+
+    Applicable to entities require only GUID in the unique/entity ID, and
+    linked to parent device (one for alarm panel itself).
+
+    :param coordinator: The coordinator to use.
     """
     def __init__(self, coordinator: GsAlarmCoordinator) -> None:
         super().__init__(coordinator)
