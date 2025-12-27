@@ -1,14 +1,19 @@
+# SPDX-License-Identifier: MIT
+# Copyright (c) 2021 Ilia Sotnikov
 """
 Tests for switches from the custom component.
 """
 from __future__ import annotations
+from datetime import timedelta
 import pytest
 
 from pytest_homeassistant_custom_component.common import (
+    async_fire_time_changed,
     MockConfigEntry,
 )
 
 from homeassistant.core import HomeAssistant
+from homeassistant.util import dt
 from homeassistant.const import (
     ATTR_ENTITY_ID,
     SERVICE_TURN_ON,
@@ -79,7 +84,7 @@ from .conftest import AlarmMockT, hass_get_entity_id_by_unique_id
         ),
     ],
 )
-# pylint: disable=too-many-arguments
+# pylint: disable=too-many-positional-arguments,too-many-arguments
 async def test_sensor_flags(
     unique_id: str, service_call: str,
     expected_flag: G90SensorUserFlags, expected_value: bool,
@@ -111,7 +116,7 @@ async def test_sensor_flags(
     )
 
     # Verify the sensor flag was set correctly
-    sensor = mock_g90alarm.return_value.get_sensors.return_value[0]
+    sensor = (await mock_g90alarm.return_value.get_sensors())[0]
     sensor.set_flag.assert_called_once_with(expected_flag, expected_value)
 
 
@@ -129,10 +134,13 @@ async def test_sensor_flags_exception(
     )
     config_entry.add_to_hass(hass)
     await hass.config_entries.async_setup(config_entry.entry_id)
+    # Simulate some time has passed for HomeAssistant to invoke
+    # update for components
+    async_fire_time_changed(hass, dt.utcnow() + timedelta(hours=1))
     await hass.async_block_till_done()
 
     # Simulate an exception when setting the sensor flag
-    sensor = mock_g90alarm.return_value.get_sensors.return_value[0]
+    sensor = (await mock_g90alarm.return_value.get_sensors())[0]
     sensor.set_flag.side_effect = G90Error('dummy exception')
 
     entity_id = hass_get_entity_id_by_unique_id(
@@ -257,7 +265,7 @@ async def test_sensor_flags_exception(
         ),
     ],
 )
-# pylint: disable=too-many-arguments
+# pylint: disable=too-many-positional-arguments,too-many-arguments
 async def test_alert_config_flags(
     unique_id: str, service_call: str,
     expected_flag: G90AlertConfigFlags, expected_value: bool,
@@ -309,6 +317,10 @@ async def test_alert_config_flags_exception(
     )
     config_entry.add_to_hass(hass)
     await hass.config_entries.async_setup(config_entry.entry_id)
+
+    # Simulate some time has passed for HomeAssistant to invoke
+    # update for components
+    async_fire_time_changed(hass, dt.utcnow() + timedelta(hours=1))
     await hass.async_block_till_done()
 
     # Simulate an exception when setting the alert flags
@@ -340,3 +352,80 @@ async def test_alert_config_flags_exception(
         {ATTR_ENTITY_ID: entity_id},
         blocking=True,
     )
+
+
+@pytest.mark.parametrize(
+    "device_name,unique_id,service_call,expected_call,expected_value",
+    [
+        pytest.param(
+            "Dummy switch 1", "dummy_guid_switch_0_1",
+            SERVICE_TURN_ON, 'turn_on', 'on',
+            id="Switch turn on"
+        ),
+        pytest.param(
+            "Dummy switch 1", "dummy_guid_switch_0_1",
+            SERVICE_TURN_OFF, 'turn_off', 'off',
+            id="Switch turn off"
+        ),
+        pytest.param(
+            "Dummy switch 2 multi-node#1", "dummy_guid_switch_1_1",
+            SERVICE_TURN_ON, 'turn_on', 'on',
+            id="Multi-node switch turn on"
+        ),
+        pytest.param(
+            "Dummy switch 2 multi-node#2", "dummy_guid_switch_1_2",
+            SERVICE_TURN_OFF, 'turn_off', 'off',
+            id="Multi-node switch turn off"
+        ),
+    ]
+)
+# pylint: disable=too-many-arguments,too-many-positional-arguments
+async def test_device(
+    device_name: str, unique_id: str, service_call: str,
+    expected_call: str, expected_value: str,
+    hass: HomeAssistant, mock_g90alarm: AlarmMockT
+) -> None:
+    """
+    Test that calling the switch service (turn_on or turn_off) for a given
+    entity results in the corresponding method being called on the correct
+    device instance.
+    """
+    config_entry = MockConfigEntry(
+        domain=DOMAIN,
+        data={'ip_addr': 'dummy-ip'},
+        options={},
+        entry_id="test_switch"
+    )
+    config_entry.add_to_hass(hass)
+    await hass.config_entries.async_setup(config_entry.entry_id)
+    # Simulate some time has passed for HomeAssistant to invoke
+    # update for components
+    async_fire_time_changed(hass, dt.utcnow() + timedelta(hours=1))
+    await hass.async_block_till_done()
+
+    entity_id = hass_get_entity_id_by_unique_id(
+        hass, 'switch', unique_id
+    )
+
+    # Call the switch service to turn the device on or off
+    await hass.services.async_call(
+        SWITCH_DOMAIN,
+        service_call,
+        {ATTR_ENTITY_ID: entity_id},
+        blocking=True,
+    )
+
+    device = next(
+        iter(
+            dev for dev in await mock_g90alarm.get_devices()
+            if dev.name == device_name
+        )
+    )
+    assert device is not None, (
+        f"Device '{device_name}' not found"
+    )
+    getattr(device, expected_call).assert_called_once()
+
+    switch_state = hass.states.get(entity_id)
+    assert switch_state is not None
+    assert switch_state.state == expected_value

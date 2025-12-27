@@ -96,6 +96,15 @@
             },
             "gsm_status": {
                 "name": "GSM Status"
+            },
+            "sensor_tampered": {
+                "name": "Manipuliert"
+            },
+            "sensor_low_battery": {
+                "name": "Niedriger Batteriestand"
+            },
+            "sensor_active_when_arming": {
+                "name": "Aktiv beim Scharfschalten"
             }
         },
         "switch": {
@@ -103,19 +112,19 @@
                 "name": "{relay}"
             },
             "sensor_flag_arm_delay": {
-                "name": "{sensor}: Scharfschaltverzögerung"
+                "name": "Scharfschaltverzögerung"
             },
             "sensor_flag_detect_door": {
-                "name": "{sensor}: Aktiv prüfen beim Scharfschalten"
+                "name": "Aktiv prüfen beim Scharfschalten"
             },
             "sensor_flag_independent_zone": {
-                "name": "{sensor}: Nur über App deaktivieren"
+                "name": "Nur über App deaktivieren"
             },
             "sensor_flag_enabled": {
-                "name": "{sensor}: Aktiviert"
+                "name": "Aktiviert"
             },
             "sensor_flag_door_chime": {
-                "name": "{sensor}: Türklingel"
+                "name": "Türklingel"
             },
             "alert_config_flag_sms_push": {
                 "name": "Alarm: SMS-Push"
@@ -159,17 +168,77 @@
                 "name": "Letztes Gerätepaket"
             },
             "last_upstream_packet": {
-                "name": "Letzte Gerätepaketzeit"
+                "name": "Zeit des letzten Upstream-Pakets"
             }
         },
         "select": {
             "sensor_alert_mode": {
-                "name": "{sensor}: Alarmmodus",
+                "name": "Alarmmodus",
                 "state": {
                     "alert_always": "Immer",
                     "alert_when_away": "Bei Abwesenheit",
                     "alert_when_away_and_home": "Bei Abwesenheit und Anwesenheit"
                 }
+            },
+            "new_sensor_type": {
+                "name": "Neuer Sensortyp"
+            },
+            "new_device_type": {
+                "name": "Neuer Relais-Typ"
+            }
+        },
+        "button": {
+            "sensor_register": {
+                "name": "Neuen Sensor registrieren"
+            },
+            "device_register": {
+                "name": "Neues Relais registrieren"
+            },
+            "device_delete": {
+                "name": "Löschen"
+            },
+            "sensor_delete": {
+                "name": "Löschen"
+            }
+        },
+        "text": {
+            "new_sensor_name": {
+                "name": "Neuer Sensorname"
+            },
+            "new_device_name": {
+                "name": "Neuer Relais-Name"
+            }
+        },
+        "notifications": {
+            "register_device_starting": {
+                "name": "Registrierung eines neuen Geräts vom Typ \"{type}\", bitte stellen Sie sicher, dass es im Lernmodus ist"
+            },
+            "register_device_finished": {
+                "name": "Neues Gerät \"{name}\" (Typ=\"{type}\") mit Index {index} erfolgreich registriert"
+            },
+            "register_device_error": {
+                "name": "Fehler bei der Registrierung des neuen Geräts \"{name}\" (Typ=\"{type}\"): {error}"
+            },
+            "register_device_type_not_set": {
+                "name": "Typ des neuen Geräts ist nicht gesetzt, kann nicht registriert werden"
+            },
+            "register_device_name_not_set": {
+                "name": "Name des neuen Geräts ist nicht gesetzt, kann nicht registriert werden"
+            },
+            "register_sensor_starting": {
+                "name": "Registrierung eines neuen Sensors vom Typ \"{type}\", bitte lösen Sie den Sensor aus"
+            },
+            "register_sensor_finished": {
+                "name": "Neuer Sensor \"{name}\" (Typ=\"{type}\") mit Index {index} erfolgreich registriert"
+            },
+            "register_sensor_error": {
+                "name": "Fehler bei der Registrierung des neuen Sensors \"{name}\" (Typ=\"{type}\"): {error}"
+            },
+            "register_sensor_type_not_set": {
+                "name": "Typ des neuen Sensors ist nicht gesetzt, kann nicht registriert werden"
+            },
+            "register_sensor_name_not_set": {
+                "name": "Name des neuen Sensors ist nicht gesetzt, kann nicht registriert werden"
             }
         }
     }

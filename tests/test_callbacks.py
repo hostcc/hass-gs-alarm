@@ -1,6 +1,9 @@
+# SPDX-License-Identifier: MIT
+# Copyright (c) 2022 Ilia Sotnikov
 """
 Tests callbacks for the custom component.
 """
+import asyncio
 import pytest
 from pytest_homeassistant_custom_component.common import (
     MockConfigEntry,
@@ -36,9 +39,10 @@ async def test_alarm_callback(
     await hass.async_block_till_done()
 
     # Simulate the alarm callback is triggered
-    mock_g90alarm.return_value.alarm_callback(
-        1, 'Dummy', 'binary_sensor.dummy_1'
+    await mock_g90alarm.return_value.on_alarm(
+        0, 'Dummy sensor', is_tampered=False
     )
+    await hass.async_block_till_done()
 
     # Verify panel state and attributes reflect that
     panel_state = hass_get_state_by_unique_id(
@@ -48,13 +52,14 @@ async def test_alarm_callback(
     assert panel_state.state == AlarmControlPanelState.TRIGGERED
     assert panel_state.attributes is not None
     assert panel_state.attributes.get('changed_by') == (
-        'binary_sensor.dummy_1'
+        'binary_sensor.dummy_guid_dummy_sensor'
     )
 
     # Simulate the arm callback is triggered
-    mock_g90alarm.return_value.armdisarm_callback(
+    await mock_g90alarm.return_value.on_armdisarm(
         G90ArmDisarmTypes.ARM_AWAY
     )
+    await hass.async_block_till_done()
 
     # Verify `changed_by` attribute has been reset
     panel_state = hass_get_state_by_unique_id(
@@ -86,9 +91,10 @@ async def test_arm_callback(
     await hass.async_block_till_done()
 
     # Simulate the arm callback is triggered
-    mock_g90alarm.return_value.armdisarm_callback(
+    await mock_g90alarm.return_value.on_armdisarm(
         G90ArmDisarmTypes.ARM_AWAY
     )
+    await hass.async_block_till_done()
 
     # Verify panel state reflects that
     panel_state = hass_get_state_by_unique_id(
@@ -120,9 +126,10 @@ async def test_disarm_callback(
     await hass.async_block_till_done()
 
     # Simulate the disarm callback is triggered
-    mock_g90alarm.return_value.armdisarm_callback(
+    await mock_g90alarm.return_value.on_armdisarm(
         G90ArmDisarmTypes.DISARM
     )
+    await hass.async_block_till_done()
 
     # Verify panel state reflects that
     panel_state = hass_get_state_by_unique_id(
@@ -151,15 +158,11 @@ async def test_low_battery_callback(
     # Allow Home Assistant to process the setup
     await hass.async_block_till_done()
 
-    sensor = mock_g90alarm.return_value.get_sensors.return_value[0]
-    # Ensure the sensor is wireless
-    assert sensor.is_wireless is True
-    # Simulate the sensor is low on battery
-    sensor._set_low_battery(True)  # pylint: disable=protected-access
-    # Simulate the low battery callback is triggered
-    sensor.low_battery_callback()
-    # Wait for the callback to be processed
+    await mock_g90alarm.return_value.on_low_battery(
+        0, 'Dummy sensor'
+    )
     await hass.async_block_till_done()
+    await asyncio.sleep(0)  # Allow state update to propagate
 
     # Verify sensor state reflects the low battery status
     sensor_state = hass_get_state_by_unique_id(
@@ -189,13 +192,11 @@ async def test_tamper_callback(
     # Allow Home Assistant to process the setup
     await hass.async_block_till_done()
 
-    sensor = mock_g90alarm.return_value.get_sensors.return_value[0]
-    # Simulate the sensor is tampered
-    sensor._set_tampered(True)  # pylint: disable=protected-access
-    # Simulate the low battery callback is triggered
-    sensor.tamper_callback()
-    # Wait for the callback to be processed
+    await mock_g90alarm.return_value.on_alarm(
+        0, 'Dummy sensor', is_tampered=True
+    )
     await hass.async_block_till_done()
+    await asyncio.sleep(0)  # Allow state update to propagate
 
     # Verify sensor state reflects the low battery status
     sensor_state = hass_get_state_by_unique_id(
@@ -225,13 +226,11 @@ async def test_door_open_when_arming_callback(
     # Allow Home Assistant to process the setup
     await hass.async_block_till_done()
 
-    sensor = mock_g90alarm.return_value.get_sensors.return_value[0]
-    # Simulate the sensor is active when arming
-    sensor._set_door_open_when_arming(True)  # pylint: disable=protected-access
-    # Simulate the low battery callback is triggered
-    sensor.door_open_when_arming_callback()
-    # Wait for the callback to be processed
+    await mock_g90alarm.return_value.on_door_open_when_arming(
+        0, 'Dummy sensor'
+    )
     await hass.async_block_till_done()
+    await asyncio.sleep(0)  # Allow state update to propagate
 
     # Verify sensor state reflects the low battery status
     sensor_state = hass_get_state_by_unique_id(

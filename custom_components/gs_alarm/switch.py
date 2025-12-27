@@ -1,142 +1,210 @@
+# SPDX-License-Identifier: MIT
+# Copyright (c) 2021 Ilia Sotnikov
 """
 Switch entities for `gs_alarm` integration.
 """
 from __future__ import annotations
-from typing import Any, TYPE_CHECKING, List
+from typing import Any, TYPE_CHECKING
 import logging
 
-from homeassistant.config_entries import ConfigEntry
-from homeassistant.core import HomeAssistant
-from homeassistant.util import slugify
-from homeassistant.const import (
-    EntityCategory,
-)
+from homeassistant.core import HomeAssistant, callback
+from homeassistant.const import EntityCategory
 from homeassistant.components.switch import SwitchEntity
 from homeassistant.helpers.entity_platform import AddEntitiesCallback
+from homeassistant.helpers.update_coordinator import CoordinatorEntity
 
 from pyg90alarm import (
     G90Device, G90Sensor, G90Error, G90TimeoutError,
     G90SensorUserFlags, G90AlertConfigFlags,
 )
 
-from .const import DOMAIN
+from .mixin import (
+    GSAlarmGenerateIDsDeviceMixin, GSAlarmGenerateIDsSensorMixin,
+    GSAlarmGenerateIDsCommonMixin
+)
+from .coordinator import GsAlarmCoordinator
+from .binary_sensor import G90BinarySensor
 if TYPE_CHECKING:
-    from . import GsAlarmData
+    from . import GsAlarmConfigEntry
 
 _LOGGER = logging.getLogger(__name__)
 
 
 async def async_setup_entry(
-    hass: HomeAssistant, entry: ConfigEntry,
+    _hass: HomeAssistant, entry: GsAlarmConfigEntry,
     async_add_entities: AddEntitiesCallback
 ) -> None:
     """Set up a config entry."""
-    g90switches: List[SwitchEntity] = []
-    for device in (
-        hass.data[DOMAIN][entry.entry_id].panel_devices
-    ):
-        g90switches.append(
-            G90Switch(device, hass.data[DOMAIN][entry.entry_id])
-        )
+    def device_list_change_callback(device: G90Device, added: bool) -> None:
+        # Add switch entity for the relay if it was added
+        if added:
+            async_add_entities(
+                [G90Switch(device, entry.runtime_data)]
+            )
 
-    for sensor in (
-        hass.data[DOMAIN][entry.entry_id].panel_sensors
-    ):
-        if sensor.supports_updates:
-            g90switches.extend([
+    def sensor_list_change_callback(sensor: G90Sensor, added: bool) -> None:
+        # Add sensor configuration switches if sensor was added and it
+        # supports updates
+        if added and sensor.supports_updates:
+            switches = [
                 G90SensorFlag(
-                    sensor, hass.data[DOMAIN][entry.entry_id],
+                    sensor, entry.runtime_data,
                     G90SensorUserFlags.ENABLED,
+                    'mdi:check-circle',
                 ),
                 G90SensorFlag(
-                    sensor, hass.data[DOMAIN][entry.entry_id],
+                    sensor, entry.runtime_data,
                     G90SensorUserFlags.ARM_DELAY,
+                    'mdi:timer-sand',
                 ),
                 G90SensorFlag(
-                    sensor, hass.data[DOMAIN][entry.entry_id],
+                    sensor, entry.runtime_data,
                     G90SensorUserFlags.DETECT_DOOR,
+                    'mdi:door',
                 ),
                 G90SensorFlag(
-                    sensor, hass.data[DOMAIN][entry.entry_id],
+                    sensor, entry.runtime_data,
                     G90SensorUserFlags.DOOR_CHIME,
+                    'mdi:bell',
                 ),
                 G90SensorFlag(
-                    sensor, hass.data[DOMAIN][entry.entry_id],
+                    sensor, entry.runtime_data,
                     G90SensorUserFlags.INDEPENDENT_ZONE,
+                    'mdi:lock',
                 ),
-            ])
+            ]
+            async_add_entities(switches)
 
-    g90switches.extend([
+    # Register callbacks for sensor/device list changes
+    entry.runtime_data.client.device_list_change_callback.add(
+        device_list_change_callback
+    )
+
+    entry.runtime_data.client.sensor_list_change_callback.add(
+        sensor_list_change_callback
+    )
+
+    # Alert configuration switches for the panel
+    alert_config_switches = [
         G90AlertConfigFlag(
-            hass.data[DOMAIN][entry.entry_id],
+            entry.runtime_data,
             G90AlertConfigFlags.AC_POWER_FAILURE,
+            'mdi:power-plug-off',
         ),
         G90AlertConfigFlag(
-            hass.data[DOMAIN][entry.entry_id],
+            entry.runtime_data,
             G90AlertConfigFlags.AC_POWER_RECOVER,
+            'mdi:power-plug',
         ),
         G90AlertConfigFlag(
-            hass.data[DOMAIN][entry.entry_id],
+            entry.runtime_data,
             G90AlertConfigFlags.ARM_DISARM,
+            'mdi:shield-home',
         ),
         G90AlertConfigFlag(
-            hass.data[DOMAIN][entry.entry_id],
-            G90AlertConfigFlags.HOST_LOW_VOLTAGE
+            entry.runtime_data,
+            G90AlertConfigFlags.HOST_LOW_VOLTAGE,
+            'mdi:battery-alert',
         ),
         G90AlertConfigFlag(
-            hass.data[DOMAIN][entry.entry_id],
+            entry.runtime_data,
             G90AlertConfigFlags.SENSOR_LOW_VOLTAGE,
+            'mdi:battery-alert',
         ),
         G90AlertConfigFlag(
-            hass.data[DOMAIN][entry.entry_id],
+            entry.runtime_data,
             G90AlertConfigFlags.WIFI_AVAILABLE,
+            'mdi:wifi',
         ),
         G90AlertConfigFlag(
-            hass.data[DOMAIN][entry.entry_id],
+            entry.runtime_data,
             G90AlertConfigFlags.WIFI_UNAVAILABLE,
+            'mdi:wifi-off',
         ),
         G90AlertConfigFlag(
-            hass.data[DOMAIN][entry.entry_id],
+            entry.runtime_data,
             G90AlertConfigFlags.DOOR_OPEN,
+            'mdi:door-open',
         ),
         G90AlertConfigFlag(
-            hass.data[DOMAIN][entry.entry_id],
+            entry.runtime_data,
             G90AlertConfigFlags.DOOR_CLOSE,
+            'mdi:door-closed',
         ),
         G90AlertConfigFlag(
-            hass.data[DOMAIN][entry.entry_id],
+            entry.runtime_data,
             G90AlertConfigFlags.SMS_PUSH,
+            'mdi:message-text',
         ),
-    ])
+    ]
 
-    async_add_entities(g90switches)
+    async_add_entities(alert_config_switches)
 
 
-class G90Switch(SwitchEntity):
+class G90Switch(
+    SwitchEntity, CoordinatorEntity[GsAlarmCoordinator],
+    GSAlarmGenerateIDsDeviceMixin
+):
     """
-    Switch specific to the alarm panel's device (relay).
+    Switch for the alarm panel's relay.
+
+    :param device: G90Device instance representing the relay.
+    :param coordinator: The coordinator to use.
     """
-    # Not all base class methods are meaningfull in the context of the
-    # integration, silence the `pylint` for those
     # pylint: disable=abstract-method,too-many-instance-attributes
-    def __init__(self, device: G90Device, hass_data: GsAlarmData) -> None:
+    # pylint: disable=too-many-ancestors
+
+    UNIQUE_ID_FMT = "{guid}_switch_{device.index}_{device_subindex}"
+    ENTITY_ID_FMT = "{guid}_{device.name}"
+
+    def __init__(
+        self, device: G90Device, coordinator: GsAlarmCoordinator
+    ) -> None:
+        super().__init__(coordinator)
         self._device = device
         self._state = False
-        self._attr_device_info = hass_data.device
         self._attr_has_entity_name = True
-        self._attr_unique_id = slugify(
-            f"{hass_data.guid}_switch_{device.index}_{device.subindex + 1}"
-        )
+        self._attr_name = None
+
+        if device.node_count > 1:
+            # Resulting name will be combination of HASS device name and the
+            # index in multi-node switch, based on how HASS names the entities
+            # having `has_entity_name` set to `True`
+            self._attr_name = device.name
+
+        # Generate unique ID and entity ID
+        self._attr_unique_id = self.generate_unique_id(coordinator, device)
+        self.entity_id = self.generate_entity_id(coordinator, device)
+        # Each relay has dedicated HASS device (single one for multi-node
+        # relays)
+        self._attr_device_info = self.generate_device_info(coordinator, device)
+
         self._attr_translation_key = 'relay'
         self._attr_translation_placeholders = {
             'relay': device.name,
         }
+
+    async def async_added_to_hass(self) -> None:
+        """
+        Invoked by HASS when entity is added.
+        """
+        await super().async_added_to_hass()
+        # Store the entity ID as extra data to `G90Sensor` instance, it will be
+        # provided in the arguments when `G90Alarm.alarm_callback` is invoked
+        _LOGGER.debug(
+            'Storing entity ID as extra data: device %s (idx %s), ID: %s',
+            self._device.name, self._device.index, self.entity_id
+        )
+        self._device.extra_data = self.entity_id
 
     @property
     def is_on(self) -> bool:
         """
         Indicates if the switch is active (on).
         """
+        _LOGGER.debug(
+            "Providing state for switch '%s': %s", self.unique_id, self._state
+        )
         return self._state
 
     async def async_turn_on(self, **_kwargs: Any) -> None:
@@ -155,7 +223,9 @@ class G90Switch(SwitchEntity):
             )
         else:
             # State is only updated upon successful command execution
+            _LOGGER.debug("Switch '%s' turned on", self.unique_id)
             self._state = True
+            self.async_write_ha_state()
 
     async def async_turn_off(self, **_kwargs: Any) -> None:
         """
@@ -172,44 +242,73 @@ class G90Switch(SwitchEntity):
             )
         else:
             # See comment above
+            _LOGGER.debug("Switch '%s' turned off", self.unique_id)
             self._state = False
+            self.async_write_ha_state()
 
 
-class G90SensorFlag(SwitchEntity):
+class G90SensorFlag(
+    SwitchEntity, CoordinatorEntity[GsAlarmCoordinator],
+    GSAlarmGenerateIDsSensorMixin
+):
     """
     Switch entity for configuration option of the sensor.
+
+    :param sensor: G90Sensor instance representing the sensor.
+    :param coordinator: The coordinator to use.
+    :param flag: The sensor user flag this switch controls.
+    :param icon: The icon to use for the switch entity.
     """
-    # Not all base class methods are meaningfull in the context of the
-    # integration, silence the `pylint` for those
     # pylint: disable=abstract-method,too-many-instance-attributes
+    # pylint: disable=too-many-ancestors
+
+    UNIQUE_ID_FMT = "{guid}_sensor_{sensor.index}_{flag_name}"
+    ENTITY_ID_FMT = "{guid}_{sensor.name}_{flag_name}"
+
     def __init__(
-        self, sensor: G90Sensor, hass_data: GsAlarmData,
-        flag: G90SensorUserFlags,
+        self, sensor: G90Sensor, coordinator: GsAlarmCoordinator,
+        flag: G90SensorUserFlags, icon: str
     ) -> None:
+        super().__init__(coordinator)
         self._sensor = sensor
         self._flag = flag
-        self._attr_device_info = hass_data.device
-        self._attr_entity_category = EntityCategory.CONFIG
-        self._attr_unique_id = slugify(
-            f"{hass_data.guid}_sensor_{sensor.index}_{flag.name}"
+        # Bind the switch under the HASS device representing the panel's sensor
+        self._attr_device_info = G90BinarySensor.generate_device_info(
+            coordinator, sensor
         )
-        self._attr_has_entity_name = True
-        self._attr_translation_key = slugify(f'sensor_flag_{flag.name}')
-        self._attr_translation_placeholders = {
-            'sensor': sensor.name,
-        }
+        # Generate unique ID and entity ID using sensor and flag name
+        self._attr_unique_id = self.generate_unique_id_with_placeholders(
+            coordinator, {
+                'sensor': sensor,
+                'flag_name': flag.name,
+            }
+        )
+        self.entity_id = self.generate_entity_id_with_placeholders(
+            coordinator, {
+                'sensor': sensor,
+                'flag_name': flag.name,
+            }
+        )
 
-    @property
-    def is_on(self) -> bool:
+        self._attr_entity_category = EntityCategory.CONFIG
+        self._attr_icon = icon
+        self._attr_has_entity_name = True
+        self._attr_translation_key = f'sensor_flag_{str(flag.name).lower()}'
+        _LOGGER.warning("Translation key: %s", self._attr_translation_key)
+
+    @callback
+    def _handle_coordinator_update(self) -> None:
         """
-        Indicates if the switch is active (on).
+        Invoked when HomeAssistant needs to update the switch state.
         """
-        value = self._sensor.get_flag(self._flag)
+        # `sensor` of entity data is periodically updated by coordinator thru
+        # `get_sensors()`
+        self._attr_is_on = self._sensor.get_flag(self._flag)
         _LOGGER.debug(
             "%s: Sensor flag '%s' is %s",
-            self.unique_id, self._flag.name, value
+            self.unique_id, self._flag.name, self._attr_is_on
         )
-        return value
+        self.async_write_ha_state()
 
     async def async_turn_on(self, **_kwargs: Any) -> None:
         """
@@ -228,6 +327,8 @@ class G90SensorFlag(SwitchEntity):
                 repr(exc)
             )
 
+        await self.coordinator.async_request_refresh()
+
     async def async_turn_off(self, **_kwargs: Any) -> None:
         """
         Turn off the switch.
@@ -245,43 +346,65 @@ class G90SensorFlag(SwitchEntity):
                 repr(exc)
             )
 
+        await self.coordinator.async_request_refresh()
 
-class G90AlertConfigFlag(SwitchEntity):
+
+class G90AlertConfigFlag(
+    SwitchEntity, CoordinatorEntity[GsAlarmCoordinator],
+    GSAlarmGenerateIDsCommonMixin
+):
     """
     Switch entity for alert configuration option of the panel.
+
+    :param coordinator: The coordinator to use.
+    :param flag: The alert config flag this switch controls.
+    :param icon: The icon to use for the switch entity.
     """
-    # Not all base class methods are meaningfull in the context of the
-    # integration, silence the `pylint` for those
     # pylint: disable=abstract-method,too-many-instance-attributes
+    # pylint: disable=too-many-ancestors
+
+    UNIQUE_ID_FMT = "{guid}_alert_config_flag_{flag_name}"
+    ENTITY_ID_FMT = "{guid}_alert_config_flag_{flag_name}"
+
     def __init__(
-        self, hass_data: GsAlarmData, flag: G90AlertConfigFlags
+        self, coordinator: GsAlarmCoordinator,
+        flag: G90AlertConfigFlags, icon: str
     ) -> None:
+        super().__init__(coordinator)
         self._flag = flag
         self._attr_has_entity_name = True
-        self._attr_unique_id = slugify(
-            f"{hass_data.guid}_alert_config_flag_{flag.name}"
+        # The switch is bound to the HASS device for the alarm panel itself
+        self._attr_device_info = self.generate_parent_device_info(coordinator)
+        # Generate unique ID and entity ID using flag name
+        self._attr_unique_id = self.generate_unique_id_with_placeholders(
+            coordinator, {
+                'flag_name': flag.name,
+            }
         )
-        self._attr_translation_key = slugify(f'alert_config_flag_{flag.name}')
-        self._attr_device_info = hass_data.device
-        self._hass_data = hass_data
+        self.entity_id = self.generate_entity_id_with_placeholders(
+            coordinator, {
+                'flag_name': flag.name,
+            }
+        )
+
+        self._attr_translation_key = (
+            f'alert_config_flag_{str(flag.name).lower()}'
+        )
         self._attr_entity_category = EntityCategory.CONFIG
+        self._attr_icon = icon
 
-    async def async_added_to_hass(self) -> None:
-        # Signal HASS to update the state as soon as component is added,
-        # which will trigger the `async_update` method - that will provide
-        # the up-to-date state w/o waiting for next interval
-        await self.async_update_ha_state(force_refresh=True)
-
-    async def async_update(self) -> None:
+    @callback
+    def _handle_coordinator_update(self) -> None:
         """
-        Indicates if the switch is active (on).
+        Invoked when HomeAssistant needs to update the switch state.
         """
-        value = await self._hass_data.client.alert_config.get_flag(self._flag)
+        alert_config_flags = self.coordinator.data.alert_config_flags
+        self._attr_is_on = self._flag in alert_config_flags
         _LOGGER.debug(
             "%s: Alert config flag '%s' is %s",
-            self.unique_id, self._flag.name, value
+            self.unique_id, self._flag.name, self._attr_is_on
         )
-        self._attr_is_on = value
+        self.async_write_ha_state()
 
     async def async_turn_on(self, **_kwargs: Any) -> None:
         """
@@ -292,7 +415,7 @@ class G90AlertConfigFlag(SwitchEntity):
                 "%s: Switching on the alert config flag '%s'",
                 self.unique_id, self._flag.name
             )
-            await self._hass_data.client.alert_config.set_flag(
+            await self.coordinator.client.alert_config.set_flag(
                 self._flag, True
             )
         except (G90Error, G90TimeoutError) as exc:
@@ -301,6 +424,8 @@ class G90AlertConfigFlag(SwitchEntity):
                 self.unique_id,
                 repr(exc)
             )
+
+        await self.coordinator.async_request_refresh()
 
     async def async_turn_off(self, **_kwargs: Any) -> None:
         """
@@ -311,7 +436,7 @@ class G90AlertConfigFlag(SwitchEntity):
                 "%s: Switching off the alert config flag '%s'",
                 self.unique_id, self._flag.name
             )
-            await self._hass_data.client.alert_config.set_flag(
+            await self.coordinator.client.alert_config.set_flag(
                 self._flag, False
             )
         except (G90Error, G90TimeoutError) as exc:
@@ -320,3 +445,5 @@ class G90AlertConfigFlag(SwitchEntity):
                 self.unique_id,
                 repr(exc)
             )
+
+        await self.coordinator.async_request_refresh()

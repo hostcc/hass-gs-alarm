@@ -25,7 +25,7 @@
                     "notifications_protocol": "Protocollo di notifica"
                 },
                 "data_description": {
-                    "notifications_protocol": "* **Locale**: Il pannello ha l'indirizzo IP `10.10.10.250`\n* **Cloud**: Il traffico del pannello verso il cloud può essere deviato verso\nHome Assistant a livello di rete, nessun traffico inviato ai server cloud\n* **Cloud concatenato**: Come **Cloud**, ma il traffico viene inviato anche ai server cloud\nper far funzionare l'applicazione mobile"
+                    "notifications_protocol": "* **Locale**: Il pannello ha l\"indirizzo IP `10.10.10.250`\n* **Cloud**: Il traffico del pannello verso il cloud può essere deviato verso\nHome Assistant a livello di rete, nessun traffico inviato ai server cloud\n* **Cloud concatenato**: Come **Cloud**, ma il traffico viene inviato anche ai server cloud\nper far funzionare l\"applicazione mobile"
                 }
             },
             "cloud": {
@@ -38,8 +38,8 @@
                 "description": "Protocollo Cloud concatenato",
                 "data": {
                     "cloud_local_port": "Porta per ascoltare il traffico del pannello",
-                    "cloud_upstream_host": "Host a cui inviare le notifiche del pannello dopo l'elaborazione",
-                    "cloud_upstream_port": "Porta a cui inviare le notifiche del pannello dopo l'elaborazione"
+                    "cloud_upstream_host": "Host a cui inviare le notifiche del pannello dopo l\"elaborazione",
+                    "cloud_upstream_port": "Porta a cui inviare le notifiche del pannello dopo l\"elaborazione"
                 }
             }
         }
@@ -73,7 +73,7 @@
                         }
                     },
                     "door_open_when_arming": {
-                        "name": "Attivo durante l'armamento",
+                        "name": "Attivo durante l\"armamento",
                         "state": {
                             "true": "Sì",
                             "false": "No"
@@ -96,6 +96,15 @@
             },
             "gsm_status": {
                 "name": "Stato GSM"
+            },
+            "sensor_tampered": {
+                "name": "Manomesso"
+            },
+            "sensor_low_battery": {
+                "name": "Batteria scarica"
+            },
+            "sensor_active_when_arming": {
+                "name": "Attivo durante l\"armamento"
             }
         },
         "switch": {
@@ -103,19 +112,19 @@
                 "name": "{relay}"
             },
             "sensor_flag_arm_delay": {
-                "name": "{sensor}: Ritardo armamento"
+                "name": "Ritardo armamento"
             },
             "sensor_flag_detect_door": {
-                "name": "{sensor}: Controlla attività durante l'armamento"
+                "name": "Controlla attività durante l\"armamento"
             },
             "sensor_flag_independent_zone": {
-                "name": "{sensor}: Disarma solo dall'app"
+                "name": "Disarma solo dall\"app"
             },
             "sensor_flag_enabled": {
-                "name": "{sensor}: Abilitato"
+                "name": "Abilitato"
             },
             "sensor_flag_door_chime": {
-                "name": "{sensor}: Campanello porta"
+                "name": "Campanello porta"
             },
             "alert_config_flag_sms_push": {
                 "name": "Avviso: SMS push"
@@ -159,17 +168,77 @@
                 "name": "Ultimo pacchetto dispositivo"
             },
             "last_upstream_packet": {
-                "name": "Ora ultimo pacchetto dispositivo"
+                "name": "Ora dell\"ultimo pacchetto ricevuto dal cloud"
             }
         },
         "select": {
             "sensor_alert_mode": {
-                "name": "{sensor}: Modalità avviso",
+                "name": "Modalità allarme",
                 "state": {
                     "alert_always": "Sempre",
-                    "alert_when_away": "Quando fuori casa",
-                    "alert_when_away_and_home": "Quando fuori casa e in casa"
+                    "alert_when_away": "Quando assente",
+                    "alert_when_away_and_home": "Quando assente e a casa"
                 }
+            },
+            "new_sensor_type": {
+                "name": "Nuovo tipo di sensore"
+            },
+            "new_device_type": {
+                "name": "Nuovo tipo di relè"
+            }
+        },
+        "button": {
+            "sensor_register": {
+                "name": "Registra nuovo sensore"
+            },
+            "device_register": {
+                "name": "Registra nuovo relè"
+            },
+            "device_delete": {
+                "name": "Elimina"
+            },
+            "sensor_delete": {
+                "name": "Elimina"
+            }
+        },
+        "text": {
+            "new_sensor_name": {
+                "name": "Nuovo nome sensore"
+            },
+            "new_device_name": {
+                "name": "Nuovo nome relè"
+            }
+        },
+        "notifications": {
+            "register_device_starting": {
+                "name": "Registrazione di un nuovo dispositivo di tipo \"{type}\", assicurati che sia in modalità apprendimento"
+            },
+            "register_device_finished": {
+                "name": "Nuovo dispositivo \"{name}\" (tipo=\"{type}\") con indice {index} registrato con successo"
+            },
+            "register_device_error": {
+                "name": "Errore durante la registrazione del nuovo dispositivo \"{name}\" (tipo=\"{type}\"): {error}"
+            },
+            "register_device_type_not_set": {
+                "name": "Il tipo del nuovo dispositivo non è impostato, non può essere registrato"
+            },
+            "register_device_name_not_set": {
+                "name": "Il nome del nuovo dispositivo non è impostato, non può essere registrato"
+            },
+            "register_sensor_starting": {
+                "name": "Registrazione di un nuovo sensore di tipo \"{type}\", per favore attiva il sensore"
+            },
+            "register_sensor_finished": {
+                "name": "Nuovo sensore \"{name}\" (tipo=\"{type}\") con indice {index} registrato con successo"
+            },
+            "register_sensor_error": {
+                "name": "Errore durante la registrazione del nuovo sensore \"{name}\" (tipo=\"{type}\"): {error}"
+            },
+            "register_sensor_type_not_set": {
+                "name": "Il tipo del nuovo sensore non è impostato, non può essere registrato"
+            },
+            "register_sensor_name_not_set": {
+                "name": "Il nome del nuovo sensore non è impostato, non può essere registrato"
             }
         }
     }

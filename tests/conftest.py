@@ -1,14 +1,16 @@
+# SPDX-License-Identifier: MIT
+# Copyright (c) 2022 Ilia Sotnikov
 """
 Pytest configuration and fixtures
 """
 from __future__ import annotations
-from typing import Iterator, TypeVar
-import asyncio
-from unittest.mock import patch, AsyncMock
+from typing import Iterator, TypeVar, Any, AsyncGenerator, Dict, List
+from unittest.mock import patch, AsyncMock, PropertyMock
 import pytest
 
 from homeassistant.core import HomeAssistant, State
 import homeassistant.helpers.entity_registry as er
+import homeassistant.helpers.device_registry as dr
 
 import pyg90alarm
 
@@ -44,127 +46,210 @@ def pytest_configure(config: pytest.Config) -> None:
 def mock_g90alarm(request: pytest.FixtureRequest) -> Iterator[AlarmMockT]:
     """
     Mocks `G90Alarm` instance and its methods relevant to tests.
+    Methods not explicitly mocked will be passed through to the real
+    implementation.
     """
-    with (
-        # Mock `G90Alarm` instance - it is imported into
-        # `custom_components.gs_alarm` namespace using `from pyg90alarm import
-        # G90Alarm`
-        patch('custom_components.gs_alarm.G90Alarm', autospec=True) as mock,
-        # Mock `G90Alarm.discover()` class method being imported into
-        # `custom_components.gs_alarm.config_flow` namespace
-        patch(
-            'custom_components.gs_alarm.config_flow.G90Alarm.discover'
-        ) as mock_discover,
-    ):
-        # Mocked discovery results, either from `g90discovery` mark (`result`
-        # keyword) or empty list by default
-        mock_discover.return_value = (
-            getattr(
-                request.node
-                .get_closest_marker('g90discovery'),
-                'kwargs', {}
-            ).get('result', [])
-        )
+    # Mock results for discovery from mark or default to empty list
+    discovery_results = getattr(
+        request.node.get_closest_marker('g90discovery'),
+        'kwargs', {}
+    ).get('result', [])
 
-        # Mock `G90Alarm().get_host_info()` method with dummy product
-        # information
-        mock.return_value.get_host_info = AsyncMock(
-            return_value=pyg90alarm.G90HostInfo(
-                host_guid='Dummy GUID',
-                product_name='Dummy product',
-                wifi_protocol_version='1.0-test',
-                cloud_protocol_version='1.1-test',
-                mcu_hw_version='1.0-test',
-                wifi_hw_version='1.0-test',
-                gsm_status_data=0,
-                wifi_status_data=0,
-                reserved1=0,
-                reserved2=0,
-                band_frequency='',
-                gsm_signal_level=100,
-                wifi_signal_level=100,
+    # Mocked panel status from mark or default to disarmed
+    host_status = getattr(
+        request.node.get_closest_marker('g90host_status'),
+        'kwargs', {}
+    ).get('result', pyg90alarm.G90ArmDisarmTypes.DISARM)
+
+    # Create host info return value
+    host_info = pyg90alarm.G90HostInfo(
+        host_guid='Dummy GUID',
+        product_name='Dummy product',
+        wifi_protocol_version='1.0-test',
+        cloud_protocol_version='1.1-test',
+        mcu_hw_version='1.0-test',
+        wifi_hw_version='1.0-test',
+        gsm_status_data=0,
+        wifi_status_data=0,
+        reserved1=0,
+        reserved2=0,
+        band_frequency='',
+        gsm_signal_level=100,
+        wifi_signal_level=100,
+    )
+
+    async def sensor_list_fetch(
+        *_args: Any, **_kwargs: Any
+    ) -> AsyncGenerator[pyg90alarm.G90Sensor, None]:
+        """
+        Mocked sensor list fetch method.
+        """
+        mock_sensors = [
+            pyg90alarm.G90Sensor(
+                # Has to point to `G90Alarm()` instance
+                parent=mock.return_value,
+                subindex=0, proto_idx=0,
+                parent_name='Dummy sensor',
+                index=0,
+                room_id=0,
+                type_id=1,
+                subtype=1,
+                timeout=0,
+                user_flags_data=(
+                    pyg90alarm.G90SensorUserFlags.ENABLED
+                    | pyg90alarm.G90SensorUserFlags.ALERT_WHEN_AWAY
+                    | pyg90alarm.G90SensorUserFlags.SUPPORTS_UPDATING_SUBTYPE
+                ),
+                baudrate=0,
+                protocol_id=0,
+                reserved_data=0,
+                node_count=1,
+                mask=0,
+                private_data=0,
             )
-        )
-
-        # Mocked panel status, either from `g90host_status` mark (`result`
-        # keyword) or disarmed by default
-        host_status = getattr(
-            request.node
-            .get_closest_marker('g90host_status'),
-            'kwargs', {}
-        ).get('result', pyg90alarm.G90ArmDisarmTypes.DISARM)
-
-        # Mock `G90Alarm().get_host_info()` method with dummy status
-        # information
-        mock.return_value.get_host_status = AsyncMock(
-            return_value=pyg90alarm.G90HostStatus(
-                host_status_data=host_status,
-                host_phone_number='12345678',
-                product_name='Dummy product',
-                mcu_hw_version='1.0-test',
-                wifi_hw_version='1.0-test',
+        ]
+        for mock_sensor in mock_sensors:
+            mock_sensor.set_alert_mode = (  # type: ignore[method-assign]
+                AsyncMock()
             )
-        )
+            mock_sensor.set_flag = AsyncMock()  # type: ignore[method-assign]
+            mock_sensor.delete = AsyncMock()  # type: ignore[method-assign]
 
-        # Instantiate a dummy sensor to mock in `G90Alarm.get_sensors()`
-        mock_sensor = pyg90alarm.G90Sensor(
-            parent=mock.return_value,  # Has to point to `G90Alarm()` instance
-            subindex=0, proto_idx=0,
-            parent_name='Dummy sensor',
-            index=0,
-            room_id=0,
-            type_id=1,
-            subtype=0,
-            timeout=0,
-            user_flags_data=(
-                pyg90alarm.G90SensorUserFlags.ENABLED
-                | pyg90alarm.G90SensorUserFlags.ALERT_WHEN_AWAY
+            yield mock_sensor
+
+    async def device_list_fetch(
+        *_args: Any, **_kwargs: Any
+    ) -> AsyncGenerator[pyg90alarm.G90Device, None]:
+        """
+        Mocked device list fetch method.
+        """
+        mock_devices = [
+            pyg90alarm.G90Device(
+                parent=mock.return_value, subindex=0, proto_idx=1,
+                parent_name='Dummy switch 1',
+                index=0,
+                room_id=0,
+                type_id=128,
+                subtype=0,
+                timeout=0,
+                user_flags_data=0,
+                baudrate=0,
+                protocol_id=0,
+                reserved_data=0,
+                node_count=1,
+                mask=0,
+                private_data=0,
             ),
-            baudrate=0,
-            protocol_id=0,
-            reserved_data=0,
-            node_count=0,
-            mask=0,
-            private_data=0,
-        )
-        mock_sensor.set_flag = AsyncMock()  # type: ignore[method-assign]
-        mock_sensor.set_alert_mode = AsyncMock()  # type: ignore[method-assign]
+            pyg90alarm.G90Device(
+                parent=mock.return_value, subindex=0, proto_idx=2,
+                parent_name='Dummy switch 2 multi-node',
+                index=1,
+                room_id=0,
+                type_id=128,
+                subtype=0,
+                timeout=0,
+                user_flags_data=0,
+                baudrate=0,
+                protocol_id=0,
+                reserved_data=0,
+                node_count=2,
+                mask=0,
+                private_data=0,
+            ),
+            pyg90alarm.G90Device(
+                parent=mock.return_value, subindex=1, proto_idx=2,
+                parent_name='Dummy switch 2 multi-node',
+                index=1,
+                room_id=0,
+                type_id=128,
+                subtype=0,
+                timeout=0,
+                user_flags_data=0,
+                baudrate=0,
+                protocol_id=0,
+                reserved_data=0,
+                node_count=2,
+                mask=0,
+                private_data=0,
+            ),
+            pyg90alarm.G90Device(
+                parent=mock.return_value, subindex=0, proto_idx=3,
+                parent_name='Dummy switch 3 multi-node',
+                index=2,
+                room_id=0,
+                type_id=128,
+                subtype=0,
+                timeout=0,
+                user_flags_data=0,
+                baudrate=0,
+                protocol_id=0,
+                reserved_data=0,
+                node_count=2,
+                mask=0,
+                private_data=0,
+            ),
+            pyg90alarm.G90Device(
+                parent=mock.return_value, subindex=1, proto_idx=3,
+                parent_name='Dummy switch 3 multi-node',
+                index=2,
+                room_id=0,
+                type_id=128,
+                subtype=0,
+                timeout=0,
+                user_flags_data=0,
+                baudrate=0,
+                protocol_id=0,
+                reserved_data=0,
+                node_count=2,
+                mask=0,
+                private_data=0,
+            )
+        ]
 
-        # Mock `G90Alarm().get_sensors()` method pretenting to return single
-        # sensor above
-        mock.return_value.get_sensors = AsyncMock(
-            return_value=[
-                mock_sensor,
-            ]
-        )
+        for mock_device in mock_devices:
+            mock_device.turn_on = AsyncMock()  # type: ignore[method-assign]
+            mock_device.turn_off = AsyncMock()  # type: ignore[method-assign]
+            mock_device.delete = AsyncMock()  # type: ignore[method-assign]
 
-        # Mock `G90Alarm().get_devices()` method pretenting to return single
-        # device (relay)
-        mock.return_value.get_devices = AsyncMock(
-            return_value=[
-                pyg90alarm.G90Device(
-                    parent=mock.return_value, subindex=0, proto_idx=0,
-                    parent_name='Dummy switch',
-                    index=0,
-                    room_id=0,
-                    type_id=128,
-                    subtype=0,
-                    timeout=0,
-                    user_flags_data=0,
-                    baudrate=0,
-                    protocol_id=0,
-                    reserved_data=0,
-                    node_count=0,
-                    mask=0,
-                    private_data=0,
-                )
-            ]
-        )
+            yield mock_device
 
-        # Mock `G90Alarm().listen_notifications()` to do nothing
-        mock.return_value.listen_notifications = AsyncMock()
-
-        mock.return_value.history = AsyncMock(
+    with (
+        # Mock the discover class method for config flow
+        patch(
+            'custom_components.gs_alarm.config_flow.G90Alarm.discover',
+            return_value=discovery_results
+        ),
+        # Main G90Alarm mock with wrapping of the real implementation
+        patch(
+            'custom_components.gs_alarm.G90Alarm',
+            spec=pyg90alarm.G90Alarm,
+            # Create a real instance to wrap
+            wraps=pyg90alarm.G90Alarm('dummy-mocked-host')
+        ) as mock,
+        patch(
+            'pyg90alarm.entities.sensor_list.G90SensorList._fetch',
+            autospec=True,
+            side_effect=sensor_list_fetch
+        ),
+        patch(
+            'pyg90alarm.entities.device_list.G90DeviceList._fetch',
+            autospec=True,
+            side_effect=device_list_fetch
+        ),
+        patch(
+            'pyg90alarm.local.config.G90AlertConfig.flags',
+            new_callable=PropertyMock,
+            side_effect=AsyncMock(
+                return_value=pyg90alarm.G90AlertConfigFlags(~0)
+            ),
+        ),
+        patch(
+            'pyg90alarm.local.config.G90AlertConfig.set_flag',
+            autospec=True,
+        ),
+        patch(
+            'pyg90alarm.G90Alarm.history',
+            autospec=True,
             return_value=[
                 # Valid entry
                 pyg90alarm.local.history.G90History(
@@ -187,18 +272,70 @@ def mock_g90alarm(request: pytest.FixtureRequest) -> Iterator[AlarmMockT]:
                     other=''
                 )
             ]
-        )
-
-        (
-            mock.return_value.alert_config.get_flag
-        ) = AsyncMock(return_value=True)
-        (
-            mock.return_value.alert_config.set_flag
-        ) = AsyncMock()
-
-        # pylint:disable=protected-access
-        mock.return_value._alert_simulation_task = AsyncMock(spec=asyncio.Task)
-
+        ),
+        patch(
+            'pyg90alarm.G90Alarm.get_host_info',
+            autospec=True,
+            return_value=host_info
+        ),
+        patch(
+            'pyg90alarm.G90Alarm.get_host_status',
+            autospec=True,
+            return_value=pyg90alarm.G90HostStatus(
+                host_status_data=host_status,
+                host_phone_number='12345678',
+                product_name='Dummy product',
+                mcu_hw_version='1.0-test',
+                wifi_hw_version='1.0-test',
+            )
+        ),
+        patch(
+            'pyg90alarm.G90Alarm.listen_notifications',
+            autospec=True
+        ),
+        patch(
+            'pyg90alarm.G90Alarm.register_sensor',
+            autospec=True,
+            return_value=pyg90alarm.G90Sensor(
+                # Has to point to `G90Alarm()` instance
+                parent=mock.return_value,
+                subindex=0, proto_idx=99,
+                parent_name='Registered sensor',
+                index=99,
+                room_id=0,
+                type_id=1,
+                subtype=1,
+                timeout=0,
+                user_flags_data=0,
+                baudrate=0,
+                protocol_id=0,
+                reserved_data=0,
+                node_count=1,
+                mask=0,
+                private_data=0,
+            )
+        ),
+        patch(
+            'pyg90alarm.G90Alarm.register_device',
+            autospec=True,
+            return_value=pyg90alarm.G90Device(
+                parent=mock.return_value, subindex=0, proto_idx=99,
+                parent_name='Registered device',
+                index=99,
+                room_id=0,
+                type_id=128,
+                subtype=0,
+                timeout=0,
+                user_flags_data=0,
+                baudrate=0,
+                protocol_id=0,
+                reserved_data=0,
+                node_count=1,
+                mask=0,
+                private_data=0,
+            )
+        ),
+    ):
         yield mock
 
 
@@ -212,7 +349,7 @@ def hass_get_entity_id_by_unique_id(
     """
     entity_registry = er.async_get(hass)
 
-    entity_id: str = entity_registry.async_get_entity_id(
+    entity_id = entity_registry.async_get_entity_id(
         platform, 'gs_alarm', unique_id
     )
     assert entity_id is not None, (
@@ -239,3 +376,29 @@ def hass_get_state_by_unique_id(
     )
 
     return state
+
+
+def entry_ids_for_integration_devices(
+    hass: HomeAssistant, entry_id: str
+) -> List[Dict[str, Any]]:
+    """
+    Returns a list of entry IDs for all devices integrated with the given
+    config entry.
+    """
+    return [
+        {
+            'device': x.name,
+            'device_id': x.id,
+            'entities': [
+                {
+                    'unique_id': y.unique_id,
+                    'entity_id': y.entity_id,
+                    'name': y.name or y.original_name
+                } for y in er.async_entries_for_device(
+                    er.async_get(hass), x.id
+                )
+            ]
+        } for x in dr.async_entries_for_config_entry(
+            dr.async_get(hass), entry_id
+        )
+    ]

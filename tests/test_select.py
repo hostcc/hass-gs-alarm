@@ -1,4 +1,5 @@
-
+# SPDX-License-Identifier: MIT
+# Copyright (c) 2025 Ilia Sotnikov
 """
 Test for selects in the custom component.
 """
@@ -48,7 +49,7 @@ from .conftest import AlarmMockT, hass_get_entity_id_by_unique_id
         ),
     ],
 )
-# pylint: disable=too-many-arguments
+# pylint: disable=too-many-positional-arguments,too-many-arguments
 async def test_sensor_alert_modes(
     unique_id: str, service_call: str,
     option: str,
@@ -79,7 +80,7 @@ async def test_sensor_alert_modes(
     )
 
     # Verify the sensor alert mode was set correctly
-    sensor = mock_g90alarm.return_value.get_sensors.return_value[0]
+    sensor = (await mock_g90alarm.return_value.get_sensors())[0]
     sensor.set_alert_mode.assert_called_once_with(expected_value)
 
 
@@ -99,7 +100,7 @@ async def test_sensor_alert_modes_exception(
     await hass.config_entries.async_setup(config_entry.entry_id)
     await hass.async_block_till_done()
 
-    sensor = mock_g90alarm.return_value.get_sensors.return_value[0]
+    sensor = (await mock_g90alarm.return_value.get_sensors())[0]
     # Simulate an exception when setting the sensor alert mode
     sensor.set_alert_mode.side_effect = G90Error('dummy exception')
 

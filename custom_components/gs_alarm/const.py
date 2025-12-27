@@ -1,6 +1,10 @@
+# SPDX-License-Identifier: MIT
+# Copyright (c) 2021 Ilia Sotnikov
 """Constants for the gs_alarm integration."""
+from datetime import timedelta
 
 DOMAIN = "gs_alarm"
+MANUFACTURER = "Golden Security"
 
 # Configuration options
 CONF_SMS_ALERT_WHEN_ARMED = "sms_alert_when_armed"
@@ -15,3 +19,6 @@ CONF_NOTIFICATIONS_PROTOCOL = "notifications_protocol"
 CONF_OPT_NOTIFICATIONS_LOCAL = "local"
 CONF_OPT_NOTIFICATIONS_CLOUD = "cloud"
 CONF_OPT_NOTIFICATIONS_CLOUD_UPSTREAM = "cloud_upstream"
+
+# Data update interval
+SCAN_INTERVAL = timedelta(seconds=30)

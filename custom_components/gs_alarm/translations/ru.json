@@ -92,10 +92,19 @@
                 }
             },
             "wifi_status": {
-                "name": "WiFi статус"
+                "name": "Статус WiFi"
             },
             "gsm_status": {
-                "name": "GSM статус"
+                "name": "Статус GSM"
+            },
+            "sensor_tampered": {
+                "name": "Взломан"
+            },
+            "sensor_low_battery": {
+                "name": "Низкий заряд батареи"
+            },
+            "sensor_active_when_arming": {
+                "name": "Активен при постановке на охрану"
             }
         },
         "switch": {
@@ -103,19 +112,19 @@
                 "name": "{relay}"
             },
             "sensor_flag_arm_delay": {
-                "name": "{sensor}: Задержка постановки на охрану"
+                "name": "Задержка постановки на охрану"
             },
             "sensor_flag_detect_door": {
-                "name": "{sensor}: Проверка при постановке на охрану"
+                "name": "Проверка при постановке на охрану"
             },
             "sensor_flag_independent_zone": {
-                "name": "{sensor}: Снятие с охраны только из приложения"
+                "name": "Снятие с охраны только из приложения"
             },
             "sensor_flag_enabled": {
-                "name": "{sensor}: Включен"
+                "name": "Включен"
             },
             "sensor_flag_door_chime": {
-                "name": "{sensor}: Звук открытия двери"
+                "name": "Звук открытия двери"
             },
             "alert_config_flag_sms_push": {
                 "name": "Оповещение: SMS сообщение"
@@ -159,17 +168,77 @@
                 "name": "Последний пакет от устройства"
             },
             "last_upstream_packet": {
-                "name": "Последний пакет из облака"
+                "name": "Время последнего полученного пакета из облака"
             }
         },
         "select": {
             "sensor_alert_mode": {
-                "name": "{sensor}: Режим охраны",
+                "name": "Режим тревоги",
                 "state": {
                     "alert_always": "Всегда",
-                    "alert_when_away": "Вне дома",
-                    "alert_when_away_and_home": "Дома и вне дома"
+                    "alert_when_away": "Когда отсутствуете",
+                    "alert_when_away_and_home": "Когда отсутствуете и дома"
                 }
+            },
+            "new_sensor_type": {
+                "name": "Новый тип датчика"
+            },
+            "new_device_type": {
+                "name": "Новый тип реле"
+            }
+        },
+        "button": {
+            "sensor_register": {
+                "name": "Зарегистрировать новый датчик"
+            },
+            "device_register": {
+                "name": "Зарегистрировать новое реле"
+            },
+            "device_delete": {
+                "name": "Удалить"
+            },
+            "sensor_delete": {
+                "name": "Удалить"
+            }
+        },
+        "text": {
+            "new_sensor_name": {
+                "name": "Новое имя датчика"
+            },
+            "new_device_name": {
+                "name": "Новое имя реле"
+            }
+        },
+        "notifications": {
+            "register_device_starting": {
+                "name": "Регистрация нового устройства типа \"{type}\", убедитесь, что оно находится в режиме обучения"
+            },
+            "register_device_finished": {
+                "name": "Новое устройство \"{name}\" (тип=\"{type}\") с индексом {index} успешно зарегистрировано"
+            },
+            "register_device_error": {
+                "name": "Ошибка при регистрации нового устройства \"{name}\" (тип=\"{type}\"): {error}"
+            },
+            "register_device_type_not_set": {
+                "name": "Тип нового устройства не установлен, невозможно зарегистрировать"
+            },
+            "register_device_name_not_set": {
+                "name": "Имя нового устройства не установлено, невозможно зарегистрировать"
+            },
+            "register_sensor_starting": {
+                "name": "Регистрация нового датчика типа \"{type}\", пожалуйста, активируйте датчик"
+            },
+            "register_sensor_finished": {
+                "name": "Новый датчик \"{name}\" (тип=\"{type}\") с индексом {index} успешно зарегистрирован"
+            },
+            "register_sensor_error": {
+                "name": "Ошибка при регистрации нового датчика \"{name}\" (тип=\"{type}\"): {error}"
+            },
+            "register_sensor_type_not_set": {
+                "name": "Тип нового датчика не установлен, невозможно зарегистрировать"
+            },
+            "register_sensor_name_not_set": {
+                "name": "Имя нового датчика не установлено, невозможно зарегистрировать"
             }
         }
     }

@@ -96,6 +96,15 @@
             },
             "gsm_status": {
                 "name": "Статус GSM"
+            },
+            "sensor_tampered": {
+                "name": "Пашкоджаны"
+            },
+            "sensor_low_battery": {
+                "name": "Нізкі ўзровень батарэі"
+            },
+            "sensor_active_when_arming": {
+                "name": "Актыўны пры ўзвадзенні"
             }
         },
         "switch": {
@@ -103,19 +112,19 @@
                 "name": "{relay}"
             },
             "sensor_flag_arm_delay": {
-                "name": "{sensor}: Затрымка пастаноўкі на ахову"
+                "name": "Затрымка пастаноўкі на ахову"
             },
             "sensor_flag_detect_door": {
-                "name": "{sensor}: Праверка актыўнасці пры пастаноўцы на ахову"
+                "name": "Праверка актыўнасці пры пастаноўцы на ахову"
             },
             "sensor_flag_independent_zone": {
-                "name": "{sensor}: Зняцце з аховы толькі праз дадатак"
+                "name": "Зняцце з аховы толькі праз дадатак"
             },
             "sensor_flag_enabled": {
-                "name": "{sensor}: Уключана"
+                "name": "Уключана"
             },
             "sensor_flag_door_chime": {
-                "name": "{sensor}: Дзверны званок"
+                "name": "Дзверны званок"
             },
             "alert_config_flag_sms_push": {
                 "name": "Апавяшчэнне: SMS-паведамленне"
@@ -159,17 +168,77 @@
                 "name": "Апошні пакет прылады"
             },
             "last_upstream_packet": {
-                "name": "Апошні пакета з воблака"
+                "name": "Час апошняга атрыманага пакета з воблака"
             }
         },
         "select": {
             "sensor_alert_mode": {
-                "name": "{sensor}: Рэжым апавяшчэння",
+                "name": "Рэжым трывогі",
                 "state": {
                     "alert_always": "Заўсёды",
-                    "alert_when_away": "Калі няма дома",
-                    "alert_when_away_and_home": "Калі няма дома і дома"
+                    "alert_when_away": "Калі адсутнічаеце",
+                    "alert_when_away_and_home": "Калі адсутнічаеце і дома"
                 }
+            },
+            "new_sensor_type": {
+                "name": "Новы тып датчыка"
+            },
+            "new_device_type": {
+                "name": "Новы тып рэле"
+            }
+        },
+        "button": {
+            "sensor_register": {
+                "name": "Зарэгістраваць новы датчык"
+            },
+            "device_register": {
+                "name": "Зарэгістраваць новае рэле"
+            },
+            "device_delete": {
+                "name": "Выдаліць"
+            },
+            "sensor_delete": {
+                "name": "Выдаліць"
+            }
+        },
+        "text": {
+            "new_sensor_name": {
+                "name": "Новае імя датчыка"
+            },
+            "new_device_name": {
+                "name": "Новае імя рэле"
+            }
+        },
+        "notifications": {
+            "register_device_starting": {
+                "name": "Рэгістрацыя новага прылады тыпу \"{type}\", пераканайцеся, што яна знаходзіцца ў рэжыме навучання"
+            },
+            "register_device_finished": {
+                "name": "Новая прылада \"{name}\" (тып=\"{type}\") з індэксам {index} паспяхова зарэгістравана"
+            },
+            "register_device_error": {
+                "name": "Памылка пры рэгістрацыі новай прылады \"{name}\" (тып=\"{type}\"): {error}"
+            },
+            "register_device_type_not_set": {
+                "name": "Тып новай прылады не ўстаноўлены, немагчыма зарэгістраваць"
+            },
+            "register_device_name_not_set": {
+                "name": "Імя новай прылады не ўстаноўлена, немагчыма зарэгістраваць"
+            },
+            "register_sensor_starting": {
+                "name": "Рэгістрацыя новага датчыка тыпу \"{type}\", калі ласка, актываваце датчык"
+            },
+            "register_sensor_finished": {
+                "name": "Новы датчык \"{name}\" (тып=\"{type}\") з індэксам {index} паспяхова зарэгістраваны"
+            },
+            "register_sensor_error": {
+                "name": "Памылка пры рэгістрацыі новага датчыка \"{name}\" (тып=\"{type}\"): {error}"
+            },
+            "register_sensor_type_not_set": {
+                "name": "Тып новага датчыка не ўстаноўлены, немагчыма зарэгістраваць"
+            },
+            "register_sensor_name_not_set": {
+                "name": "Імя новага датчыка не ўстаноўлена, немагчыма зарэгістраваць"
             }
         }
     }

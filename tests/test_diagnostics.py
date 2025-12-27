@@ -1,3 +1,5 @@
+# SPDX-License-Identifier: MIT
+# Copyright (c) 2024 Ilia Sotnikov
 """
 Tests for integration diagnostics.
 """
@@ -55,7 +57,6 @@ async def test_diagnostics(
         'sensors',
         'devices',
         'alert_config',
-        'alert_simulation_task'
     ])
 
     # Simulate diagnostics download for the config entry
