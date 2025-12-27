@@ -294,7 +294,6 @@ class G90SensorFlag(
         self._attr_icon = icon
         self._attr_has_entity_name = True
         self._attr_translation_key = f'sensor_flag_{str(flag.name).lower()}'
-        _LOGGER.warning("Translation key: %s", self._attr_translation_key)
 
     @callback
     def _handle_coordinator_update(self) -> None:
