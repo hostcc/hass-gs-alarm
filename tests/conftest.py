@@ -12,7 +12,17 @@ from homeassistant.core import HomeAssistant, State
 import homeassistant.helpers.entity_registry as er
 import homeassistant.helpers.device_registry as dr
 
-import pyg90alarm
+from pyg90alarm import (
+    G90Alarm,
+    G90ArmDisarmTypes,
+    G90AlertConfigFlags,
+    G90HostInfo,
+    G90HostStatus,
+    G90Sensor,
+    G90SensorUserFlags,
+    G90Device,
+)
+from pyg90alarm.local.history import G90History
 
 AlarmMockT = TypeVar('AlarmMockT', bound=AsyncMock)
 
@@ -59,10 +69,10 @@ def mock_g90alarm(request: pytest.FixtureRequest) -> Iterator[AlarmMockT]:
     host_status = getattr(
         request.node.get_closest_marker('g90host_status'),
         'kwargs', {}
-    ).get('result', pyg90alarm.G90ArmDisarmTypes.DISARM)
+    ).get('result', G90ArmDisarmTypes.DISARM)
 
     # Create host info return value
-    host_info = pyg90alarm.G90HostInfo(
+    host_info = G90HostInfo(
         host_guid='Dummy GUID',
         product_name='Dummy product',
         wifi_protocol_version='1.0-test',
@@ -80,12 +90,12 @@ def mock_g90alarm(request: pytest.FixtureRequest) -> Iterator[AlarmMockT]:
 
     async def sensor_list_fetch(
         *_args: Any, **_kwargs: Any
-    ) -> AsyncGenerator[pyg90alarm.G90Sensor, None]:
+    ) -> AsyncGenerator[G90Sensor, None]:
         """
         Mocked sensor list fetch method.
         """
         mock_sensors = [
-            pyg90alarm.G90Sensor(
+            G90Sensor(
                 # Has to point to `G90Alarm()` instance
                 parent=mock.return_value,
                 subindex=0, proto_idx=0,
@@ -96,9 +106,9 @@ def mock_g90alarm(request: pytest.FixtureRequest) -> Iterator[AlarmMockT]:
                 subtype=1,
                 timeout=0,
                 user_flags_data=(
-                    pyg90alarm.G90SensorUserFlags.ENABLED
-                    | pyg90alarm.G90SensorUserFlags.ALERT_WHEN_AWAY
-                    | pyg90alarm.G90SensorUserFlags.SUPPORTS_UPDATING_SUBTYPE
+                    G90SensorUserFlags.ENABLED
+                    | G90SensorUserFlags.ALERT_WHEN_AWAY
+                    | G90SensorUserFlags.SUPPORTS_UPDATING_SUBTYPE
                 ),
                 baudrate=0,
                 protocol_id=0,
@@ -119,12 +129,12 @@ def mock_g90alarm(request: pytest.FixtureRequest) -> Iterator[AlarmMockT]:
 
     async def device_list_fetch(
         *_args: Any, **_kwargs: Any
-    ) -> AsyncGenerator[pyg90alarm.G90Device, None]:
+    ) -> AsyncGenerator[G90Device, None]:
         """
         Mocked device list fetch method.
         """
         mock_devices = [
-            pyg90alarm.G90Device(
+            G90Device(
                 parent=mock.return_value, subindex=0, proto_idx=1,
                 parent_name='Dummy switch 1',
                 index=0,
@@ -140,7 +150,7 @@ def mock_g90alarm(request: pytest.FixtureRequest) -> Iterator[AlarmMockT]:
                 mask=0,
                 private_data=0,
             ),
-            pyg90alarm.G90Device(
+            G90Device(
                 parent=mock.return_value, subindex=0, proto_idx=2,
                 parent_name='Dummy switch 2 multi-node',
                 index=1,
@@ -156,7 +166,7 @@ def mock_g90alarm(request: pytest.FixtureRequest) -> Iterator[AlarmMockT]:
                 mask=0,
                 private_data=0,
             ),
-            pyg90alarm.G90Device(
+            G90Device(
                 parent=mock.return_value, subindex=1, proto_idx=2,
                 parent_name='Dummy switch 2 multi-node',
                 index=1,
@@ -172,7 +182,7 @@ def mock_g90alarm(request: pytest.FixtureRequest) -> Iterator[AlarmMockT]:
                 mask=0,
                 private_data=0,
             ),
-            pyg90alarm.G90Device(
+            G90Device(
                 parent=mock.return_value, subindex=0, proto_idx=3,
                 parent_name='Dummy switch 3 multi-node',
                 index=2,
@@ -188,7 +198,7 @@ def mock_g90alarm(request: pytest.FixtureRequest) -> Iterator[AlarmMockT]:
                 mask=0,
                 private_data=0,
             ),
-            pyg90alarm.G90Device(
+            G90Device(
                 parent=mock.return_value, subindex=1, proto_idx=3,
                 parent_name='Dummy switch 3 multi-node',
                 index=2,
@@ -222,9 +232,9 @@ def mock_g90alarm(request: pytest.FixtureRequest) -> Iterator[AlarmMockT]:
         # Main G90Alarm mock with wrapping of the real implementation
         patch(
             'custom_components.gs_alarm.G90Alarm',
-            spec=pyg90alarm.G90Alarm,
+            spec=G90Alarm,
             # Create a real instance to wrap
-            wraps=pyg90alarm.G90Alarm('dummy-mocked-host')
+            wraps=G90Alarm('dummy-mocked-host')
         ) as mock,
         patch(
             'pyg90alarm.entities.sensor_list.G90SensorList._fetch',
@@ -240,7 +250,7 @@ def mock_g90alarm(request: pytest.FixtureRequest) -> Iterator[AlarmMockT]:
             'pyg90alarm.local.config.G90AlertConfig.flags',
             new_callable=PropertyMock,
             side_effect=AsyncMock(
-                return_value=pyg90alarm.G90AlertConfigFlags(~0)
+                return_value=G90AlertConfigFlags(~0)
             ),
         ),
         patch(
@@ -252,7 +262,7 @@ def mock_g90alarm(request: pytest.FixtureRequest) -> Iterator[AlarmMockT]:
             autospec=True,
             return_value=[
                 # Valid entry
-                pyg90alarm.local.history.G90History(
+                G90History(
                     type=2,
                     event_id=3,
                     source=0,
@@ -262,7 +272,7 @@ def mock_g90alarm(request: pytest.FixtureRequest) -> Iterator[AlarmMockT]:
                     other=''
                 ),
                 # Invalid entry (wrong source)
-                pyg90alarm.local.history.G90History(
+                G90History(
                     type=2,
                     event_id=3,
                     source=254,
@@ -281,7 +291,7 @@ def mock_g90alarm(request: pytest.FixtureRequest) -> Iterator[AlarmMockT]:
         patch(
             'pyg90alarm.G90Alarm.get_host_status',
             autospec=True,
-            return_value=pyg90alarm.G90HostStatus(
+            return_value=G90HostStatus(
                 host_status_data=host_status,
                 host_phone_number='12345678',
                 product_name='Dummy product',
@@ -296,7 +306,7 @@ def mock_g90alarm(request: pytest.FixtureRequest) -> Iterator[AlarmMockT]:
         patch(
             'pyg90alarm.G90Alarm.register_sensor',
             autospec=True,
-            return_value=pyg90alarm.G90Sensor(
+            return_value=G90Sensor(
                 # Has to point to `G90Alarm()` instance
                 parent=mock.return_value,
                 subindex=0, proto_idx=99,
@@ -318,7 +328,7 @@ def mock_g90alarm(request: pytest.FixtureRequest) -> Iterator[AlarmMockT]:
         patch(
             'pyg90alarm.G90Alarm.register_device',
             autospec=True,
-            return_value=pyg90alarm.G90Device(
+            return_value=G90Device(
                 parent=mock.return_value, subindex=0, proto_idx=99,
                 parent_name='Registered device',
                 index=99,

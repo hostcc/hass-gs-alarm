@@ -7,7 +7,7 @@ Config flow for `gs_alarm` integrarion.
 from __future__ import annotations
 import logging
 
-from typing import Any, cast, Self, Dict
+from typing import Any, Self, Dict
 
 import voluptuous as vol
 
@@ -67,9 +67,7 @@ class G90ConfigFlow(ConfigFlow, domain=DOMAIN):
         """
         if user_input is None:
             self._set_confirm_only()
-            return cast(
-                ConfigFlowResult, self.async_show_form(step_id="confirm")
-            )
+            return self.async_show_form(step_id="confirm")
 
         devices = await self.hass.async_create_task(G90Alarm.discover())
         _LOGGER.debug('Discovered devices: %s', devices)
@@ -83,7 +81,7 @@ class G90ConfigFlow(ConfigFlow, domain=DOMAIN):
             res = self.async_create_entry(
                 title=DOMAIN, data={CONF_IP_ADDR: device.host}
             )
-        return cast(ConfigFlowResult, res)
+        return res
 
     async def async_step_user(
         self, _user_input: dict[str, Any] | None = None
@@ -100,11 +98,9 @@ class G90ConfigFlow(ConfigFlow, domain=DOMAIN):
         Handles adding integration with manual hostname/IP specified.
         """
         if user_input is None:
-            return cast(
-                ConfigFlowResult, self.async_show_form(
-                    step_id='custom_host',
-                    data_schema=STEP_USER_DATA_SCHEMA
-                )
+            return self.async_show_form(
+                step_id='custom_host',
+                data_schema=STEP_USER_DATA_SCHEMA
             )
         errors = {}
 
@@ -112,18 +108,13 @@ class G90ConfigFlow(ConfigFlow, domain=DOMAIN):
         if not user_input.get(CONF_IP_ADDR, None):
             errors[CONF_IP_ADDR] = 'ip_addr_required'
         else:
-            return cast(
-                ConfigFlowResult,
-                self.async_create_entry(title=DOMAIN, data=user_input)
-            )
+            return self.async_create_entry(title=DOMAIN, data=user_input)
 
         # Hostname/IP address is required
-        return cast(
-            ConfigFlowResult, self.async_show_form(
-                step_id='custom_host',
-                data_schema=STEP_USER_DATA_SCHEMA,
-                errors=errors
-            )
+        return self.async_show_form(
+            step_id='custom_host',
+            data_schema=STEP_USER_DATA_SCHEMA,
+            errors=errors
         )
 
     @staticmethod
@@ -201,12 +192,10 @@ class OptionsFlowHandler(OptionsFlow):
 
         # Present the form back if no user input
         if user_input is None:
-            return cast(
-                ConfigFlowResult, self.async_show_form(
-                    step_id='init',
-                    data_schema=vol.Schema(schema),
-                    last_step=False,
-                )
+            return self.async_show_form(
+                step_id='init',
+                data_schema=vol.Schema(schema),
+                last_step=False,
             )
 
         # Store the user input from the first step
@@ -223,11 +212,7 @@ class OptionsFlowHandler(OptionsFlow):
 
         # (Re)create the integration entry, that will fetch the options and
         # adjust its configuration
-        return cast(
-            ConfigFlowResult, self.async_create_entry(
-                title=DOMAIN, data=user_input
-            )
-        )
+        return self.async_create_entry(title=DOMAIN, data=user_input)
 
     async def async_step_cloud(
         self, user_input: dict[str, Any] | None = None
@@ -247,22 +232,16 @@ class OptionsFlowHandler(OptionsFlow):
         )
 
         if user_input is None:
-            return cast(
-                ConfigFlowResult, self.async_show_form(
+            return self.async_show_form(
                     step_id='cloud',
                     data_schema=schema,
                     last_step=True,
                 )
-            )
 
         # Merge the user input with the data from the first step to create
         # the final configuration
         user_input.update(self.init_step_data)
-        return cast(
-            ConfigFlowResult, self.async_create_entry(
-                title=DOMAIN, data=user_input
-            )
-        )
+        return self.async_create_entry(title=DOMAIN, data=user_input)
 
     async def async_step_cloud_upstream(
         self, user_input: dict[str, Any] | None = None
@@ -294,19 +273,13 @@ class OptionsFlowHandler(OptionsFlow):
         )
 
         if user_input is None:
-            return cast(
-                ConfigFlowResult, self.async_show_form(
+            return self.async_show_form(
                     step_id='cloud_upstream',
                     data_schema=schema,
                     last_step=True,
                 )
-            )
 
         # Merge the user input with the data from the first step to create
         # the final configuration
         user_input.update(self.init_step_data)
-        return cast(
-            ConfigFlowResult, self.async_create_entry(
-                title=DOMAIN, data=user_input
-            )
-        )
+        return self.async_create_entry(title=DOMAIN, data=user_input)
