@@ -1,6 +1,7 @@
 ---
 branches:
   - main
+  - master
 
 # Use bare tag names, e.g., 1.2.3
 tagFormat: ${version}
