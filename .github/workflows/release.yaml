@@ -1,89 +1,47 @@
 ---
-name: release
+name: Release
 
-on:
+on:  # yamllint disable rule:truthy
+  workflow_dispatch:
   push:
-    branches: [master, main]
+    branches:
+      - master
+      - main
+
+permissions:
+  contents: write
+  issues: write
+  pull-requests: write
 
 jobs:
-  automatic-release:
-    name: Automatic release
+  release:
+    name: Release with semantic-release
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout the code
+      - name: Checkout code (SSH)
         uses: actions/checkout@v4
         with:
-          # Branches/tags should be available for semver action below to pick
-          # next version
           fetch-depth: 0
-          # Git will use deploy SSH key, mostly to push to default branch being
-          # protected
           ssh-key: ${{ secrets.DEPLOY_KEY }}
 
-      - name: Generate next version
-        id: version
-        uses: ietf-tools/semver-action@v1
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
         with:
-          token: ${{ github.token }}
-          # Increase patch component if no conventional commits found
-          noVersionBumpBehavior: patch
-          # Retain the current version if there no commits tag and recent
-          # commit
-          noNewCommitBehavior: current
-          # Pick either current branch for PR or the default branch to find the
-          # version from (the former is only needed for testing the workflow in
-          # an PR)
-          branch: >-
-            ${{
-              github.head_ref
-              || github.event.repository.default_branch
-            }}
+          node-version: '24'
+          cache: 'npm'
+          cache-dependency-path: '**/.github/workflows/*.yaml'
 
-      - name: Set version in manifest and commit that
-        uses: maxgfr/github-change-json@v0.0.26
-        # Only perform release-related actions if new version is generated
-        # (check is done between `nextStrict` and `current` versions, since
-        # `release-action` below uses the former thus creating the tags after
-        # the version) , do nothing otherwise - primary use case to prevent
-        # another run of the workflow triggered when manifest is updated (see
-        # below)
-        if: steps.version.outputs.nextStrict != steps.version.outputs.current
-        with:
-          key: version
-          value: ${{ steps.version.outputs.nextStrict }}
-          path: custom_components/gs_alarm/manifest.json
-
-      - name: Commit updated manifest
-        # See comment above
-        if: steps.version.outputs.nextStrict != steps.version.outputs.current
+      - name: Run semantic-release
+        env:
+          GIT_AUTHOR_NAME: "github-actions[bot]"
+          GIT_AUTHOR_EMAIL: "github-actions[bot]@users.noreply.github.com"
+          GIT_COMMITTER_NAME: "github-actions[bot]"
+          GIT_COMMITTER_EMAIL: "github-actions[bot]@users.noreply.github.com"
+          GITHUB_TOKEN: ${{ github.token }}
         run: |
-          git config --local user.email \
-            "github-actions[bot]@users.noreply.github.com"
-          git config --local user.name \
-            "github-actions[bot]"
-          git add custom_components/gs_alarm/manifest.json
-          git commit -m "Updating version in 'manifest.json'"
-
-      - name: Push changes
-        uses: ad-m/github-push-action@master
-        # See comment above
-        if: steps.version.outputs.nextStrict != steps.version.outputs.current
-        with:
-          # SSH (deploy) key allows to bypass branch protection on default
-          # branch
-          ssh: true
-          branch: ${{ github.event.repository.default_branch }}
-
-      - name: Create release
-        uses: ncipollo/release-action@v1
-        # See comment above
-        if: steps.version.outputs.nextStrict != steps.version.outputs.current
-        with:
-          # Base the release off of the tip of default branch
-          commit: ${{ github.event.repository.default_branch }}
-          token: ${{ github.token }}
-          allowUpdates: false
-          draft: false
-          generateReleaseNotes: true
-          prerelease: true
-          tag: ${{ steps.version.outputs.nextStrict }}
+          npx -y \
+            -p semantic-release@25.0.2 \
+            -p @semantic-release/git@10.0.1 \
+            -p conventional-changelog-conventionalcommits@9.1.0 \
+            -p semantic-release-replace-plugin@1.2.7 \
+            semantic-release
