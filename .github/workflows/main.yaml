@@ -64,7 +64,7 @@ jobs:
           package_version=`python -m setuptools_scm`
           echo "VALUE=$package_version" >> $GITHUB_OUTPUT
       - name: SonarCloud scanning
-        uses: sonarsource/sonarcloud-github-action@master
+        uses: SonarSource/sonarqube-scan-action@v6
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
