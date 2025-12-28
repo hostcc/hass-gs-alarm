@@ -12,6 +12,11 @@ updates:
       - "dependencies"
       - "automated"
     open-pull-requests-limit: 5
+    ignore:
+      # These are pinned by `pytest-homeassistant-custom-component` package and
+      # can't be updated independently.
+      - dependency-name: "pytest"
+      - dependency-name: "coverage"
 
   - package-ecosystem: "github-actions"
     directory: "/"
