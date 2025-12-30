@@ -580,7 +580,7 @@ async def test_config_flags_restore_state(
     # Simulate restored state for the entity
     mock_restore_cache(hass, [State(entity_id, restored_state)])
 
-    if simulated_exception:
+    if simulated_exception and expected_call:
         # Setup the config flag to raise an exception when being restored
         attrgetter(expected_call)(
             mock_g90alarm.return_value
