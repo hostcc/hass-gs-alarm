@@ -468,6 +468,34 @@ class G90SimulateAlertsFromHistory(GsAlarmSwitchRestoreEntityBase):
         self._attr_entity_category = EntityCategory.CONFIG
         self._attr_icon = 'mdi:history'
 
+    async def async_added_to_hass(self) -> None:
+        """
+        Restores the last state on startup and applies it to the
+        coordinator client.
+        """
+        await super().async_added_to_hass()
+        # If the simulation was enabled before restart, re-enable it
+        if self._attr_is_on:
+            try:
+                _LOGGER.debug(
+                    'Restoring simulation of alerts from history for'
+                    ' panel %s',
+                    self.coordinator.data.host_info.host_guid
+                )
+                await (
+                    self.coordinator.client
+                    .start_simulating_alerts_from_history()
+                )
+            except (G90Error, G90TimeoutError) as exc:
+                _LOGGER.error(
+                    "Error restoring simulation of alerts from history"
+                    " for panel '%s': %s",
+                    self.coordinator.data.host_info.host_guid,
+                    repr(exc)
+                )
+                # Reset the state if restoration failed
+                self._attr_is_on = False
+
     async def async_turn_on(self, **_kwargs: Any) -> None:
         """
         Turn on the switch.
@@ -523,6 +551,21 @@ class G90SmsAlertWhenArmed(GsAlarmSwitchRestoreEntityBase):
         self._attr_translation_key = 'sms_alert_when_armed'
         self._attr_entity_category = EntityCategory.CONFIG
         self._attr_icon = 'mdi:message-text'
+
+    async def async_added_to_hass(self) -> None:
+        """
+        Restores the last state on startup and applies it to G90Alarm client.
+        """
+        await super().async_added_to_hass()
+        # Apply the state to G90Alarm client, but only if it has
+        # been restored, i.e. not being unknown (=None)
+        if self._attr_is_on is not None:
+            self.coordinator.client.sms_alert_when_armed = self._attr_is_on
+            _LOGGER.debug(
+                'Restored SMS alert when armed state for panel %s: %s',
+                self.coordinator.data.host_info.host_guid,
+                self._attr_is_on
+            )
 
     async def async_turn_on(self, **_kwargs: Any) -> None:
         """
