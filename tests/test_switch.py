@@ -13,9 +13,10 @@ import pytest
 from pytest_homeassistant_custom_component.common import (
     async_fire_time_changed,
     MockConfigEntry,
+    mock_restore_cache,
 )
 
-from homeassistant.core import HomeAssistant
+from homeassistant.core import HomeAssistant, State
 from homeassistant.util import dt
 from homeassistant.const import (
     ATTR_ENTITY_ID,
@@ -525,3 +526,77 @@ async def test_device(
     switch_state = hass.states.get(entity_id)
     assert switch_state is not None
     assert switch_state.state == expected_value
+
+
+@pytest.mark.parametrize(
+    "entity_id,restored_state,expected_call,expected_args,expect_no_call", [
+        pytest.param(
+            "switch.dummy_guid_simulate_alerts_from_history", "on",
+            'start_simulating_alerts_from_history', (), False,
+            id="Enabled simulating alerts from history"
+        ),
+        pytest.param(
+            "switch.dummy_guid_simulate_alerts_from_history", "off",
+            'stop_simulating_alerts_from_history', (), True,
+            id="Disabled simulating alerts from history"
+        ),
+        pytest.param(
+            "switch.dummy_guid_sms_alert_when_armed", "on",
+            None, ('sms_alert_when_armed', True), False,
+            id="Enabled SMS alert when armed"
+        ),
+        pytest.param(
+            "switch.dummy_guid_sms_alert_when_armed", "off",
+            None, ('sms_alert_when_armed', False), False,
+            id="Disabled SMS alert when armed"
+        ),
+    ]
+)
+async def test_config_flags_restore_state(
+    hass: HomeAssistant, mock_g90alarm: AlarmMockT,
+    entity_id: str, restored_state: str,
+    expected_call: Optional[str],
+    expected_args: tuple[G90AlertConfigFlags | str, bool],
+    expect_no_call: bool,
+) -> None:
+    """
+    Verifies that states are restored on startup for the switch entities having
+    that functionality.
+    """
+    # pylint: disable=too-many-arguments,too-many-positional-arguments
+
+    # Simulate restored state for the entity
+    mock_restore_cache(hass, [State(entity_id, restored_state)])
+
+    config_entry = MockConfigEntry(
+        domain=DOMAIN,
+        data={'ip_addr': 'dummy-ip'},
+        options={},
+        entry_id="test_restore_state"
+    )
+    config_entry.add_to_hass(hass)
+    await hass.config_entries.async_setup(config_entry.entry_id)
+
+    # Verify the entity state was restored correctly
+    switch_state = hass.states.get(entity_id)
+    assert switch_state is not None
+    assert switch_state.state == restored_state
+
+    # Verify the configuration has been restored correctly
+    if expected_call is None:
+        # `expected_args` are interpreted as property name and value to
+        # verify
+        (prop, value) = expected_args
+        assert getattr(mock_g90alarm.return_value, str(prop)) == value
+        return
+
+    if expect_no_call:
+        # Verify the expected method was not called
+        getattr(
+            mock_g90alarm.return_value, expected_call
+        ).assert_not_called()
+    else:
+        # Verify the expected method was called with expected arguments
+        mock_g90alarm.return_value.assert_has_calls([
+            getattr(call, expected_call)(*expected_args),
+        ])
