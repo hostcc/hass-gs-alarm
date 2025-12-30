@@ -529,24 +529,35 @@ async def test_device(
 
 
 @pytest.mark.parametrize(
-    "entity_id,restored_state,expected_call,expected_args,expect_no_call", [
+    "entity_id,restored_state,expected_state,simulated_exception,"
+    "expected_call,expected_args,expect_no_call", [
         pytest.param(
-            "switch.dummy_guid_simulate_alerts_from_history", "on",
+            "switch.dummy_guid_simulate_alerts_from_history", "on", "on",
+            None,
             'start_simulating_alerts_from_history', (), False,
             id="Enabled simulating alerts from history"
         ),
         pytest.param(
-            "switch.dummy_guid_simulate_alerts_from_history", "off",
+            "switch.dummy_guid_simulate_alerts_from_history", "on", "off",
+            G90Error('dummy exception'),
+            'start_simulating_alerts_from_history', (), False,
+            id="Exception with enabled simulating alerts from history"
+        ),
+        pytest.param(
+            "switch.dummy_guid_simulate_alerts_from_history", "off", "off",
+            None,
             'stop_simulating_alerts_from_history', (), True,
             id="Disabled simulating alerts from history"
         ),
         pytest.param(
-            "switch.dummy_guid_sms_alert_when_armed", "on",
+            "switch.dummy_guid_sms_alert_when_armed", "on", "on",
+            None,
             None, ('sms_alert_when_armed', True), False,
             id="Enabled SMS alert when armed"
         ),
         pytest.param(
-            "switch.dummy_guid_sms_alert_when_armed", "off",
+            "switch.dummy_guid_sms_alert_when_armed", "off", "off",
+            None,
             None, ('sms_alert_when_armed', False), False,
             id="Disabled SMS alert when armed"
         ),
@@ -554,7 +565,8 @@ async def test_device(
 )
 async def test_config_flags_restore_state(
     hass: HomeAssistant, mock_g90alarm: AlarmMockT,
-    entity_id: str, restored_state: str,
+    entity_id: str, restored_state: str, expected_state: str,
+    simulated_exception: Optional[Exception],
     expected_call: Optional[str],
     expected_args: tuple[G90AlertConfigFlags | str, bool],
     expect_no_call: bool,
@@ -568,6 +580,12 @@ async def test_config_flags_restore_state(
     # Simulate restored state for the entity
     mock_restore_cache(hass, [State(entity_id, restored_state)])
 
+    if simulated_exception:
+        # Setup the config flag to raise an exception when being restored
+        attrgetter(expected_call)(
+            mock_g90alarm.return_value
+        ).side_effect = simulated_exception
+
     config_entry = MockConfigEntry(
         domain=DOMAIN,
         data={'ip_addr': 'dummy-ip'},
@@ -580,7 +598,7 @@ async def test_config_flags_restore_state(
     # Verify the entity state was restored correctly
     switch_state = hass.states.get(entity_id)
     assert switch_state is not None
-    assert switch_state.state == restored_state
+    assert switch_state.state == expected_state
 
     # Verify the configuration has been restored correctly
     if expected_call is None:
