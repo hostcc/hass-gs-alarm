@@ -559,9 +559,8 @@ class G90SmsAlertWhenArmed(GsAlarmSwitchRestoreEntityBase):
         """
         await super().async_added_to_hass()
         # Apply the restored state to the coordinator client property
-        # Only if we have a previous state
-        state = await self.async_get_last_state()
-        if state is not None and self._attr_is_on is not None:
+        # Parent class guarantees _attr_is_on is a bool after restoration
+        if self._attr_is_on is not None:
             self.coordinator.client.sms_alert_when_armed = self._attr_is_on
             _LOGGER.debug(
                 'Restored SMS alert when armed state for panel %s: %s',
