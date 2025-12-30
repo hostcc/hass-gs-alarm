@@ -554,12 +554,11 @@ class G90SmsAlertWhenArmed(GsAlarmSwitchRestoreEntityBase):
 
     async def async_added_to_hass(self) -> None:
         """
-        Restores the last state on startup and applies it to the
-        coordinator client.
+        Restores the last state on startup and applies it to G90Alarm client.
         """
         await super().async_added_to_hass()
-        # Apply the restored state to the coordinator client property
-        # Parent class guarantees _attr_is_on is a bool after restoration
+        # Apply the state to G90Alarm client, but only if it has
+        # been restored, i.e. not being unknown (=None)
         if self._attr_is_on is not None:
             self.coordinator.client.sms_alert_when_armed = self._attr_is_on
             _LOGGER.debug(
