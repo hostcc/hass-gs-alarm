@@ -21,8 +21,6 @@ from homeassistant.exceptions import (
 
 from .const import (
     CONF_IP_ADDR,
-    CONF_SMS_ALERT_WHEN_ARMED,
-    CONF_SIMULATE_ALERTS_FROM_HISTORY,
     CONF_NOTIFICATIONS_PROTOCOL,
     CONF_CLOUD_LOCAL_PORT,
     CONF_CLOUD_UPSTREAM_HOST,
@@ -116,47 +114,6 @@ async def options_update_listener(
             'Updating alarm panel from config_entry options %s',
             entry.options
         )
-
-        sms_alert_when_armed = entry.options.get(CONF_SMS_ALERT_WHEN_ARMED)
-        # Skip updating the property if integration has no options persisted
-        # (just added to HASS)
-        if sms_alert_when_armed is not None:
-            g90_client.sms_alert_when_armed = entry.options.get(
-                CONF_SMS_ALERT_WHEN_ARMED, False
-            )
-            _LOGGER.debug(
-                'G90Alarm.sms_alert_when_armed: %s',
-                g90_client.sms_alert_when_armed
-            )
-
-        simulate_alerts_from_history = entry.options.get(
-            CONF_SIMULATE_ALERTS_FROM_HISTORY
-        )
-        # See the comment above
-        if simulate_alerts_from_history is not None:
-            try:
-                if simulate_alerts_from_history:
-                    _LOGGER.debug(
-                        'Starting to simulate device alerts from history'
-                    )
-                    await g90_client.start_simulating_alerts_from_history()
-                    entry.async_on_unload(
-                        g90_client.stop_simulating_alerts_from_history
-                    )
-                else:
-                    _LOGGER.debug(
-                        'Stopping to simulate device alerts from history'
-                    )
-                    await g90_client.stop_simulating_alerts_from_history()
-            except (G90Error, G90TimeoutError) as exc:
-                _LOGGER.error(
-                    "Error %s simulate device alerts from history"
-                    " for panel '%s': %s",
-                    'enabling' if simulate_alerts_from_history
-                    else 'disabling',
-                    entry.title,
-                    repr(exc)
-                )
 
         # Configure the selected notifications protocol
         await _options_notifications_protocol(g90_client, entry.options)

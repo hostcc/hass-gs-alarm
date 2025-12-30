@@ -20,8 +20,6 @@
         "step": {
             "init": {
                 "data": {
-                    "sms_alert_when_armed": "SMS-Benachrichtigungen nur wenn das Gerät scharf geschaltet ist",
-                    "simulate_alerts_from_history": "Gerätewarnungen aus dem Verlauf simulieren",
                     "notifications_protocol": "Benachrichtigungsprotokoll"
                 },
                 "data_description": {
@@ -155,6 +153,12 @@
             },
             "alert_config_flag_wifi_unavailable": {
                 "name": "Alarm: WiFi nicht verfügbar"
+            },
+            "sms_alert_when_armed": {
+                "name": "SMS-Benachrichtigungen nur wenn das Gerät scharf geschaltet ist"
+            },
+            "simulate_alerts_from_history": {
+                "name": "Gerätewarnungen aus dem Verlauf simulieren"
             }
         },
         "sensor": {

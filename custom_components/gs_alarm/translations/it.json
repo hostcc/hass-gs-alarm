@@ -20,12 +20,10 @@
         "step": {
             "init": {
                 "data": {
-                    "sms_alert_when_armed": "Avvisi SMS solo quando il dispositivo è armato",
-                    "simulate_alerts_from_history": "Simula avvisi del dispositivo dalla cronologia",
                     "notifications_protocol": "Protocollo di notifica"
                 },
                 "data_description": {
-                    "notifications_protocol": "* **Locale**: Il pannello ha l\"indirizzo IP `10.10.10.250`\n* **Cloud**: Il traffico del pannello verso il cloud può essere deviato verso\nHome Assistant a livello di rete, nessun traffico inviato ai server cloud\n* **Cloud concatenato**: Come **Cloud**, ma il traffico viene inviato anche ai server cloud\nper far funzionare l\"applicazione mobile"
+                    "notifications_protocol": "* **Locale**: Il pannello ha l'indirizzo IP `10.10.10.250`\n* **Cloud**: Il traffico del pannello verso il cloud può essere deviato verso\nHome Assistant a livello di rete, nessun traffico inviato ai server cloud\n* **Cloud concatenato**: Come **Cloud**, ma il traffico viene inviato anche ai server cloud\nper far funzionare l'applicazione mobile"
                 }
             },
             "cloud": {
@@ -38,8 +36,8 @@
                 "description": "Protocollo Cloud concatenato",
                 "data": {
                     "cloud_local_port": "Porta per ascoltare il traffico del pannello",
-                    "cloud_upstream_host": "Host a cui inviare le notifiche del pannello dopo l\"elaborazione",
-                    "cloud_upstream_port": "Porta a cui inviare le notifiche del pannello dopo l\"elaborazione"
+                    "cloud_upstream_host": "Host a cui inviare le notifiche del pannello dopo l'elaborazione",
+                    "cloud_upstream_port": "Porta a cui inviare le notifiche del pannello dopo l'elaborazione"
                 }
             }
         }
@@ -73,7 +71,7 @@
                         }
                     },
                     "door_open_when_arming": {
-                        "name": "Attivo durante l\"armamento",
+                        "name": "Attivo durante l'armamento",
                         "state": {
                             "true": "Sì",
                             "false": "No"
@@ -104,7 +102,7 @@
                 "name": "Batteria scarica"
             },
             "sensor_active_when_arming": {
-                "name": "Attivo durante l\"armamento"
+                "name": "Attivo durante l'armamento"
             }
         },
         "switch": {
@@ -115,7 +113,7 @@
                 "name": "Ritardo armamento"
             },
             "sensor_flag_detect_door": {
-                "name": "Controlla attività durante l\"armamento"
+                "name": "Controlla attività durante l'armamento"
             },
             "sensor_flag_independent_zone": {
                 "name": "Disarma solo dall\"app"
@@ -155,6 +153,12 @@
             },
             "alert_config_flag_wifi_unavailable": {
                 "name": "Avviso: WiFi non disponibile"
+            },
+            "sms_alert_when_armed": {
+                "name": "Avvisi SMS solo quando il dispositivo è armato"
+            },
+            "simulate_alerts_from_history": {
+                "name": "Simula avvisi del dispositivo dalla cronologia"
             }
         },
         "sensor": {
@@ -168,7 +172,7 @@
                 "name": "Ultimo pacchetto dispositivo"
             },
             "last_upstream_packet": {
-                "name": "Ora dell\"ultimo pacchetto ricevuto dal cloud"
+                "name": "Ora dell'ultimo pacchetto ricevuto dal cloud"
             }
         },
         "select": {

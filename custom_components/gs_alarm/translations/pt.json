@@ -20,8 +20,6 @@
         "step": {
             "init": {
                 "data": {
-                    "sms_alert_when_armed": "Alertas SMS apenas quando o dispositivo está armado",
-                    "simulate_alerts_from_history": "Simular alertas de dispositivos a partir do histórico",
                     "notifications_protocol": "Protocolo de notificações"
                 },
                 "data_description": {
@@ -155,6 +153,12 @@
             },
             "alert_config_flag_wifi_unavailable": {
                 "name": "Alerta: WiFi indisponível"
+            },
+            "sms_alert_when_armed": {
+                "name": "Alertas SMS apenas quando o dispositivo está armado"
+            },
+            "simulate_alerts_from_history": {
+                "name": "Simular alertas de dispositivos a partir do histórico"
             }
         },
         "sensor": {

@@ -20,8 +20,6 @@
         "step": {
             "init": {
                 "data": {
-                    "sms_alert_when_armed": "SMS оповещения только в режиме охраны",
-                    "simulate_alerts_from_history": "Симуляция событий из истории",
                     "notifications_protocol": "Протокол уведомлений"
                 },
                 "data_description": {
@@ -155,6 +153,12 @@
             },
             "alert_config_flag_wifi_unavailable": {
                 "name": "Оповещение: WiFi недоступен"
+            },
+            "sms_alert_when_armed": {
+                "name": "SMS оповещения только в режиме охраны"
+            },
+            "simulate_alerts_from_history": {
+                "name": "Симуляция событий из истории"
             }
         },
         "sensor": {
