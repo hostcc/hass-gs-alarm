@@ -151,6 +151,15 @@ async def test_setup_unload_and_reload_entry_afresh(
                 'unique_id': 'dummy_guid_new_device_register',
                 'entity_id': 'button.dummy_guid_new_device_register',
                 'name': 'Register new relay',
+            }, {
+                'unique_id': 'dummy_guid_simulate_alerts_from_history',
+                'entity_id':
+                    'switch.dummy_guid_simulate_alerts_from_history',
+                'name': 'Simulate alerts from history',
+            }, {
+                'unique_id': 'dummy_guid_sms_alert_when_armed',
+                'entity_id': 'switch.dummy_guid_sms_alert_when_armed',
+                'name': 'SMS alerts only when armed',
             },])
         },
         {
@@ -293,28 +302,3 @@ async def test_setup_unload_and_reload_entry_afresh(
     # Unload the integration
     await hass.config_entries.async_unload(config_entry.entry_id)
     await hass.async_block_till_done()
-
-
-async def test_setup_entry_with_persisted_options(
-    hass: HomeAssistant, mock_g90alarm: AlarmMockT
-) -> None:
-    """
-    Tests the custom integration loads properly, simulating there are some
-    options persisted (integration has been added to HASS and configured).
-    """
-    config_entry = MockConfigEntry(
-        domain=DOMAIN,
-        data={'ip_addr': 'dummy-ip'},
-        options={
-            'sms_alert_when_armed': True,
-        },
-        entry_id="test"
-    )
-    config_entry.add_to_hass(hass)
-    await hass.config_entries.async_setup(config_entry.entry_id)
-
-    await hass.async_block_till_done()
-
-    # Verify `G90Alarm` instance has been configured according to integration
-    # options
-    assert mock_g90alarm.return_value.sms_alert_when_armed is True

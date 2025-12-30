@@ -7,8 +7,6 @@ DOMAIN = "gs_alarm"
 MANUFACTURER = "Golden Security"
 
 # Configuration options
-CONF_SMS_ALERT_WHEN_ARMED = "sms_alert_when_armed"
-CONF_SIMULATE_ALERTS_FROM_HISTORY = "simulate_alerts_from_history"
 CONF_IP_ADDR = "ip_addr"
 CONF_CLOUD_LOCAL_PORT = "cloud_local_port"
 CONF_CLOUD_UPSTREAM_HOST = "cloud_upstream_host"

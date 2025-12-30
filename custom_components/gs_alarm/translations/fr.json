@@ -9,7 +9,7 @@
                 "data": {
                     "ip_addr": "Adresse IP"
                 },
-                "description": "Aucun appareil n\"a été découvert, veuillez procéder à la configuration manuelle"
+                "description": "Aucun appareil n'a été découvert, veuillez procéder à la configuration manuelle"
             },
             "confirm": {
                 "description": "Voulez-vous commencer la configuration ?"
@@ -20,12 +20,10 @@
         "step": {
             "init": {
                 "data": {
-                    "sms_alert_when_armed": "Alertes SMS uniquement lorsque l\"appareil est armé",
-                    "simulate_alerts_from_history": "Simuler les alertes de l\"appareil à partir de l\"historique",
                     "notifications_protocol": "Protocole de notifications"
                 },
                 "data_description": {
-                    "notifications_protocol": "* **Local**: Le panneau a l\"adresse IP `10.10.10.250`\n* **Cloud**: Le trafic du panneau vers le cloud peut être redirigé vers\nHome Assistant au niveau du réseau, aucun trafic n\"est envoyé aux serveurs cloud\n* **Cloud chaîné**: Identique à **Cloud**, mais le trafic est également envoyé aux serveurs cloud\npour que l\"application mobile fonctionne"
+                    "notifications_protocol": "* **Local**: Le panneau a l'adresse IP `10.10.10.250`\n* **Cloud**: Le trafic du panneau vers le cloud peut être redirigé vers\nHome Assistant au niveau du réseau, aucun trafic n'est envoyé aux serveurs cloud\n* **Cloud chaîné**: Identique à **Cloud**, mais le trafic est également envoyé aux serveurs cloud\npour que l'application mobile fonctionne"
                 }
             },
             "cloud": {
@@ -73,7 +71,7 @@
                         }
                     },
                     "door_open_when_arming": {
-                        "name": "Actif lors de l\"armement",
+                        "name": "Actif lors de l'armement",
                         "state": {
                             "true": "Oui",
                             "false": "Non"
@@ -104,7 +102,7 @@
                 "name": "Batterie faible"
             },
             "sensor_active_when_arming": {
-                "name": "Actif lors de l\"armement"
+                "name": "Actif lors de l'armement"
             }
         },
         "switch": {
@@ -112,13 +110,13 @@
                 "name": "{relay}"
             },
             "sensor_flag_arm_delay": {
-                "name": "Délai d\"armement"
+                "name": "Délai d'armement"
             },
             "sensor_flag_detect_door": {
-                "name": "Vérifier l\"activité lors de l\"armement"
+                "name": "Vérifier l'activité lors de l'armement"
             },
             "sensor_flag_independent_zone": {
-                "name": "Désarmement uniquement depuis l\"application"
+                "name": "Désarmement uniquement depuis l'application"
             },
             "sensor_flag_enabled": {
                 "name": "Activé"
@@ -133,10 +131,10 @@
                 "name": "Alerte: Panne d\"alimentation secteur"
             },
             "alert_config_flag_ac_power_recover": {
-                "name": "Alerte: Rétablissement de l\"alimentation secteur"
+                "name": "Alerte: Rétablissement de l'alimentation secteur"
             },
             "alert_config_flag_host_low_voltage": {
-                "name": "Alerte: Tension faible de l\"hôte"
+                "name": "Alerte: Tension faible de l'hôte"
             },
             "alert_config_flag_sensor_low_voltage": {
                 "name": "Alerte: Tension faible du capteur"
@@ -155,6 +153,12 @@
             },
             "alert_config_flag_wifi_unavailable": {
                 "name": "Alerte: WiFi indisponible"
+            },
+            "sms_alert_when_armed": {
+                "name": "Alertes SMS uniquement lorsque l'appareil est armé"
+            },
+            "simulate_alerts_from_history": {
+                "name": "Simuler les alertes de l'appareil à partir de l'historique"
             }
         },
         "sensor": {
@@ -165,7 +169,7 @@
                 "name": "Signal GSM"
             },
             "last_device_packet": {
-                "name": "Dernier paquet de l\"appareil"
+                "name": "Dernier paquet de l'appareil"
             },
             "last_upstream_packet": {
                 "name": "Heure du dernier paquet reçu depuis le cloud"
@@ -211,34 +215,34 @@
         },
         "notifications": {
             "register_device_starting": {
-                "name": "Enregistrement d\"un nouvel appareil de type \"{type}\", veuillez vous assurer qu\"il est en mode apprentissage"
+                "name": "Enregistrement d'un nouvel appareil de type \"{type}\", veuillez vous assurer qu'il est en mode apprentissage"
             },
             "register_device_finished": {
                 "name": "Nouvel appareil \"{name}\" (type=\"{type}\") avec index {index} enregistré avec succès"
             },
             "register_device_error": {
-                "name": "Erreur lors de l\"enregistrement du nouvel appareil \"{name}\" (type=\"{type}\") : {error}"
+                "name": "Erreur lors de l'enregistrement du nouvel appareil \"{name}\" (type=\"{type}\") : {error}"
             },
             "register_device_type_not_set": {
-                "name": "Le type du nouvel appareil n\"est pas défini, impossible de l\"enregistrer"
+                "name": "Le type du nouvel appareil n'est pas défini, impossible de l'enregistrer"
             },
             "register_device_name_not_set": {
-                "name": "Le nom du nouvel appareil n\"est pas défini, impossible de l\"enregistrer"
+                "name": "Le nom du nouvel appareil n'est pas défini, impossible de l'enregistrer"
             },
             "register_sensor_starting": {
-                "name": "Enregistrement d\"un nouveau capteur de type \"{type}\", veuillez déclencher le capteur"
+                "name": "Enregistrement d'un nouveau capteur de type \"{type}\", veuillez déclencher le capteur"
             },
             "register_sensor_finished": {
                 "name": "Nouveau capteur \"{name}\" (type=\"{type}\") avec index {index} enregistré avec succès"
             },
             "register_sensor_error": {
-                "name": "Erreur lors de l\"enregistrement du nouveau capteur \"{name}\" (type=\"{type}\") : {error}"
+                "name": "Erreur lors de l'enregistrement du nouveau capteur \"{name}\" (type=\"{type}\") : {error}"
             },
             "register_sensor_type_not_set": {
-                "name": "Le type du nouveau capteur n\"est pas défini, impossible de l\"enregistrer"
+                "name": "Le type du nouveau capteur n'est pas défini, impossible de l'enregistrer"
             },
             "register_sensor_name_not_set": {
-                "name": "Le nom du nouveau capteur n\"est pas défini, impossible de l\"enregistrer"
+                "name": "Le nom du nouveau capteur n'est pas défini, impossible de l'enregistrer"
             }
         }
     }

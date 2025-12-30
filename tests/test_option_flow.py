@@ -22,52 +22,6 @@ from custom_components.gs_alarm.const import (
 from .conftest import AlarmMockT
 
 
-async def test_config_flow_options(
-    hass: HomeAssistant, mock_g90alarm: AlarmMockT
-) -> None:
-    """
-    Tests options (configure) flow for the component with correct inputs.
-    """
-    # Instantiate the component into HomeAssistant, required for its options
-    # flow handler to be registered
-    config_entry = MockConfigEntry(
-        domain=DOMAIN,
-        data={},
-    )
-    config_entry.add_to_hass(hass)
-    await hass.config_entries.async_setup(config_entry.entry_id)
-
-    # Initial step
-    result = await hass.config_entries.options.async_init(
-        config_entry.entry_id,
-        context={'source': 'user'},
-    )
-    # Verify it results in form
-    assert result['step_id'] == 'init'
-    assert result['type'] == FlowResultType.FORM
-
-    # Submission step configuring the single mocked sensor to be disabled (by
-    # its index) and enabling `SMS alert only when armed`
-    result = await hass.config_entries.options.async_configure(
-        flow_id=result['flow_id'],
-        user_input={
-            'sms_alert_when_armed': True,
-            'simulate_alerts_from_history': True,
-        },
-    )
-    # Verify it results in (re)creating corresponding entry in HomeAssistant
-    assert result['type'] == FlowResultType.CREATE_ENTRY
-    await hass.async_block_till_done()
-
-    # Verify the value of the `sms_alert_when_armed` property of `G90Alarm()`
-    # instance
-    assert mock_g90alarm.return_value.sms_alert_when_armed
-
-    # Verify simulating device alerts from history has been started
-    (mock_g90alarm.return_value
-        .start_simulating_alerts_from_history.assert_called())
-
-
 @pytest.mark.parametrize(
     "protocol,user_input,expected_call,expected_kwargs",
     [
@@ -137,8 +91,6 @@ async def test_config_flow_options_notifications_protocol(
     result = await hass.config_entries.options.async_configure(
         flow_id=result['flow_id'],
         user_input={
-            'sms_alert_when_armed': False,
-            'simulate_alerts_from_history': False,
             'notifications_protocol': protocol,
         },
     )

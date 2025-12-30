@@ -32,8 +32,6 @@ from pyg90alarm.const import (
 
 from .const import (
     DOMAIN,
-    CONF_SMS_ALERT_WHEN_ARMED,
-    CONF_SIMULATE_ALERTS_FROM_HISTORY,
     CONF_NOTIFICATIONS_PROTOCOL,
     CONF_IP_ADDR,
     CONF_CLOUD_LOCAL_PORT,
@@ -159,18 +157,6 @@ class OptionsFlowHandler(OptionsFlow):
             vol.Required | vol.Optional,
             SelectSelector | BooleanSelector
         ] = {
-            vol.Required(
-                CONF_SMS_ALERT_WHEN_ARMED,
-                default=self.config_entry.options.get(
-                    CONF_SMS_ALERT_WHEN_ARMED, False
-                ),
-            ): BooleanSelector(),
-            vol.Required(
-                CONF_SIMULATE_ALERTS_FROM_HISTORY,
-                default=self.config_entry.options.get(
-                    CONF_SIMULATE_ALERTS_FROM_HISTORY, False
-                ),
-            ): BooleanSelector(),
             vol.Required(
                 CONF_NOTIFICATIONS_PROTOCOL,
                 default=self.config_entry.options.get(

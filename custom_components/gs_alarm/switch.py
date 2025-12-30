@@ -18,6 +18,7 @@ from pyg90alarm import (
     G90SensorUserFlags, G90AlertConfigFlags,
 )
 
+from .entity_base import GsAlarmSwitchRestoreEntityBase
 from .mixin import (
     GSAlarmGenerateIDsDeviceMixin, GSAlarmGenerateIDsSensorMixin,
     GSAlarmGenerateIDsCommonMixin
@@ -85,7 +86,7 @@ async def async_setup_entry(
     )
 
     # Alert configuration switches for the panel
-    alert_config_switches = [
+    config_switches = [
         G90AlertConfigFlag(
             entry.runtime_data,
             G90AlertConfigFlags.AC_POWER_FAILURE,
@@ -136,9 +137,11 @@ async def async_setup_entry(
             G90AlertConfigFlags.SMS_PUSH,
             'mdi:message-text',
         ),
+        G90SmsAlertWhenArmed(entry.runtime_data),
+        G90SimulateAlertsFromHistory(entry.runtime_data),
     ]
 
-    async_add_entities(alert_config_switches)
+    async_add_entities(config_switches)
 
 
 class G90Switch(
@@ -446,3 +449,146 @@ class G90AlertConfigFlag(
             )
 
         await self.coordinator.async_request_refresh()
+
+
+class G90SimulateAlertsFromHistory(GsAlarmSwitchRestoreEntityBase):
+    """
+    Switch entity to configure simulating alerts from history.
+    """
+    # pylint: disable=too-many-ancestors
+    UNIQUE_ID_FMT = "{guid}_simulate_alerts_from_history"
+    ENTITY_ID_FMT = "{guid}_simulate_alerts_from_history"
+
+    def __init__(
+        self, coordinator: GsAlarmCoordinator,
+    ) -> None:
+        super().__init__(coordinator)
+        self._attr_has_entity_name = True
+        self._attr_translation_key = 'simulate_alerts_from_history'
+        self._attr_entity_category = EntityCategory.CONFIG
+        self._attr_icon = 'mdi:history'
+
+    async def async_added_to_hass(self) -> None:
+        """
+        Restores the last state on startup and applies it to the
+        coordinator client.
+        """
+        await super().async_added_to_hass()
+        # If the simulation was enabled before restart, re-enable it
+        if self._attr_is_on:
+            try:
+                _LOGGER.debug(
+                    'Restoring simulation of alerts from history for'
+                    ' panel %s',
+                    self.coordinator.data.host_info.host_guid
+                )
+                await (
+                    self.coordinator.client
+                    .start_simulating_alerts_from_history()
+                )
+            except (G90Error, G90TimeoutError) as exc:
+                _LOGGER.error(
+                    "Error restoring simulation of alerts from history"
+                    " for panel '%s': %s",
+                    self.coordinator.data.host_info.host_guid,
+                    repr(exc)
+                )
+                # Reset the state if restoration failed
+                self._attr_is_on = False
+
+    async def async_turn_on(self, **_kwargs: Any) -> None:
+        """
+        Turn on the switch.
+        """
+        try:
+            _LOGGER.debug('Starting to simulate device alerts from history')
+            await (
+                self.coordinator.client.start_simulating_alerts_from_history()
+            )
+        except (G90Error, G90TimeoutError) as exc:
+            _LOGGER.error(
+                "Error enabling simulation of alerts from history"
+                " for panel '%s': %s",
+                self.coordinator.data.host_info.host_guid,
+                repr(exc)
+            )
+        else:
+            # Store the state only if enabling simulation succeeded
+            await super().async_turn_on()
+
+    async def async_turn_off(self, **_kwargs: Any) -> None:
+        """
+        Turn off the switch.
+        """
+        try:
+            _LOGGER.debug('Stopping to simulate device alerts from history')
+            await self.coordinator.client.stop_simulating_alerts_from_history()
+        except (G90Error, G90TimeoutError) as exc:
+            _LOGGER.error(
+                "Error disabling simulation of alerts from history"
+                " for panel '%s': %s",
+                self.coordinator.data.host_info.host_guid,
+                repr(exc)
+            )
+        else:
+            # Store the state only if disabling simulation succeeded
+            await super().async_turn_off()
+
+
+class G90SmsAlertWhenArmed(GsAlarmSwitchRestoreEntityBase):
+    """
+    Switch entity to configure SMS alerts only when panel is armed.
+    """
+    # pylint: disable=too-many-ancestors
+    UNIQUE_ID_FMT = "{guid}_sms_alert_when_armed"
+    ENTITY_ID_FMT = "{guid}_sms_alert_when_armed"
+
+    def __init__(
+        self, coordinator: GsAlarmCoordinator,
+    ) -> None:
+        super().__init__(coordinator)
+        self._attr_has_entity_name = True
+        self._attr_translation_key = 'sms_alert_when_armed'
+        self._attr_entity_category = EntityCategory.CONFIG
+        self._attr_icon = 'mdi:message-text'
+
+    async def async_added_to_hass(self) -> None:
+        """
+        Restores the last state on startup and applies it to G90Alarm client.
+        """
+        await super().async_added_to_hass()
+        # Apply the state to G90Alarm client, but only if it has
+        # been restored, i.e. not being unknown (=None)
+        if self._attr_is_on is not None:
+            self.coordinator.client.sms_alert_when_armed = self._attr_is_on
+            _LOGGER.debug(
+                'Restored SMS alert when armed state for panel %s: %s',
+                self.coordinator.data.host_info.host_guid,
+                self._attr_is_on
+            )
+
+    async def async_turn_on(self, **_kwargs: Any) -> None:
+        """
+        Turn on the switch.
+        """
+        _LOGGER.debug(
+            'Enabling SMS alert when armed for panel %s',
+            self.coordinator.data.host_info.host_guid
+        )
+        # No exception handling since this property doesn't
+        # communicate with the panel directly
+        self.coordinator.client.sms_alert_when_armed = True
+        # Store the state
+        await super().async_turn_on()
+
+    async def async_turn_off(self, **_kwargs: Any) -> None:
+        """
+        Turn off the switch.
+        """
+        _LOGGER.debug(
+            'Disabling SMS alert when armed for panel %s',
+            self.coordinator.data.host_info.host_guid
+        )
+        # See comment above
+        self.coordinator.client.sms_alert_when_armed = False
+        await super().async_turn_off()

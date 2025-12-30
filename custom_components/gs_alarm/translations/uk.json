@@ -20,8 +20,6 @@
         "step": {
             "init": {
                 "data": {
-                    "sms_alert_when_armed": "SMS-сповіщення тільки коли пристрій увімкнено",
-                    "simulate_alerts_from_history": "Симулювати сповіщення пристрою з історії",
                     "notifications_protocol": "Протокол сповіщень"
                 },
                 "data_description": {
@@ -155,6 +153,12 @@
             },
             "alert_config_flag_wifi_unavailable": {
                 "name": "Сповіщення: WiFi недоступний"
+            },
+            "sms_alert_when_armed": {
+                "name": "SMS-сповіщення тільки коли пристрій увімкнено"
+            },
+            "simulate_alerts_from_history": {
+                "name": "Симулювати сповіщення пристрою з історії"
             }
         },
         "sensor": {
