@@ -559,13 +559,15 @@ class G90SmsAlertWhenArmed(GsAlarmSwitchRestoreEntityBase):
         """
         await super().async_added_to_hass()
         # Apply the restored state to the coordinator client property
-        # Use bool() to satisfy mypy strict mode (parent always sets to bool)
-        self.coordinator.client.sms_alert_when_armed = bool(self._attr_is_on)
-        _LOGGER.debug(
-            'Restored SMS alert when armed state for panel %s: %s',
-            self.coordinator.data.host_info.host_guid,
-            self._attr_is_on
-        )
+        # Only if we have a previous state
+        state = await self.async_get_last_state()
+        if state is not None and self._attr_is_on is not None:
+            self.coordinator.client.sms_alert_when_armed = self._attr_is_on
+            _LOGGER.debug(
+                'Restored SMS alert when armed state for panel %s: %s',
+                self.coordinator.data.host_info.host_guid,
+                self._attr_is_on
+            )
 
     async def async_turn_on(self, **_kwargs: Any) -> None:
         """
