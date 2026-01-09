@@ -110,7 +110,7 @@
                 "name": "{relay}"
             },
             "sensor_flag_arm_delay": {
-                "name": "Inschakeling vertraging"
+                "name": "Inschakelingsvertraging"
             },
             "sensor_flag_detect_door": {
                 "name": "Controleer actief bij inschakeling"

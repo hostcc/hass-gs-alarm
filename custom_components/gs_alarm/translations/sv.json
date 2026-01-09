@@ -134,10 +134,10 @@
                 "name": "Avisering: AC-ström återställd"
             },
             "alert_config_flag_host_low_voltage": {
-                "name": "Avisering: Värdlåg spänning"
+                "name": "Avisering: Värd låg spänning"
             },
             "alert_config_flag_sensor_low_voltage": {
-                "name": "Avisering: Sensorlåg spänning"
+                "name": "Avisering: Sensor låg spänning"
             },
             "alert_config_flag_arm_disarm": {
                 "name": "Avisering: Aktivering/inaktivering"
