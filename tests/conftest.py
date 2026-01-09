@@ -254,6 +254,13 @@ def mock_g90alarm(request: pytest.FixtureRequest) -> Iterator[AlarmMockT]:
             ),
         ),
         patch(
+            'pyg90alarm.local.config.G90AlertConfig.flags_with_fallback',
+            new_callable=PropertyMock,
+            side_effect=AsyncMock(
+                return_value=G90AlertConfigFlags(~0)
+            ),
+        ),
+        patch(
             'pyg90alarm.local.config.G90AlertConfig.set_flag',
             autospec=True,
         ),
