@@ -134,10 +134,10 @@
                 "name": "Varsel: AC-straum gjenoppretta"
             },
             "alert_config_flag_host_low_voltage": {
-                "name": "Varsel: Vert lågt spennignsnivå"
+                "name": "Varsel: Vert lågt spenningsnivå"
             },
             "alert_config_flag_sensor_low_voltage": {
-                "name": "Varsel: Sensor lågt spennignsnivå"
+                "name": "Varsel: Sensor lågt spenningsnivå"
             },
             "alert_config_flag_arm_disarm": {
                 "name": "Varsel: Aktivering/deaktivering"
