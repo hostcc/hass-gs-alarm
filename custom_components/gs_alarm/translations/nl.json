@@ -23,7 +23,7 @@
                     "notifications_protocol": "Notificatieprotocol"
                 },
                 "data_description": {
-                    "notifications_protocol": "* **Lokaal**: Het paneel heeft IP-adres `10.10.10.250`\n* **Cloud**: Paneelverkeer naar cloud kan worden omgeleid naar\nHome Assistant op netwerkniveau, geen verkeer naar cloudservers\n* **Gekoppelde cloud**: Hetzelfde als **Cloud**, maar verkeer wordt ook naar cloudservers verzonden\nvoor mobiele applicatie werking"
+                    "notifications_protocol": "* **Lokaal**: Het paneel heeft IP-adres `10.10.10.250`\n* **Cloud**: Paneelverkeer naar cloud kan worden omgeleid naar\nHome Assistant op netwerkniveau, geen verkeer naar cloudservers\n* **Gekoppelde cloud**: Hetzelfde als **Cloud**, maar verkeer wordt ook naar cloudservers verzonden\nzodat de mobiele applicatie werkt"
                 }
             },
             "cloud": {
@@ -169,10 +169,10 @@
                 "name": "GSM-signaal"
             },
             "last_device_packet": {
-                "name": "Laatst apparaatpakket"
+                "name": "Laatste apparaatpakket"
             },
             "last_upstream_packet": {
-                "name": "Laatst upstream-pakket"
+                "name": "Laatste upstream-pakket"
             }
         },
         "select": {

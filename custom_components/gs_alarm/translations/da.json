@@ -23,7 +23,7 @@
                     "notifications_protocol": "Beskedprotokol"
                 },
                 "data_description": {
-                    "notifications_protocol": "* **Lokalt**: Panelet har IP-adresse `10.10.10.250`\n* **Sky**: Paneltrafik til sky kan omdirigeres til\nHome Assistant på netværksniveau, ingen trafik sendt til cloud-servere\n* **Kædet sky**: Samme som **Sky**, men trafik sendes også til cloud-servere\nfor mobilapplikation til at fungere"
+                    "notifications_protocol": "* **Lokalt**: Panelet har IP-adresse `10.10.10.250`\n* **Sky**: Paneltrafik til sky kan omdirigeres til\nHome Assistant på netværksniveau, ingen trafik sendt til cloud-servere\n* **Kædet sky**: Samme som **Sky**, men trafik sendes også til cloud-servere\nfor at mobilapplikationen kan fungere"
                 }
             },
             "cloud": {
