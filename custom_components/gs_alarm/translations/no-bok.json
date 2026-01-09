@@ -2,7 +2,7 @@
     "config": {
         "abort": {
             "no_devices_found": "Ingen enheter funnet på nettverket",
-            "single_instance_allowed": "Allerede konfigurert. Bare en enkelt konfiguration er mulig."
+            "single_instance_allowed": "Allerede konfigurert. Bare en enkelt konfigurasjon er mulig."
         },
         "step": {
             "custom_host": {
