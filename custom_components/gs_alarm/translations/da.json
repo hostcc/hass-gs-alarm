@@ -1,0 +1,249 @@
+{
+    "config": {
+        "abort": {
+            "no_devices_found": "Ingen enheder fundet på netværket",
+            "single_instance_allowed": "Allerede konfigureret. Kun en enkelt konfiguration er mulig."
+        },
+        "step": {
+            "custom_host": {
+                "data": {
+                    "ip_addr": "IP-adresse"
+                },
+                "description": "Ingen enheder er blevet opdaget, gå til manuel opsætning"
+            },
+            "confirm": {
+                "description": "Vil du starte opsætningen?"
+            }
+        }
+    },
+    "options": {
+        "step": {
+            "init": {
+                "data": {
+                    "notifications_protocol": "Beskedprotokol"
+                },
+                "data_description": {
+                    "notifications_protocol": "* **Lokalt**: Panelet har IP-adresse `10.10.10.250`\n* **Sky**: Paneltrafik til sky kan omdirigeres til\nHome Assistant på netværksniveau, ingen trafik sendt til cloud-servere\n* **Kædet sky**: Samme som **Sky**, men trafik sendes også til cloud-servere\nfor mobilapplikation til at fungere"
+                }
+            },
+            "cloud": {
+                "description": "Sky-protokol",
+                "data": {
+                    "cloud_local_port": "Port til at lytte efter paneltrafik på"
+                }
+            },
+            "cloud_upstream": {
+                "description": "Kædet sky-protokol",
+                "data": {
+                    "cloud_local_port": "Port til at lytte efter paneltrafik på",
+                    "cloud_upstream_host": "Vært til at sende panelbeskeder til efter behandling",
+                    "cloud_upstream_port": "Port til at sende panelbeskeder til efter behandling"
+                }
+            }
+        }
+    },
+    "selector": {
+        "notifications_protocol": {
+            "options": {
+                "local": "Lokalt",
+                "cloud": "Sky",
+                "cloud_upstream": "Kædet sky"
+            }
+        }
+    },
+    "entity": {
+        "binary_sensor": {
+            "sensor": {
+                "name": "{sensor}",
+                "state_attributes": {
+                    "low_battery": {
+                        "name": "Lavt batteri",
+                        "state": {
+                            "true": "Ja",
+                            "false": "Nej"
+                        }
+                    },
+                    "tampered": {
+                        "name": "Manipuleret",
+                        "state": {
+                            "true": "Ja",
+                            "false": "Nej"
+                        }
+                    },
+                    "door_open_when_arming": {
+                        "name": "Aktiv ved aktivering",
+                        "state": {
+                            "true": "Ja",
+                            "false": "Nej"
+                        }
+                    },
+                    "panel_sensor_number": {"name": "Panelsensornummer"},
+                    "protocol": {"name": "Protokol"},
+                    "flags": {"name": "Flag"},
+                    "wireless": {
+                        "name": "Trådløs",
+                        "state": {
+                            "true": "Ja",
+                            "false": "Nej"
+                        }
+                    }
+                }
+            },
+            "wifi_status": {
+                "name": "WiFi-status"
+            },
+            "gsm_status": {
+                "name": "GSM-status"
+            },
+            "sensor_tampered": {
+                "name": "Manipuleret"
+            },
+            "sensor_low_battery": {
+                "name": "Lavt batteri"
+            },
+            "sensor_active_when_arming": {
+                "name": "Aktiv ved aktivering"
+            }
+        },
+        "switch": {
+            "relay": {
+                "name": "{relay}"
+            },
+            "sensor_flag_arm_delay": {
+                "name": "Aktiveringsforsinkelse"
+            },
+            "sensor_flag_detect_door": {
+                "name": "Tjek aktiv ved aktivering"
+            },
+            "sensor_flag_independent_zone": {
+                "name": "Deaktiver kun fra app"
+            },
+            "sensor_flag_enabled": {
+                "name": "Aktiveret"
+            },
+            "sensor_flag_door_chime": {
+                "name": "Dørklokke"
+            },
+            "alert_config_flag_sms_push": {
+                "name": "Besked: SMS push"
+            },
+            "alert_config_flag_ac_power_failure": {
+                "name": "Besked: AC-strømfejl"
+            },
+            "alert_config_flag_ac_power_recover": {
+                "name": "Besked: AC-strøm gendannet"
+            },
+            "alert_config_flag_host_low_voltage": {
+                "name": "Besked: Host lavt spændingsniveau"
+            },
+            "alert_config_flag_sensor_low_voltage": {
+                "name": "Besked: Sensor lavt spændingsniveau"
+            },
+            "alert_config_flag_arm_disarm": {
+                "name": "Besked: Aktivering/deaktivering"
+            },
+            "alert_config_flag_door_open": {
+                "name": "Besked: Dør åbnet"
+            },
+            "alert_config_flag_door_close": {
+                "name": "Besked: Dør lukket"
+            },
+            "alert_config_flag_wifi_available": {
+                "name": "Besked: WiFi tilgængeligt"
+            },
+            "alert_config_flag_wifi_unavailable": {
+                "name": "Besked: WiFi utilgængeligt"
+            },
+            "sms_alert_when_armed": {
+                "name": "SMS-beskeder kun når aktiveret"
+            },
+            "simulate_alerts_from_history": {
+                "name": "Simuler beskeder fra historik"
+            }
+        },
+        "sensor": {
+            "wifi_signal": {
+                "name": "WiFi-signal"
+            },
+            "gsm_signal": {
+                "name": "GSM-signal"
+            },
+            "last_device_packet": {
+                "name": "Sidste enhedspakke"
+            },
+            "last_upstream_packet": {
+                "name": "Sidste upstream-pakke"
+            }
+        },
+        "select": {
+            "sensor_alert_mode": {
+                "name": "Beskedtilstand",
+                "state": {
+                    "alert_always": "Altid",
+                    "alert_when_away": "Når væk",
+                    "alert_when_away_and_home": "Når væk og hjemme"
+                }
+            },
+            "new_sensor_type": {
+                "name": "Ny sensortype"
+            },
+            "new_device_type": {
+                "name": "Ny relaistype"
+            }
+        },
+        "button": {
+            "sensor_register": {
+                "name": "Registrer ny sensor"
+            },
+            "device_register": {
+                "name": "Registrer nyt relais"
+            },
+            "device_delete": {
+                "name": "Slet"
+            },
+            "sensor_delete": {
+                "name": "Slet"
+            }
+        },
+        "text": {
+            "new_sensor_name": {
+                "name": "Nyt sensornavn"
+            },
+            "new_device_name": {
+                "name": "Nyt relaisnavn"
+            }
+        },
+        "notifications": {
+            "register_device_starting": {
+                "name": "Registrering af ny enhed af type \"{type}\", sikr at den er i læringstilstand"
+            },
+            "register_device_finished": {
+                "name": "Ny enhed \"{name}\" (type=\"{type}\", panelindeks={index}) registreret med succes"
+            },
+            "register_device_error": {
+                "name": "Fejl ved registrering af ny enhed \"{name}\" (type=\"{type}\"): {error}"
+            },
+            "register_device_type_not_set": {
+                "name": "Enhedstype er ikke angivet, kan ikke registrere det"
+            },
+            "register_device_name_not_set": {
+                "name": "Enhedsnavn er ikke angivet, kan ikke registrere det"
+            },
+            "register_sensor_starting": {
+                "name": "Registrering af ny sensor af type \"{type}\", udløs venligst sensoren"
+            },
+            "register_sensor_finished": {
+                "name": "Ny sensor \"{name}\" (type=\"{type}\", panelindeks={index}) registreret med succes"
+            },
+            "register_sensor_error": {
+                "name": "Fejl ved registrering af ny sensor \"{name}\" (type=\"{type}\"): {error}"
+            },
+            "register_sensor_type_not_set": {
+                "name": "Sensortype er ikke angivet, kan ikke registrere det"
+            },
+            "register_sensor_name_not_set": {
+                "name": "Sensornavn er ikke angivet, kan ikke registrere det"
+            }
+        }
+    }
+}

@@ -1,0 +1,249 @@
+{
+    "config": {
+        "abort": {
+            "no_devices_found": "Geen apparaten gevonden op het netwerk",
+            "single_instance_allowed": "Reeds geconfigureerd. Slechts één configuratie mogelijk."
+        },
+        "step": {
+            "custom_host": {
+                "data": {
+                    "ip_addr": "IP-adres"
+                },
+                "description": "Geen apparaten zijn ontdekt, ga naar handmatige installatie"
+            },
+            "confirm": {
+                "description": "Wil je het instellen starten?"
+            }
+        }
+    },
+    "options": {
+        "step": {
+            "init": {
+                "data": {
+                    "notifications_protocol": "Notificatieprotocol"
+                },
+                "data_description": {
+                    "notifications_protocol": "* **Lokaal**: Het paneel heeft IP-adres `10.10.10.250`\n* **Cloud**: Paneelverkeer naar cloud kan worden omgeleid naar\nHome Assistant op netwerkniveau, geen verkeer naar cloudservers\n* **Gekoppelde cloud**: Hetzelfde als **Cloud**, maar verkeer wordt ook naar cloudservers verzonden\nvoor mobiele applicatie werking"
+                }
+            },
+            "cloud": {
+                "description": "Cloudprotocol",
+                "data": {
+                    "cloud_local_port": "Poort om op te luisteren voor paneelverkeer"
+                }
+            },
+            "cloud_upstream": {
+                "description": "Gekoppelde cloudprotocol",
+                "data": {
+                    "cloud_local_port": "Poort om op te luisteren voor paneelverkeer",
+                    "cloud_upstream_host": "Host voor het verzenden van paneelmeldingen na verwerking",
+                    "cloud_upstream_port": "Poort voor het verzenden van paneelmeldingen na verwerking"
+                }
+            }
+        }
+    },
+    "selector": {
+        "notifications_protocol": {
+            "options": {
+                "local": "Lokaal",
+                "cloud": "Cloud",
+                "cloud_upstream": "Gekoppelde cloud"
+            }
+        }
+    },
+    "entity": {
+        "binary_sensor": {
+            "sensor": {
+                "name": "{sensor}",
+                "state_attributes": {
+                    "low_battery": {
+                        "name": "Lage batterij",
+                        "state": {
+                            "true": "Ja",
+                            "false": "Nee"
+                        }
+                    },
+                    "tampered": {
+                        "name": "Ontvreemd",
+                        "state": {
+                            "true": "Ja",
+                            "false": "Nee"
+                        }
+                    },
+                    "door_open_when_arming": {
+                        "name": "Actief bij inschakeling",
+                        "state": {
+                            "true": "Ja",
+                            "false": "Nee"
+                        }
+                    },
+                    "panel_sensor_number": {"name": "Paneelsensornummer"},
+                    "protocol": {"name": "Protocol"},
+                    "flags": {"name": "Markeringen"},
+                    "wireless": {
+                        "name": "Draadloos",
+                        "state": {
+                            "true": "Ja",
+                            "false": "Nee"
+                        }
+                    }
+                }
+            },
+            "wifi_status": {
+                "name": "WiFi-status"
+            },
+            "gsm_status": {
+                "name": "GSM-status"
+            },
+            "sensor_tampered": {
+                "name": "Ontvreemd"
+            },
+            "sensor_low_battery": {
+                "name": "Lage batterij"
+            },
+            "sensor_active_when_arming": {
+                "name": "Actief bij inschakeling"
+            }
+        },
+        "switch": {
+            "relay": {
+                "name": "{relay}"
+            },
+            "sensor_flag_arm_delay": {
+                "name": "Inschakeling vertraging"
+            },
+            "sensor_flag_detect_door": {
+                "name": "Controleer actief bij inschakeling"
+            },
+            "sensor_flag_independent_zone": {
+                "name": "Alleen uitschakelen via app"
+            },
+            "sensor_flag_enabled": {
+                "name": "Ingeschakeld"
+            },
+            "sensor_flag_door_chime": {
+                "name": "Deurbel"
+            },
+            "alert_config_flag_sms_push": {
+                "name": "Waarschuwing: SMS push"
+            },
+            "alert_config_flag_ac_power_failure": {
+                "name": "Waarschuwing: AC-stroomuitval"
+            },
+            "alert_config_flag_ac_power_recover": {
+                "name": "Waarschuwing: AC-stroom hersteld"
+            },
+            "alert_config_flag_host_low_voltage": {
+                "name": "Waarschuwing: Host lage spanning"
+            },
+            "alert_config_flag_sensor_low_voltage": {
+                "name": "Waarschuwing: Sensor lage spanning"
+            },
+            "alert_config_flag_arm_disarm": {
+                "name": "Waarschuwing: In-/uitschakeling"
+            },
+            "alert_config_flag_door_open": {
+                "name": "Waarschuwing: Deur open"
+            },
+            "alert_config_flag_door_close": {
+                "name": "Waarschuwing: Deur dicht"
+            },
+            "alert_config_flag_wifi_available": {
+                "name": "Waarschuwing: WiFi beschikbaar"
+            },
+            "alert_config_flag_wifi_unavailable": {
+                "name": "Waarschuwing: WiFi niet beschikbaar"
+            },
+            "sms_alert_when_armed": {
+                "name": "SMS-meldingen alleen bij inschakeling"
+            },
+            "simulate_alerts_from_history": {
+                "name": "Simuleer meldingen uit geschiedenis"
+            }
+        },
+        "sensor": {
+            "wifi_signal": {
+                "name": "WiFi-signaal"
+            },
+            "gsm_signal": {
+                "name": "GSM-signaal"
+            },
+            "last_device_packet": {
+                "name": "Laatst apparaatpakket"
+            },
+            "last_upstream_packet": {
+                "name": "Laatst upstream-pakket"
+            }
+        },
+        "select": {
+            "sensor_alert_mode": {
+                "name": "Waarschuwingsmodus",
+                "state": {
+                    "alert_always": "Altijd",
+                    "alert_when_away": "Bij afwezigheid",
+                    "alert_when_away_and_home": "Bij afwezigheid en thuis"
+                }
+            },
+            "new_sensor_type": {
+                "name": "Nieuw sensortype"
+            },
+            "new_device_type": {
+                "name": "Nieuw relaistype"
+            }
+        },
+        "button": {
+            "sensor_register": {
+                "name": "Nieuwe sensor registreren"
+            },
+            "device_register": {
+                "name": "Nieuw relais registreren"
+            },
+            "device_delete": {
+                "name": "Verwijderen"
+            },
+            "sensor_delete": {
+                "name": "Verwijderen"
+            }
+        },
+        "text": {
+            "new_sensor_name": {
+                "name": "Nieuwe sensornaam"
+            },
+            "new_device_name": {
+                "name": "Nieuwe relaisnaam"
+            }
+        },
+        "notifications": {
+            "register_device_starting": {
+                "name": "Een nieuw apparaat van type \"{type}\" registreren, zorg dat het in leermodus staat"
+            },
+            "register_device_finished": {
+                "name": "Nieuw apparaat \"{name}\" (type=\"{type}\", paneelindex={index}) succesvol geregistreerd"
+            },
+            "register_device_error": {
+                "name": "Fout bij registratie van nieuw apparaat \"{name}\" (type=\"{type}\"): {error}"
+            },
+            "register_device_type_not_set": {
+                "name": "Type van het nieuwe apparaat is niet ingesteld, kan het niet registreren"
+            },
+            "register_device_name_not_set": {
+                "name": "Naam van het nieuwe apparaat is niet ingesteld, kan het niet registreren"
+            },
+            "register_sensor_starting": {
+                "name": "Een nieuwe sensor van type \"{type}\" registreren, activeer alstublieft de sensor"
+            },
+            "register_sensor_finished": {
+                "name": "Nieuwe sensor \"{name}\" (type=\"{type}\", paneelindex={index}) succesvol geregistreerd"
+            },
+            "register_sensor_error": {
+                "name": "Fout bij registratie van nieuwe sensor \"{name}\" (type=\"{type}\"): {error}"
+            },
+            "register_sensor_type_not_set": {
+                "name": "Type van de nieuwe sensor is niet ingesteld, kan het niet registreren"
+            },
+            "register_sensor_name_not_set": {
+                "name": "Naam van de nieuwe sensor is niet ingesteld, kan het niet registreren"
+            }
+        }
+    }
+}

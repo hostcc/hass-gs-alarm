@@ -1,0 +1,249 @@
+{
+    "config": {
+        "abort": {
+            "no_devices_found": "Inga enheter funna på nätverket",
+            "single_instance_allowed": "Redan konfigurerad. Bara en enskild konfiguration är möjlig."
+        },
+        "step": {
+            "custom_host": {
+                "data": {
+                    "ip_addr": "IP-adress"
+                },
+                "description": "Inga enheter har upptäckts, fortsätt till manuell konfiguration"
+            },
+            "confirm": {
+                "description": "Vill du starta installationen?"
+            }
+        }
+    },
+    "options": {
+        "step": {
+            "init": {
+                "data": {
+                    "notifications_protocol": "Aviseringsprotokoll"
+                },
+                "data_description": {
+                    "notifications_protocol": "* **Lokalt**: Panelen har IP-adressen `10.10.10.250`\n* **Moln**: Panelens trafik till molnet kan omdirigeras till\nHome Assistant på nätverksnivå, ingen trafik skickas till molnservrar\n* **Kedjat moln**: Samma som **Moln**, men trafik skickas också till molnservrar\nför att mobilapplikationen ska fungera"
+                }
+            },
+            "cloud": {
+                "description": "Molnprotokoll",
+                "data": {
+                    "cloud_local_port": "Port att lyssna på för paneltrafik"
+                }
+            },
+            "cloud_upstream": {
+                "description": "Kedjat molnprotokoll",
+                "data": {
+                    "cloud_local_port": "Port att lyssna på för paneltrafik",
+                    "cloud_upstream_host": "Värd att skicka panelaviseringar till efter bearbetning",
+                    "cloud_upstream_port": "Port att skicka panelaviseringar till efter bearbetning"
+                }
+            }
+        }
+    },
+    "selector": {
+        "notifications_protocol": {
+            "options": {
+                "local": "Lokalt",
+                "cloud": "Moln",
+                "cloud_upstream": "Kedjat moln"
+            }
+        }
+    },
+    "entity": {
+        "binary_sensor": {
+            "sensor": {
+                "name": "{sensor}",
+                "state_attributes": {
+                    "low_battery": {
+                        "name": "Lågt batteri",
+                        "state": {
+                            "true": "Ja",
+                            "false": "Nej"
+                        }
+                    },
+                    "tampered": {
+                        "name": "Manipulerad",
+                        "state": {
+                            "true": "Ja",
+                            "false": "Nej"
+                        }
+                    },
+                    "door_open_when_arming": {
+                        "name": "Aktiv vid aktivering",
+                        "state": {
+                            "true": "Ja",
+                            "false": "Nej"
+                        }
+                    },
+                    "panel_sensor_number": {"name": "Panelsensornummer"},
+                    "protocol": {"name": "Protokoll"},
+                    "flags": {"name": "Flaggor"},
+                    "wireless": {
+                        "name": "Trådlös",
+                        "state": {
+                            "true": "Ja",
+                            "false": "Nej"
+                        }
+                    }
+                }
+            },
+            "wifi_status": {
+                "name": "WiFi-status"
+            },
+            "gsm_status": {
+                "name": "GSM-status"
+            },
+            "sensor_tampered": {
+                "name": "Manipulerad"
+            },
+            "sensor_low_battery": {
+                "name": "Lågt batteri"
+            },
+            "sensor_active_when_arming": {
+                "name": "Aktiv vid aktivering"
+            }
+        },
+        "switch": {
+            "relay": {
+                "name": "{relay}"
+            },
+            "sensor_flag_arm_delay": {
+                "name": "Aktiveringsförsening"
+            },
+            "sensor_flag_detect_door": {
+                "name": "Kontrollera aktiv vid aktivering"
+            },
+            "sensor_flag_independent_zone": {
+                "name": "Inaktivera endast från app"
+            },
+            "sensor_flag_enabled": {
+                "name": "Aktiverad"
+            },
+            "sensor_flag_door_chime": {
+                "name": "Dörrringklocka"
+            },
+            "alert_config_flag_sms_push": {
+                "name": "Avisering: SMS push"
+            },
+            "alert_config_flag_ac_power_failure": {
+                "name": "Avisering: AC-strömfel"
+            },
+            "alert_config_flag_ac_power_recover": {
+                "name": "Avisering: AC-ström återställd"
+            },
+            "alert_config_flag_host_low_voltage": {
+                "name": "Avisering: Värdlåg spänning"
+            },
+            "alert_config_flag_sensor_low_voltage": {
+                "name": "Avisering: Sensorlåg spänning"
+            },
+            "alert_config_flag_arm_disarm": {
+                "name": "Avisering: Aktivering/inaktivering"
+            },
+            "alert_config_flag_door_open": {
+                "name": "Avisering: Dörr öppen"
+            },
+            "alert_config_flag_door_close": {
+                "name": "Avisering: Dörr stängd"
+            },
+            "alert_config_flag_wifi_available": {
+                "name": "Avisering: WiFi tillgängligt"
+            },
+            "alert_config_flag_wifi_unavailable": {
+                "name": "Avisering: WiFi otillgängligt"
+            },
+            "sms_alert_when_armed": {
+                "name": "SMS-aviseringar endast när aktiverad"
+            },
+            "simulate_alerts_from_history": {
+                "name": "Simulera aviseringar från historik"
+            }
+        },
+        "sensor": {
+            "wifi_signal": {
+                "name": "WiFi-signal"
+            },
+            "gsm_signal": {
+                "name": "GSM-signal"
+            },
+            "last_device_packet": {
+                "name": "Senaste enhetspaket"
+            },
+            "last_upstream_packet": {
+                "name": "Senaste uppströmspaket"
+            }
+        },
+        "select": {
+            "sensor_alert_mode": {
+                "name": "Aviseringsläge",
+                "state": {
+                    "alert_always": "Alltid",
+                    "alert_when_away": "När borta",
+                    "alert_when_away_and_home": "När borta och hemma"
+                }
+            },
+            "new_sensor_type": {
+                "name": "Ny sensortyp"
+            },
+            "new_device_type": {
+                "name": "Ny relä-typ"
+            }
+        },
+        "button": {
+            "sensor_register": {
+                "name": "Registrera ny sensor"
+            },
+            "device_register": {
+                "name": "Registrera nytt relä"
+            },
+            "device_delete": {
+                "name": "Ta bort"
+            },
+            "sensor_delete": {
+                "name": "Ta bort"
+            }
+        },
+        "text": {
+            "new_sensor_name": {
+                "name": "Nytt sensornamn"
+            },
+            "new_device_name": {
+                "name": "Nytt relä-namn"
+            }
+        },
+        "notifications": {
+            "register_device_starting": {
+                "name": "Registrering av ny enhet av typ \"{type}\", se till att den är i inlärningsläge"
+            },
+            "register_device_finished": {
+                "name": "Ny enhet \"{name}\" (type=\"{type}\", panelindex={index}) registrerad framgångsrikt"
+            },
+            "register_device_error": {
+                "name": "Fel vid registrering av ny enhet \"{name}\" (type=\"{type}\"): {error}"
+            },
+            "register_device_type_not_set": {
+                "name": "Enhetstypen är inte angiven, kan inte registrera den"
+            },
+            "register_device_name_not_set": {
+                "name": "Enhetens namn är inte angiven, kan inte registrera den"
+            },
+            "register_sensor_starting": {
+                "name": "Registrering av ny sensor av typ \"{type}\", aktivera sensorn"
+            },
+            "register_sensor_finished": {
+                "name": "Ny sensor \"{name}\" (type=\"{type}\", panelindex={index}) registrerad framgångsrikt"
+            },
+            "register_sensor_error": {
+                "name": "Fel vid registrering av ny sensor \"{name}\" (type=\"{type}\"): {error}"
+            },
+            "register_sensor_type_not_set": {
+                "name": "Sensortypen är inte angiven, kan inte registrera den"
+            },
+            "register_sensor_name_not_set": {
+                "name": "Sensorns namn är inte angiven, kan inte registrera den"
+            }
+        }
+    }
+}
