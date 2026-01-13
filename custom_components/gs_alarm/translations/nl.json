@@ -9,10 +9,10 @@
                 "data": {
                     "ip_addr": "IP-adres"
                 },
-                "description": "Geen apparaten zijn ontdekt, ga naar handmatige installatie"
+                "description": "Geen apparaten gevonden, gebruik handmatige installatie"
             },
             "confirm": {
-                "description": "Wil je het instellen starten?"
+                "description": "Instellen starten?"
             }
         }
     },
@@ -29,13 +29,13 @@
             "cloud": {
                 "description": "Cloudprotocol",
                 "data": {
-                    "cloud_local_port": "Poort om op te luisteren voor paneelverkeer"
+                    "cloud_local_port": "Poort voor luisteren naar paneelverkeer"
                 }
             },
             "cloud_upstream": {
                 "description": "Gekoppelde cloudprotocol",
                 "data": {
-                    "cloud_local_port": "Poort om op te luisteren voor paneelverkeer",
+                    "cloud_local_port": "Poort voor luisteren naar paneelverkeer",
                     "cloud_upstream_host": "Host voor het verzenden van paneelmeldingen na verwerking",
                     "cloud_upstream_port": "Poort voor het verzenden van paneelmeldingen na verwerking"
                 }
@@ -57,14 +57,14 @@
                 "name": "{sensor}",
                 "state_attributes": {
                     "low_battery": {
-                        "name": "Lage batterij",
+                        "name": "Batterijspanning laag",
                         "state": {
                             "true": "Ja",
                             "false": "Nee"
                         }
                     },
                     "tampered": {
-                        "name": "Ontvreemd",
+                        "name": "Sabotage",
                         "state": {
                             "true": "Ja",
                             "false": "Nee"
@@ -96,10 +96,10 @@
                 "name": "GSM-status"
             },
             "sensor_tampered": {
-                "name": "Ontvreemd"
+                "name": "Sabotage"
             },
             "sensor_low_battery": {
-                "name": "Lage batterij"
+                "name": "Batterijspanning laag"
             },
             "sensor_active_when_arming": {
                 "name": "Actief bij inschakeling"
@@ -110,7 +110,7 @@
                 "name": "{relay}"
             },
             "sensor_flag_arm_delay": {
-                "name": "Inschakelingsvertraging"
+                "name": "Inschakelvertraging"
             },
             "sensor_flag_detect_door": {
                 "name": "Controleer actief bij inschakeling"
