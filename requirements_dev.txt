@@ -1,6 +1,6 @@
 flake8==7.3.0
 pylint==4.0.4
-pytest-homeassistant-custom-component==0.13.305
+pytest-homeassistant-custom-component==0.13.306
 pytest-cov==7.0.0
 pytest-unordered==0.7.0
 mypy[reports]==1.19.1
