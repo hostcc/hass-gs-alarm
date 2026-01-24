@@ -67,7 +67,7 @@ will be listed there.
 | SMS alerts only when armed | When enabled, SMS alerts are only sent when the panel is armed |
 | Speech: Language | Language and voice gender for panel speech announcements |
 | Timezone offset | Timezone offset from UTC for the panel's internal clock |
-| Volume: Alarm | Volume level for built-inalarm siren (Mute/Low/High) |
+| Volume: Alarm | Volume level for built-in alarm siren (Mute/Low/High) |
 | Volume: Key tone | Volume level for keypad button press sounds (Mute/Low/High) |
 | Volume: Ring | Volume level for incoming call (Mute/Low/High), only available on panels with cellular support |
 | Volume: Speech | Volume level for speech announcements (Mute/Low/High) |
