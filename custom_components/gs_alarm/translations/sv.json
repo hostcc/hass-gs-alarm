@@ -190,7 +190,7 @@
                 "state": {
                     "mute": "Tyst",
                     "low": "Låg",
-                    "high": "Höy"
+                    "high": "Hög"
                 }
             },
             "speech_volume_level": {
@@ -198,7 +198,7 @@
                 "state": {
                     "mute": "Tyst",
                     "low": "Låg",
-                    "high": "Höy"
+                    "high": "Hög"
                 }
             },
             "key_tone_volume_level": {
@@ -206,7 +206,7 @@
                 "state": {
                     "mute": "Tyst",
                     "low": "Låg",
-                    "high": "Höy"
+                    "high": "Hög"
                 }
             },
             "ring_volume_level": {
@@ -214,7 +214,7 @@
                 "state": {
                     "mute": "Tyst",
                     "low": "Låg",
-                    "high": "Höy"
+                    "high": "Hög"
                 }
             },
             "speech_language": {
