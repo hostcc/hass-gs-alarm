@@ -5,7 +5,6 @@ Text entities for `gs_alarm` integration.
 """
 from __future__ import annotations
 from typing import TYPE_CHECKING
-import logging
 
 from homeassistant.core import HomeAssistant
 from homeassistant.const import EntityCategory
@@ -18,8 +17,6 @@ from .entity_base import GSAlarmEntityBase, G90ConfigTextField
 from .coordinator import GsAlarmCoordinator
 if TYPE_CHECKING:
     from . import GsAlarmConfigEntry
-
-_LOGGER = logging.getLogger(__name__)
 
 
 async def async_setup_entry(
