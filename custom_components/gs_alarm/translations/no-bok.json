@@ -246,7 +246,7 @@
                     "none": "Ingen",
                     "pap": "PAP",
                     "chap": "CHAP",
-                    "pap_chap": "PAP, CHAP"
+                    "pap_or_chap": "PAP, CHAP"
                 }
             },            
             "sensor_alert_mode": {
