@@ -618,3 +618,98 @@ async def test_config_flags_restore_state(
         mock_g90alarm.return_value.assert_has_calls([
             getattr(call, expected_call)(*expected_args),
         ])
+
+
+@pytest.mark.parametrize(
+    "unique_id,service,field,value",
+    [
+        pytest.param(
+            "dummy_guid_ap_enabled", "turn_on", "ap_enabled", True,
+            id="AP enabled"
+        ),
+        pytest.param(
+            "dummy_guid_ap_enabled", "turn_off", "ap_enabled", False,
+            id="AP disabled"
+        ),
+        pytest.param(
+            "dummy_guid_gprs_enabled", "turn_on", "gprs_enabled", True,
+            id="GPRS enabled"
+        ),
+        pytest.param(
+            "dummy_guid_gprs_enabled", "turn_off", "gprs_enabled", False,
+            id="GPRS disabled"
+        ),
+    ],
+)
+# pylint: disable=too-many-positional-arguments,too-many-arguments
+async def test_net_config_switch_entities(
+    unique_id: str, service: str, field: str, value: bool,
+    hass: HomeAssistant, mock_g90alarm: AlarmMockT
+) -> None:
+    """
+    Tests network config switch entities can be toggled correctly.
+    """
+    config_entry = MockConfigEntry(
+        domain=DOMAIN,
+        data={'ip_addr': 'dummy-ip'},
+        options={},
+        entry_id="test_net_config_switch"
+    )
+    config_entry.add_to_hass(hass)
+    await hass.config_entries.async_setup(config_entry.entry_id)
+    await hass.async_block_till_done()
+
+    entity_id = hass_get_entity_id_by_unique_id(hass, 'switch', unique_id)
+
+    # Toggle the switch
+    await hass.services.async_call(
+        SWITCH_DOMAIN,
+        service,
+        {ATTR_ENTITY_ID: entity_id},
+        blocking=True,
+    )
+    await hass.async_block_till_done()
+
+    # Verify save was called
+    (await mock_g90alarm.return_value.net_config()).save.assert_called()
+    # Verify the value was set correctly
+    assert getattr(
+        await mock_g90alarm.return_value.net_config(), field
+    ) == value
+
+
+async def test_net_config_switch_exception(
+    hass: HomeAssistant, mock_g90alarm: AlarmMockT
+) -> None:
+    """
+    Tests network config switch entities handle exceptions correctly.
+    """
+    (
+        await mock_g90alarm.return_value.net_config()
+    ).save.side_effect = G90Error('dummy exception')
+
+    config_entry = MockConfigEntry(
+        domain=DOMAIN,
+        data={'ip_addr': 'dummy-ip'},
+        options={},
+        entry_id="test_net_config_switch_exception"
+    )
+    config_entry.add_to_hass(hass)
+    await hass.config_entries.async_setup(config_entry.entry_id)
+    await hass.async_block_till_done()
+
+    entity_id = hass_get_entity_id_by_unique_id(
+        hass, 'switch', 'dummy_guid_ap_enabled'
+    )
+
+    # Attempt to toggle switch, which should not raise an exception
+    await hass.services.async_call(
+        SWITCH_DOMAIN,
+        'turn_on',
+        {ATTR_ENTITY_ID: entity_id},
+        blocking=True,
+    )
+    await hass.async_block_till_done()
+
+    # Verify save was called despite exception
+    (await mock_g90alarm.return_value.net_config()).save.assert_called()

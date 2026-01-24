@@ -20,7 +20,10 @@ from homeassistant.components.select import (
     SERVICE_SELECT_OPTION,
 )
 
-from pyg90alarm import G90SensorAlertModes, G90Error
+from pyg90alarm import (
+    G90SensorAlertModes, G90Error,
+    G90APNAuth, G90VolumeLevel, G90SpeechLanguage,
+)
 
 from custom_components.gs_alarm.const import DOMAIN
 from .conftest import AlarmMockT, hass_get_entity_id_by_unique_id
@@ -124,3 +127,143 @@ async def test_sensor_alert_modes_exception(
     dummy_sensor_1_alert_mode = hass.states.get(entity_id)
     assert dummy_sensor_1_alert_mode is not None
     assert dummy_sensor_1_alert_mode.state == 'alert_when_away'
+
+
+@pytest.mark.parametrize(
+    "unique_id,option,field,value",
+    [
+        pytest.param(
+            "dummy_guid_apn_auth", "none",
+            "apn_auth", G90APNAuth.NONE,
+            id="APN auth - none"
+        ),
+        pytest.param(
+            "dummy_guid_apn_auth", "pap",
+            "apn_auth", G90APNAuth.PAP,
+            id="APN auth - PAP"
+        ),
+        pytest.param(
+            "dummy_guid_apn_auth", "chap",
+            "apn_auth", G90APNAuth.CHAP,
+            id="APN auth - CHAP"
+        ),
+        pytest.param(
+            "dummy_guid_apn_auth", "pap_or_chap",
+            "apn_auth", G90APNAuth.PAP_OR_CHAP,
+            id="APN auth - PAP or CHAP"
+        ),
+    ],
+)
+# pylint: disable=too-many-positional-arguments,too-many-arguments
+async def test_net_config_select_entities(
+    unique_id: str, option: str, field: str, value: G90APNAuth,
+    hass: HomeAssistant, mock_g90alarm: AlarmMockT
+) -> None:
+    """
+    Tests network config select entities can be set correctly.
+    """
+    config_entry = MockConfigEntry(
+        domain=DOMAIN,
+        data={'ip_addr': 'dummy-ip'},
+        options={},
+        entry_id="test_net_config_select"
+    )
+    config_entry.add_to_hass(hass)
+    await hass.config_entries.async_setup(config_entry.entry_id)
+    await hass.async_block_till_done()
+
+    entity_id = hass_get_entity_id_by_unique_id(hass, 'select', unique_id)
+
+    # Set the option
+    await hass.services.async_call(
+        SELECT_DOMAIN,
+        SERVICE_SELECT_OPTION,
+        {ATTR_ENTITY_ID: entity_id, ATTR_OPTION: option},
+        blocking=True,
+    )
+    await hass.async_block_till_done()
+
+    # Verify save was called
+    (await mock_g90alarm.return_value.net_config()).save.assert_called()
+    # Verify the value was set correctly
+    assert getattr(
+        await mock_g90alarm.return_value.net_config(), field
+    ) == value
+
+
+@pytest.mark.parametrize(
+    "unique_id,option,field,value",
+    [
+        pytest.param(
+            "dummy_guid_alarm_volume_level", "mute",
+            "alarm_volume_level", G90VolumeLevel.MUTE,
+            id="Alarm volume - mute"
+        ),
+        pytest.param(
+            "dummy_guid_alarm_volume_level", "low",
+            "alarm_volume_level", G90VolumeLevel.LOW,
+            id="Alarm volume - low"
+        ),
+        pytest.param(
+            "dummy_guid_alarm_volume_level", "high",
+            "alarm_volume_level", G90VolumeLevel.HIGH,
+            id="Alarm volume - high"
+        ),
+        pytest.param(
+            "dummy_guid_speech_volume_level", "low",
+            "speech_volume_level", G90VolumeLevel.LOW,
+            id="Speech volume - low"
+        ),
+        pytest.param(
+            "dummy_guid_key_tone_volume_level", "high",
+            "key_tone_volume_level", G90VolumeLevel.HIGH,
+            id="Key tone volume - high"
+        ),
+        pytest.param(
+            "dummy_guid_ring_volume_level", "mute",
+            "ring_volume_level", G90VolumeLevel.MUTE,
+            id="Ring volume - mute"
+        ),
+        pytest.param(
+            "dummy_guid_speech_language", "english_female",
+            "speech_language", G90SpeechLanguage.ENGLISH_FEMALE,
+            id="Speech language - English female"
+        ),
+    ],
+)
+# pylint: disable=too-many-positional-arguments,too-many-arguments
+async def test_host_config_select_entities(
+    unique_id: str, option: str,
+    field: str, value: G90VolumeLevel | G90SpeechLanguage,
+    hass: HomeAssistant, mock_g90alarm: AlarmMockT
+) -> None:
+    """
+    Tests host config select entities can be set correctly.
+    """
+    config_entry = MockConfigEntry(
+        domain=DOMAIN,
+        data={'ip_addr': 'dummy-ip'},
+        options={},
+        entry_id="test_host_config_select"
+    )
+    config_entry.add_to_hass(hass)
+    await hass.config_entries.async_setup(config_entry.entry_id)
+    await hass.async_block_till_done()
+
+    entity_id = hass_get_entity_id_by_unique_id(hass, 'select', unique_id)
+
+    # Set the option
+    await hass.services.async_call(
+        SELECT_DOMAIN,
+        SERVICE_SELECT_OPTION,
+        {ATTR_ENTITY_ID: entity_id, ATTR_OPTION: option},
+        blocking=True,
+    )
+    await hass.async_block_till_done()
+
+    # Verify save was called
+    (await mock_g90alarm.return_value.host_config()).save.assert_called()
+    # Verify the value was set correctly
+    assert getattr(
+        await mock_g90alarm.return_value.host_config(), field
+    ) == value

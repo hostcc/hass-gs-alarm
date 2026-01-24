@@ -128,7 +128,7 @@
                 "name": "Alerte: Notification SMS"
             },
             "alert_config_flag_ac_power_failure": {
-                "name": "Alerte: Panne d\"alimentation secteur"
+                "name": "Alerte: Panne d'alimentation secteur"
             },
             "alert_config_flag_ac_power_recover": {
                 "name": "Alerte: Rétablissement de l'alimentation secteur"
@@ -159,20 +159,29 @@
             },
             "simulate_alerts_from_history": {
                 "name": "Simuler les alertes de l'appareil à partir de l'historique"
+            },
+            "ap_enabled": {
+                "name": "Point d'accès: activé"
+            },
+            "gprs_enabled": {
+                "name": "Cellulaire: activé"
             }
         },
         "sensor": {
-           "wifi_signal": {
+            "wifi_signal": {
                 "name": "Signal WiFi"
             },
             "gsm_signal": {
                 "name": "Signal GSM"
             },
             "last_device_packet": {
-                "name": "Dernier paquet de l'appareil"
+                "name": "Dernier paquet d'appareil"
             },
             "last_upstream_packet": {
-                "name": "Heure du dernier paquet reçu depuis le cloud"
+                "name": "Dernier paquet en amont"
+            },
+            "cellular_operator": {
+                "name": "Opérateur cellulaire"
             }
         },
         "select": {
@@ -185,18 +194,82 @@
                 }
             },
             "new_sensor_type": {
-                "name": "Nouveau type de capteur"
+                "name": "Nouveau capteur: type"
             },
             "new_device_type": {
-                "name": "Nouveau type de relais"
+                "name": "Nouveau relais: type"
+            },
+            "alarm_volume_level": {
+                "name": "Volume: Alarme",
+                "state": {
+                    "mute": "Muet",
+                    "low": "Faible",
+                    "high": "Élevé"
+                }
+            },
+            "speech_volume_level": {
+                "name": "Volume: Parole",
+                "state": {
+                    "mute": "Muet",
+                    "low": "Faible",
+                    "high": "Élevé"
+                }
+            },
+            "key_tone_volume_level": {
+                "name": "Volume: Tonalité des touches",
+                "state": {
+                    "mute": "Muet",
+                    "low": "Faible",
+                    "high": "Élevé"
+                }
+            },
+            "ring_volume_level": {
+                "name": "Volume: Sonnerie",
+                "state": {
+                    "mute": "Muet",
+                    "low": "Faible",
+                    "high": "Élevé"
+                }
+            },
+            "speech_language": {
+                "name": "Parole: Langue",
+                "state": {
+                    "english_female": "Anglais (Féminin)",
+                    "english_male": "Anglais (Masculin)",
+                    "chinese_female": "Chinois (Féminin)",
+                    "chinese_male": "Chinois (Masculin)",
+                    "german_female": "Allemand (Féminin)",
+                    "german_male": "Allemand (Masculin)",
+                    "spanish_female": "Espagnol (Féminin)",
+                    "spanish_male": "Espagnol (Masculin)",
+                    "dutch_female": "Néerlandais (Féminin)",
+                    "dutch_male": "Néerlandais (Masculin)",
+                    "swedish_female": "Suédois (Féminin)",
+                    "swedish_male": "Suédois (Masculin)",
+                    "french_female": "Français (Féminin)",
+                    "french_male": "Français (Masculin)",
+                    "turkish_female": "Turc (Féminin)",
+                    "turkish_male": "Turc (Masculin)",
+                    "russian_female": "Russe (Féminin)",
+                    "russian_male": "Russe (Masculin)"
+                }
+            },
+            "apn_auth": {
+                "name": "Cellulaire: Authentification APN",
+                "state": {
+                    "none": "Aucun",
+                    "pap": "PAP",
+                    "chap": "CHAP",
+                    "pap_or_chap": "PAP ou CHAP"
+                }
             }
         },
         "button": {
             "sensor_register": {
-                "name": "Enregistrer un nouveau capteur"
+                "name": "Nouveau capteur: enregistrer"
             },
             "device_register": {
-                "name": "Enregistrer un nouveau relais"
+                "name": "Nouveau relais: enregistrer"
             },
             "device_delete": {
                 "name": "Supprimer"
@@ -207,10 +280,72 @@
         },
         "text": {
             "new_sensor_name": {
-                "name": "Nouveau nom de capteur"
+                "name": "Nouveau capteur: nom"
             },
             "new_device_name": {
-                "name": "Nouveau nom de relais"
+                "name": "Nouveau relais: nom"
+            },
+            "panel_password": {
+                "name": "Panneau: mot de passe"
+            },
+            "panel_phone_number": {
+                "name": "Panneau: numéro de téléphone"
+            },
+            "phone_number_1": {
+                "name": "Alarme: téléphone 1"
+            },
+            "phone_number_2": {
+                "name": "Alarme: téléphone 2"
+            },
+            "phone_number_3": {
+                "name": "Alarme: téléphone 3"
+            },
+            "phone_number_4": {
+                "name": "Alarme: téléphone 4"
+            },
+            "phone_number_5": {
+                "name": "Alarme: téléphone 5"
+            },
+            "phone_number_6": {
+                "name": "Alarme: téléphone 6"
+            },
+            "sms_push_number_1": {
+                "name": "Alarme: SMS push téléphone 1"
+            },
+            "sms_push_number_2": {
+                "name": "Alarme: SMS push téléphone 2"
+            },
+            "ap_password": {
+                "name": "Point d'accès: mot de passe"
+            },
+            "apn_name": {
+                "name": "Cellulaire: nom APN"
+            },
+            "apn_user": {
+                "name": "Cellulaire: utilisateur APN"
+            },
+            "apn_password": {
+                "name": "Cellulaire: mot de passe APN"
+            }
+        },
+        "number": {
+            "alarm_siren_duration": {
+                "name": "Durée: sirène d'alarme"
+            },
+            "arm_delay": {
+                "name": "Délai: armement"
+            },
+            "alarm_delay": {
+                "name": "Délai: alarme"
+            },
+            "backlight_duration": {
+                "name": "Durée: rétroéclairage"
+            },
+            "ring_duration": {
+                "name": "Durée: sonnerie"
+            },
+            "timezone_offset_m": {
+                "name": "Décalage de fuseau horaire"
             }
         },
         "notifications": {

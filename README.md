@@ -22,6 +22,56 @@ of the cases.
 Please note enabling the door alert will have more notifications (and possible
 SMS messages if you enabled those in mobile application) to be sent.
 
+## Panel Configuration Options
+
+The panel configuration options are available as Home Assistant entities and can
+be configured through the UI - navigate to "Settings -> Devices & Services ->
+Golden Security Alarm -> \<serial number\>", corresponding entities
+will be listed there.
+
+| Option | Description |
+|--------|-------------|
+| Access point: enabled | Enable/disable the panel's WiFi access point functionality |
+| Access point: Password | Password for the panel's WiFi access point |
+| Alert: AC power failure | Enable/disable alert notifications when AC power fails |
+| Alert: AC power recover | Enable/disable alert notifications when AC power is restored |
+| Alert: Arm/disarm | Enable/disable alert notifications when panel is armed or disarmed |
+| Alert: Door close | Enable/disable alert notifications when a door closes |
+| Alert: Door open | Enable/disable alert notifications when a door opens |
+| Alert: Host low voltage | Enable/disable alert notifications when the panel host has low battery voltage |
+| Alert: Sensor low voltage | Enable/disable alert notifications when a sensor has low battery voltage |
+| Alert: SMS push | Enable/disable SMS push notifications for alerts |
+| Alert: WiFi available | Enable/disable alert notifications when WiFi becomes available |
+| Alert: WiFi unavailable | Enable/disable alert notifications when WiFi becomes unavailable |
+| Alarm: Phone 1 | First phone number to call when alarm is triggered |
+| Alarm: Phone 2 | Second phone number to call when alarm is triggered |
+| Alarm: Phone 3 | Third phone number to call when alarm is triggered |
+| Alarm: Phone 4 | Fourth phone number to call when alarm is triggered |
+| Alarm: Phone 5 | Fifth phone number to call when alarm is triggered |
+| Alarm: Phone 6 | Sixth phone number to call when alarm is triggered |
+| Alarm: SMS push phone 1 | First phone number to receive SMS push notifications |
+| Alarm: SMS push phone 2 | Second phone number to receive SMS push notifications |
+| Cellular: APN Authentication | Authentication method for cellular APN connection, provided by cellular operator |
+| Cellular: APN Name | Access Point Name for cellular data connection, provided by cellular operator |
+| Cellular: APN Password | Password for cellular APN authentication, provided by cellular operator |
+| Cellular: APN User | Username for cellular APN authentication, provided by cellular operator |
+| Cellular: enabled | Enable/disable cellular/GPRS connectivity |
+| Delay: Alarm | Delay before the alarm sounds after a sensor is triggered |
+| Delay: Arm | Delay before the panel arms after arming command |
+| Duration: Alarm siren | Duration for how long the alarm siren will sound, use `0` to disable the siren |
+| Duration: Backlight | Duration for how long the panel backlight stays on |
+| Duration: Ring | Duration for how long the panel rings when receiving a call |
+| Panel: Password | Panel password for disarming and remote control via SMS/calls |
+| Panel: Phone number | The panel's own phone number, SIM card number for panels with cellular support |
+| Simulate alerts from history | Enable/disable simulation of alerts from historical events |
+| SMS alerts only when armed | When enabled, SMS alerts are only sent when the panel is armed |
+| Speech: Language | Language and voice gender for panel speech announcements |
+| Timezone offset | Timezone offset from UTC for the panel's internal clock |
+| Volume: Alarm | Volume level for built-in alarm siren (Mute/Low/High) |
+| Volume: Key tone | Volume level for keypad button press sounds (Mute/Low/High) |
+| Volume: Ring | Volume level for incoming call (Mute/Low/High), only available on panels with cellular support |
+| Volume: Speech | Volume level for speech announcements (Mute/Low/High) |
+
 ## Notifications
 
 Notifications from the alarm panel are essential for the integration -

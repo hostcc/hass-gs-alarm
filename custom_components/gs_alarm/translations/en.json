@@ -159,6 +159,12 @@
             },
             "simulate_alerts_from_history": {
                 "name": "Simulate alerts from history"
+            },
+            "ap_enabled": {
+                "name": "Access point: enabled"
+            },
+            "gprs_enabled": {
+                "name": "Cellular: enabled"
             }
         },
         "sensor": {
@@ -173,6 +179,9 @@
             },
             "last_upstream_packet": {
                 "name": "Last upstream packet"
+            },
+            "cellular_operator": {
+                "name": "Cellular operator"
             }
         },
         "select": {
@@ -185,18 +194,82 @@
                 }
             },
             "new_sensor_type": {
-                "name": "New sensor type"
+                "name": "New sensor: type"
             },
             "new_device_type": {
-                "name": "New relay type"
+                "name": "New relay: type"
+            },
+            "alarm_volume_level": {
+                "name": "Volume: Alarm",
+                "state": {
+                    "mute": "Mute",
+                    "low": "Low",
+                    "high": "High"
+                }
+            },
+            "speech_volume_level": {
+                "name": "Volume: Speech",
+                "state": {
+                    "mute": "Mute",
+                    "low": "Low",
+                    "high": "High"
+                }
+            },
+            "key_tone_volume_level": {
+                "name": "Volume: Key tone",
+                "state": {
+                    "mute": "Mute",
+                    "low": "Low",
+                    "high": "High"
+                }
+            },
+            "ring_volume_level": {
+                "name": "Volume: Ring",
+                "state": {
+                    "mute": "Mute",
+                    "low": "Low",
+                    "high": "High"
+                }
+            },
+            "speech_language": {
+                "name": "Speech: Language",
+                "state": {
+                    "english_female": "English (Female)",
+                    "english_male": "English (Male)",
+                    "chinese_female": "Chinese (Female)",
+                    "chinese_male": "Chinese (Male)",
+                    "german_female": "German (Female)",
+                    "german_male": "German (Male)",
+                    "spanish_female": "Spanish (Female)",
+                    "spanish_male": "Spanish (Male)",
+                    "dutch_female": "Dutch (Female)",
+                    "dutch_male": "Dutch (Male)",
+                    "swedish_female": "Swedish (Female)",
+                    "swedish_male": "Swedish (Male)",
+                    "french_female": "French (Female)",
+                    "french_male": "French (Male)",
+                    "turkish_female": "Turkish (Female)",
+                    "turkish_male": "Turkish (Male)",
+                    "russian_female": "Russian (Female)",
+                    "russian_male": "Russian (Male)"
+                }
+            },
+            "apn_auth": {
+                "name": "Cellular: APN Authentication",
+                "state": {
+                    "none": "None",
+                    "pap": "PAP",
+                    "chap": "CHAP",
+                    "pap_or_chap": "PAP or CHAP"
+                }
             }
         },
         "button": {
             "sensor_register": {
-                "name": "Register new sensor"
+                "name": "New sensor: register"
             },
             "device_register": {
-                "name": "Register new relay"
+                "name": "New relay: register"
             },
             "device_delete": {
                 "name": "Delete"
@@ -207,10 +280,72 @@
         },
         "text": {
             "new_sensor_name": {
-                "name": "New sensor name"
+                "name": "New sensor: name"
             },
             "new_device_name": {
-                "name": "New relay name"
+                "name": "New relay: name"
+            },
+            "panel_password": {
+                "name": "Panel: Password"
+            },
+            "panel_phone_number": {
+                "name": "Panel: Phone number"
+            },
+            "phone_number_1": {
+                "name": "Alarm: Phone 1"
+            },
+            "phone_number_2": {
+                "name": "Alarm: Phone 2"
+            },
+            "phone_number_3": {
+                "name": "Alarm: Phone 3"
+            },
+            "phone_number_4": {
+                "name": "Alarm: Phone 4"
+            },
+            "phone_number_5": {
+                "name": "Alarm: Phone 5"
+            },
+            "phone_number_6": {
+                "name": "Alarm: Phone 6"
+            },
+            "sms_push_number_1": {
+                "name": "Alarm: SMS push phone 1"
+            },
+            "sms_push_number_2": {
+                "name": "Alarm: SMS push phone 2"
+            },
+            "ap_password": {
+                "name": "Access point: Password"
+            },
+            "apn_name": {
+                "name": "Cellular: APN Name"
+            },
+            "apn_user": {
+                "name": "Cellular: APN User"
+            },
+            "apn_password": {
+                "name": "Cellular: APN Password"
+            }
+        },
+        "number": {
+            "alarm_siren_duration": {
+                "name": "Duration: Alarm siren"
+            },
+            "arm_delay": {
+                "name": "Delay: Arm"
+            },
+            "alarm_delay": {
+                "name": "Delay: Alarm"
+            },
+            "backlight_duration": {
+                "name": "Duration: Backlight"
+            },
+            "ring_duration": {
+                "name": "Duration: Ring"
+            },
+            "timezone_offset_m": {
+                "name": "Timezone offset"
             }
         },
         "notifications": {

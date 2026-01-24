@@ -16,12 +16,13 @@ from homeassistant.core import Event
 
 from pyg90alarm import (
     G90Sensor, G90Error, G90TimeoutError, G90SensorAlertModes,
-    G90SensorDefinitions, G90DeviceDefinitions,
+    G90SensorDefinitions, G90DeviceDefinitions, G90VolumeLevel,
+    G90SpeechLanguage, G90APNAuth,
 )
 
 from .const import DOMAIN
 from .mixin import GSAlarmGenerateIDsSensorMixin
-from .entity_base import GSAlarmEntityBase
+from .entity_base import GSAlarmEntityBase, G90ConfigSelectField
 from .coordinator import GsAlarmCoordinator
 from .binary_sensor import G90BinarySensor
 if TYPE_CHECKING:
@@ -47,11 +48,84 @@ async def async_setup_entry(
         sensor_list_change_callback
     )
 
-    # Entities for registering sensors holding its name and type
-    async_add_entities([
+    entities = [
+        # Entities for registering sensors holding its name and type
         G90NewSensorType(entry.runtime_data),
         G90NewDeviceType(entry.runtime_data),
-    ])
+        # Add host config select entities
+        G90ConfigSelectField(
+            entry.runtime_data, entry.runtime_data.data.host_config,
+            'alarm_volume_level', {
+                G90VolumeLevel.MUTE: "mute",
+                G90VolumeLevel.LOW: "low",
+                G90VolumeLevel.HIGH: "high",
+            }, 'mdi:volume-high'
+        ),
+        G90ConfigSelectField(
+            entry.runtime_data, entry.runtime_data.data.host_config,
+            'speech_volume_level', {
+                G90VolumeLevel.MUTE: "mute",
+                G90VolumeLevel.LOW: "low",
+                G90VolumeLevel.HIGH: "high",
+            }, 'mdi:account-voice'
+        ),
+        G90ConfigSelectField(
+            entry.runtime_data, entry.runtime_data.data.host_config,
+            'key_tone_volume_level', {
+                G90VolumeLevel.MUTE: "mute",
+                G90VolumeLevel.LOW: "low",
+                G90VolumeLevel.HIGH: "high",
+            }, 'mdi:dialpad'
+        ),
+        G90ConfigSelectField(
+            entry.runtime_data, entry.runtime_data.data.host_config,
+            'speech_language', {
+                G90SpeechLanguage.ENGLISH_FEMALE: "english_female",
+                G90SpeechLanguage.ENGLISH_MALE: "english_male",
+                G90SpeechLanguage.CHINESE_FEMALE: "chinese_female",
+                G90SpeechLanguage.CHINESE_MALE: "chinese_male",
+                G90SpeechLanguage.GERMAN_FEMALE: "german_female",
+                G90SpeechLanguage.GERMAN_MALE: "german_male",
+                G90SpeechLanguage.SPANISH_FEMALE: "spanish_female",
+                G90SpeechLanguage.SPANISH_MALE: "spanish_male",
+                G90SpeechLanguage.DUTCH_FEMALE: "dutch_female",
+                G90SpeechLanguage.DUTCH_MALE: "dutch_male",
+                G90SpeechLanguage.SWEDISH_FEMALE: "swedish_female",
+                G90SpeechLanguage.SWEDISH_MALE: "swedish_male",
+                G90SpeechLanguage.FRENCH_FEMALE: "french_female",
+                G90SpeechLanguage.FRENCH_MALE: "french_male",
+                G90SpeechLanguage.TURKISH_FEMALE: "turkish_female",
+                G90SpeechLanguage.TURKISH_MALE: "turkish_male",
+                G90SpeechLanguage.RUSSIAN_FEMALE: "russian_female",
+                G90SpeechLanguage.RUSSIAN_MALE: "russian_male",
+            }, 'mdi:account-voice'
+        ),
+        # Add network config select entity
+        G90ConfigSelectField(
+            entry.runtime_data, entry.runtime_data.data.net_config,
+            'apn_auth', {
+                G90APNAuth.NONE: "none",
+                G90APNAuth.PAP: "pap",
+                G90APNAuth.CHAP: "chap",
+                G90APNAuth.PAP_OR_CHAP: "pap_or_chap",
+            }, 'mdi:shield-account'
+        ),
+    ]
+
+    # Only panels with cellular support have ring volume level setting
+    if entry.runtime_data.data.host_config.ring_volume_level is not None:
+        entities.append(
+            G90ConfigSelectField(
+                entry.runtime_data, entry.runtime_data.data.host_config,
+                'ring_volume_level', {
+                    G90VolumeLevel.MUTE: "mute",
+                    G90VolumeLevel.LOW: "low",
+                    G90VolumeLevel.HIGH: "high",
+                }, 'mdi:phone-ring-outline'
+            )
+        )
+
+    async_add_entities(entities)
 
 
 class G90SensorAlertMode(

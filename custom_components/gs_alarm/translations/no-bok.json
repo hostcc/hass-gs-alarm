@@ -159,6 +159,12 @@
             },
             "simulate_alerts_from_history": {
                 "name": "Simuler varsler fra historikk"
+            },
+            "ap_enabled": {
+                "name": "Tilgangspunkt: aktivert"
+            },
+            "gprs_enabled": {
+                "name": "Mobil: aktivert"
             }
         },
         "sensor": {
@@ -173,9 +179,76 @@
             },
             "last_upstream_packet": {
                 "name": "Siste oppstrøms-pakke"
+            },
+            "cellular_operator": {
+                "name": "Mobiloperatør"
             }
         },
-        "select": {
+        "select": {            
+            "alarm_volume_level": {
+                "name": "Volum: Alarm",
+                "state": {
+                    "mute": "Stille",
+                    "low": "Lav",
+                    "high": "Høy"
+                }
+            },
+            "speech_volume_level": {
+                "name": "Volum: Tale",
+                "state": {
+                    "mute": "Stille",
+                    "low": "Lav",
+                    "high": "Høy"
+                }
+            },
+            "key_tone_volume_level": {
+                "name": "Volum: Tast-tone",
+                "state": {
+                    "mute": "Stille",
+                    "low": "Lav",
+                    "high": "Høy"
+                }
+            },
+            "ring_volume_level": {
+                "name": "Volum: Ringetone",
+                "state": {
+                    "mute": "Stille",
+                    "low": "Lav",
+                    "high": "Høy"
+                }
+            },
+            "speech_language": {
+                "name": "Tale: Språk",
+                "state": {
+                    "english_female": "Engelsk (Kvinne)",
+                    "english_male": "Engelsk (Mann)",
+                    "spanish_female": "Spansk (Kvinne)",
+                    "spanish_male": "Spansk (Mann)",
+                    "french_female": "Fransk (Kvinne)",
+                    "french_male": "Fransk (Mann)",
+                    "german_female": "Tysk (Kvinne)",
+                    "german_male": "Tysk (Mann)",
+                    "italian_female": "Italiensk (Kvinne)",
+                    "italian_male": "Italiensk (Mann)",
+                    "portuguese_female": "Portugisisk (Kvinne)",
+                    "portuguese_male": "Portugisisk (Mann)",
+                    "russian_female": "Russisk (Kvinne)",
+                    "russian_male": "Russisk (Mann)",
+                    "ukrainian_female": "Ukrainsk (Kvinne)",
+                    "ukrainian_male": "Ukrainsk (Mann)",
+                    "bulgarian_female": "Bulgarsk (Kvinne)",
+                    "bulgarian_male": "Bulgarsk (Mann)"
+                }
+            },
+            "apn_auth": {
+                "name": "APN-autentisering",
+                "state": {
+                    "none": "Ingen",
+                    "pap": "PAP",
+                    "chap": "CHAP",
+                    "pap_or_chap": "PAP, CHAP"
+                }
+            },            
             "sensor_alert_mode": {
                 "name": "Varslingsmodus",
                 "state": {
@@ -193,10 +266,10 @@
         },
         "button": {
             "sensor_register": {
-                "name": "Registrer ny sensor"
+                "name": "Ny sensor: registrer"
             },
             "device_register": {
-                "name": "Registrer nytt relais"
+                "name": "Ny relè: registrer"
             },
             "device_delete": {
                 "name": "Slett"
@@ -205,14 +278,76 @@
                 "name": "Slett"
             }
         },
-        "text": {
+        "text": {            
+            "panel_password": {
+                "name": "Panel: passord"
+            },
+            "panel_phone_number": {
+                "name": "Panel: telefonnummer"
+            },
+            "phone_number_1": {
+                "name": "Alarm: telefon 1"
+            },
+            "phone_number_2": {
+                "name": "Alarm: telefon 2"
+            },
+            "phone_number_3": {
+                "name": "Alarm: telefon 3"
+            },
+            "phone_number_4": {
+                "name": "Alarm: telefon 4"
+            },
+            "phone_number_5": {
+                "name": "Alarm: telefon 5"
+            },
+            "phone_number_6": {
+                "name": "Alarm: telefon 6"
+            },
+            "sms_push_number_1": {
+                "name": "SMS push: nummer 1"
+            },
+            "sms_push_number_2": {
+                "name": "SMS push: nummer 2"
+            },
+            "ap_password": {
+                "name": "Tilgangspunkt: passord"
+            },
+            "apn_name": {
+                "name": "Tilgangspunkt APN: navn"
+            },
+            "apn_user": {
+                "name": "Tilgangspunkt APN: bruker"
+            },
+            "apn_password": {
+                "name": "Tilgangspunkt APN: passord"
+            },            
             "new_sensor_name": {
                 "name": "Nytt sensornavn"
             },
             "new_device_name": {
                 "name": "Nytt relaisnavn"
             }
-        },
+        },        
+        "number": {
+            "alarm_siren_duration": {
+                "name": "Varighet: alarmsirene"
+            },
+            "arm_delay": {
+                "name": "Forsinkelse: armering"
+            },
+            "alarm_delay": {
+                "name": "Forsinkelse: alarm"
+            },
+            "backlight_duration": {
+                "name": "Varighet: bakgrunnsbelysning"
+            },
+            "ring_duration": {
+                "name": "Varighet: ringetone"
+            },
+            "timezone_offset_m": {
+                "name": "Tidssoneavvik"
+            }
+        },        
         "notifications": {
             "register_device_starting": {
                 "name": "Registrering av ny enhet av type \"{type}\", sørg for at den er i læringsmodus"

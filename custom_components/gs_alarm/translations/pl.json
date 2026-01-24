@@ -159,6 +159,12 @@
             },
             "simulate_alerts_from_history": {
                 "name": "Symuluj alerty urządzenia z historii"
+            },
+            "ap_enabled": {
+                "name": "Punkt dostępu: włączony"
+            },
+            "gprs_enabled": {
+                "name": "Komórkowe: włączone"
             }
         },
         "sensor": {
@@ -173,9 +179,76 @@
             },
             "last_upstream_packet": {
                 "name": "Czas ostatniego odebranego pakietu z chmury"
+            },
+            "cellular_operator": {
+                "name": "Operator komórkowy"
             }
         },
         "select": {
+            "alarm_volume_level": {
+                "name": "Głośność: Alarm",
+                "state": {
+                    "mute": "Wyciszenie",
+                    "low": "Niska",
+                    "high": "Wysoka"
+                }
+            },
+            "speech_volume_level": {
+                "name": "Głośność: Mowa",
+                "state": {
+                    "mute": "Wyciszenie",
+                    "low": "Niska",
+                    "high": "Wysoka"
+                }
+            },
+            "key_tone_volume_level": {
+                "name": "Głośność: Ton klawisza",
+                "state": {
+                    "mute": "Wyciszenie",
+                    "low": "Niska",
+                    "high": "Wysoka"
+                }
+            },
+            "ring_volume_level": {
+                "name": "Głośność: Dzwonek",
+                "state": {
+                    "mute": "Wyciszenie",
+                    "low": "Niska",
+                    "high": "Wysoka"
+                }
+            },
+            "speech_language": {
+                "name": "Mowa: Język",
+                "state": {
+                    "english_female": "Angielski (Kobieta)",
+                    "english_male": "Angielski (Mężczyzna)",
+                    "spanish_female": "Hiszpański (Kobieta)",
+                    "spanish_male": "Hiszpański (Mężczyzna)",
+                    "french_female": "Francuski (Kobieta)",
+                    "french_male": "Francuski (Mężczyzna)",
+                    "german_female": "Niemiecki (Kobieta)",
+                    "german_male": "Niemiecki (Mężczyzna)",
+                    "italian_female": "Włoski (Kobieta)",
+                    "italian_male": "Włoski (Mężczyzna)",
+                    "portuguese_female": "Portugalski (Kobieta)",
+                    "portuguese_male": "Portugalski (Mężczyzna)",
+                    "russian_female": "Rosyjski (Kobieta)",
+                    "russian_male": "Rosyjski (Mężczyzna)",
+                    "ukrainian_female": "Ukraiński (Kobieta)",
+                    "ukrainian_male": "Ukraiński (Mężczyzna)",
+                    "bulgarian_female": "Bułgarski (Kobieta)",
+                    "bulgarian_male": "Bułgarski (Mężczyzna)"
+                }
+            },
+            "apn_auth": {
+                "name": "Autoryzacja APN",
+                "state": {
+                    "none": "Brak",
+                    "pap": "PAP",
+                    "chap": "CHAP",
+                    "pap_or_chap": "PAP, CHAP"
+                }
+            },
             "sensor_alert_mode": {
                 "name": "Tryb alarmu",
                 "state": {
@@ -185,18 +258,18 @@
                 }
             },
             "new_sensor_type": {
-                "name": "Nowy typ czujnika"
+                "name": "Nowy czujnik: typ"
             },
             "new_device_type": {
-                "name": "Nowy typ przekaźnika"
+                "name": "Nowy przekaźnik: typ"
             }
         },
         "button": {
             "sensor_register": {
-                "name": "Zarejestruj nowy czujnik"
+                "name": "Nowy czujnik: rejestracja"
             },
             "device_register": {
-                "name": "Zarejestruj nowy przekaźnik"
+                "name": "Nowy przekaźnik: rejestracja"
             },
             "device_delete": {
                 "name": "Usuń"
@@ -206,11 +279,73 @@
             }
         },
         "text": {
+            "panel_password": {
+                "name": "Panel: hasło"
+            },
+            "panel_phone_number": {
+                "name": "Panel: numer telefonu"
+            },
+            "phone_number_1": {
+                "name": "Alarm: telefon 1"
+            },
+            "phone_number_2": {
+                "name": "Alarm: telefon 2"
+            },
+            "phone_number_3": {
+                "name": "Alarm: telefon 3"
+            },
+            "phone_number_4": {
+                "name": "Alarm: telefon 4"
+            },
+            "phone_number_5": {
+                "name": "Alarm: telefon 5"
+            },
+            "phone_number_6": {
+                "name": "Alarm: telefon 6"
+            },
+            "sms_push_number_1": {
+                "name": "SMS push: numer 1"
+            },
+            "sms_push_number_2": {
+                "name": "SMS push: numer 2"
+            },
+            "ap_password": {
+                "name": "Punkt dostępu: hasło"
+            },
+            "apn_name": {
+                "name": "Punkt dostępu APN: nazwa"
+            },
+            "apn_user": {
+                "name": "Punkt dostępu APN: użytkownik"
+            },
+            "apn_password": {
+                "name": "Punkt dostępu APN: hasło"
+            },
             "new_sensor_name": {
                 "name": "Nowa nazwa czujnika"
             },
             "new_device_name": {
                 "name": "Nowa nazwa przekaźnika"
+            }
+        },
+        "number": {
+            "alarm_siren_duration": {
+                "name": "Czas trwania syreny alarmu"
+            },
+            "arm_delay": {
+                "name": "Opóźnienie uzbrojenia"
+            },
+            "alarm_delay": {
+                "name": "Opóźnienie alarmu"
+            },
+            "backlight_duration": {
+                "name": "Czas trwania podświetlenia"
+            },
+            "ring_duration": {
+                "name": "Czas trwania dzwonka"
+            },
+            "timezone_offset_m": {
+                "name": "Przesunięcie strefy czasowej"
             }
         },
         "notifications": {
