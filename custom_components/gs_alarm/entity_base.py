@@ -8,6 +8,7 @@ from typing import Any
 import logging
 
 from homeassistant.const import STATE_ON
+from homeassistant.core import callback
 from homeassistant.helpers.update_coordinator import CoordinatorEntity
 from homeassistant.components.switch import SwitchEntity
 from homeassistant.helpers.restore_state import RestoreEntity
@@ -207,6 +208,7 @@ class G90ConfigSelectField(SelectEntity, G90ConfigFieldBase):
         field_name: str, states_map: dict[Any, str], icon: str
     ) -> None:
         super().__init__(coordinator, config_object, field_name, icon)
+        self._attr_current_option = None
         self.states_map = states_map
         self.reverse_states_map = dict(
             zip(states_map.values(), states_map.keys())
@@ -221,17 +223,16 @@ class G90ConfigSelectField(SelectEntity, G90ConfigFieldBase):
         """
         await self._set_value(self.reverse_states_map[option])
 
-    @property
-    def current_option(self) -> str | None:
+    @callback
+    def _handle_coordinator_update(self) -> None:
         """
-        Return the currently selected option.
-
-        :return: The current option.
+        Invoked when HomeAssistant needs to update the switch state.
         """
         option = self._get_value()
-        if option is None:
-            return None
-        return self.states_map.get(option)
+        self._attr_current_option = (
+            self.states_map.get(option) if option is not None else None
+        )
+        self.async_write_ha_state()
 
 
 class G90ConfigNumberField(NumberEntity, G90ConfigFieldBase):
@@ -252,6 +253,7 @@ class G90ConfigNumberField(NumberEntity, G90ConfigFieldBase):
         icon: str, unit: str
     ) -> None:
         super().__init__(coordinator, config_object, field_name, icon)
+        self._attr_native_value = None
         self._attr_mode = NumberMode.BOX
         self._attr_native_unit_of_measurement = unit
 
@@ -271,15 +273,14 @@ class G90ConfigNumberField(NumberEntity, G90ConfigFieldBase):
         """
         await self._set_value(int(value))
 
-    @property
-    def native_value(self) -> float | None:
+    @callback
+    def _handle_coordinator_update(self) -> None:
         """
-        Return the entity value to represent the entity state.
-
-        :return: The current value.
+        Invoked when HomeAssistant needs to update the switch state.
         """
         value = self._get_value()
-        return float(value) if value is not None else None
+        self._attr_native_value = float(value) if value is not None else None
+        self.async_write_ha_state()
 
 
 class G90ConfigTextField(TextEntity, G90ConfigFieldBase):
@@ -301,6 +302,7 @@ class G90ConfigTextField(TextEntity, G90ConfigFieldBase):
         icon: str, is_password: bool
     ) -> None:
         super().__init__(coordinator, config_object, field_name, icon)
+        self._attr_native_value = None
         if is_password:
             self._attr_mode = TextMode.PASSWORD
 
@@ -329,15 +331,13 @@ class G90ConfigTextField(TextEntity, G90ConfigFieldBase):
         """
         await self._set_value(value)
 
-    @property
-    def native_value(self) -> str | None:
+    @callback
+    def _handle_coordinator_update(self) -> None:
         """
-        Return the entity value to represent the entity state.
-
-        :return: The current value.
+        Invoked when HomeAssistant needs to update the switch state.
         """
-        value: str | None = self._get_value()
-        return value
+        self._attr_native_value = self._get_value()
+        self.async_write_ha_state()
 
 
 class G90ConfigSwitchField(SwitchEntity, G90ConfigFieldBase):
@@ -358,7 +358,7 @@ class G90ConfigSwitchField(SwitchEntity, G90ConfigFieldBase):
         icon: str
     ) -> None:
         super().__init__(coordinator, config_object, field_name, icon)
-        self._attr_is_on = False
+        self._attr_is_on = None
 
     async def async_turn_on(self, **_kwargs: Any) -> None:
         """
@@ -372,11 +372,10 @@ class G90ConfigSwitchField(SwitchEntity, G90ConfigFieldBase):
         """
         await self._set_value(False)
 
-    @property
-    def is_on(self) -> bool:
+    @callback
+    def _handle_coordinator_update(self) -> None:
         """
-        Return the entity state.
-
-        :return: True if the switch is on, False otherwise.
+        Invoked when HomeAssistant needs to update the switch state.
         """
-        return bool(self._get_value())
+        self._attr_is_on = bool(self._get_value())
+        self.async_write_ha_state()
