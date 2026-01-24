@@ -33,7 +33,7 @@ load-plugins = [
 [tool.pylint.'MESSAGES CONTROL']
 per-file-ignores = [
     # Tests do have some duplicate code, but it is acceptable since those should
-    # be as simple as possible, but no necessarily coded efficiently
+    # be as simple as possible, but not necessarily coded efficiently
     "/tests/*:duplicate-code",
 ]
 

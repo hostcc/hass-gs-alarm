@@ -171,7 +171,7 @@ class G90ConfigFieldBase(
 
         except (G90Error, G90TimeoutError) as exc:
             value_str = repr(value)
-            # Redact sensitive value if the entities is marked as sensitive
+            # Redact sensitive value if the entity is marked as sensitive
             if self._is_sensitive:
                 value_str = "<redacted>"
             _LOGGER.error(

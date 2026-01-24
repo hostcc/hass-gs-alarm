@@ -271,7 +271,7 @@ def mock_g90alarm(request: pytest.FixtureRequest) -> Iterator[AlarmMockT]:
         # Patching dataclass `save()` method should come before `load()`,
         # since load returns instance of the dataclass. Otherwise, `save()`
         # won't get mocked correctly. Also, `autospec=True` isn't used,
-        # otherwise mock instance won't get create over `save()` method.
+        # otherwise mock instance won't get created over `save()` method.
         patch(
             'pyg90alarm.local.host_config.G90HostConfig.save',
         ),
