@@ -24,3 +24,16 @@ ignore_missing_imports = true
 
 [tool.coverage.run]
 relative_files = true
+
+[tool.pylint.main]
+load-plugins = [
+    "pylint_per_file_ignores",
+]
+
+[tool.pylint.'MESSAGES CONTROL']
+per-file-ignores = [
+    # Tests do have some duplicate code, but it is acceptable since those should
+    # be as simple as possible, but no necessarily coded efficiently
+    "/tests/*:duplicate-code",
+]
+

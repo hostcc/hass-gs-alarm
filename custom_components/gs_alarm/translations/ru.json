@@ -159,6 +159,12 @@
             },
             "simulate_alerts_from_history": {
                 "name": "Симуляция событий из истории"
+            },
+            "ap_enabled": {
+                "name": "Точка доступа: включено"
+            },
+            "gprs_enabled": {
+                "name": "Сотовая связь: включено"
             }
         },
         "sensor": {
@@ -173,9 +179,76 @@
             },
             "last_upstream_packet": {
                 "name": "Время последнего полученного пакета из облака"
+            },
+            "cellular_operator": {
+                "name": "Оператор сотовой связи"
             }
         },
-        "select": {
+        "select": {            
+            "alarm_volume_level": {
+                "name": "Громкость: Сигнал тревоги",
+                "state": {
+                    "mute": "Без звука",
+                    "low": "Низкая",
+                    "high": "Высокая"
+                }
+            },
+            "speech_volume_level": {
+                "name": "Громкость: Речь",
+                "state": {
+                    "mute": "Без звука",
+                    "low": "Низкая",
+                    "high": "Высокая"
+                }
+            },
+            "key_tone_volume_level": {
+                "name": "Громкость: Звук клавиш",
+                "state": {
+                    "mute": "Без звука",
+                    "low": "Низкая",
+                    "high": "Высокая"
+                }
+            },
+            "ring_volume_level": {
+                "name": "Громкость: Звонок",
+                "state": {
+                    "mute": "Без звука",
+                    "low": "Низкая",
+                    "high": "Высокая"
+                }
+            },
+            "speech_language": {
+                "name": "Речь: Язык",
+                "state": {
+                    "english_female": "Английский (Женский)",
+                    "english_male": "Английский (Мужской)",
+                    "spanish_female": "Испанский (Женский)",
+                    "spanish_male": "Испанский (Мужской)",
+                    "french_female": "Французский (Женский)",
+                    "french_male": "Французский (Мужской)",
+                    "german_female": "Немецкий (Женский)",
+                    "german_male": "Немецкий (Мужской)",
+                    "italian_female": "Итальянский (Женский)",
+                    "italian_male": "Итальянский (Мужской)",
+                    "portuguese_female": "Португальский (Женский)",
+                    "portuguese_male": "Португальский (Мужской)",
+                    "russian_female": "Русский (Женский)",
+                    "russian_male": "Русский (Мужской)",
+                    "ukrainian_female": "Украинский (Женский)",
+                    "ukrainian_male": "Украинский (Мужской)",
+                    "bulgarian_female": "Болгарский (Женский)",
+                    "bulgarian_male": "Болгарский (Мужской)"
+                }
+            },
+            "apn_auth": {
+                "name": "Точка доступа APN: аутентификация",
+                "state": {
+                    "none": "Нет",
+                    "pap": "PAP",
+                    "chap": "CHAP",
+                    "pap_chap": "PAP, CHAP"
+                }
+            },            
             "sensor_alert_mode": {
                 "name": "Режим тревоги",
                 "state": {
@@ -185,18 +258,18 @@
                 }
             },
             "new_sensor_type": {
-                "name": "Новый тип датчика"
+                "name": "Новый датчик: тип"
             },
             "new_device_type": {
-                "name": "Новый тип реле"
+                "name": "Новое реле: тип"
             }
         },
         "button": {
             "sensor_register": {
-                "name": "Зарегистрировать новый датчик"
+                "name": "Новый датчик: регистрация"
             },
             "device_register": {
-                "name": "Зарегистрировать новое реле"
+                "name": "Новое реле: регистрация"
             },
             "device_delete": {
                 "name": "Удалить"
@@ -206,11 +279,73 @@
             }
         },
         "text": {
+            "panel_password": {
+                "name": "Панель: пароль"
+            },
+            "panel_phone_number": {
+                "name": "Панель: номер телефона"
+            },
+            "phone_number_1": {
+                "name": "Тревога: телефон 1"
+            },
+            "phone_number_2": {
+                "name": "Тревога: телефон 2"
+            },
+            "phone_number_3": {
+                "name": "Тревога: телефон 3"
+            },
+            "phone_number_4": {
+                "name": "Тревога: телефон 4"
+            },
+            "phone_number_5": {
+                "name": "Тревога: телефон 5"
+            },
+            "phone_number_6": {
+                "name": "Тревога: телефон 6"
+            },
+            "sms_push_number_1": {
+                "name": "SMS push: номер 1"
+            },
+            "sms_push_number_2": {
+                "name": "SMS push: номер 2"
+            },
+            "ap_password": {
+                "name": "Точка доступа: пароль"
+            },
+            "apn_name": {
+                "name": "Точка доступа APN: название"
+            },
+            "apn_user": {
+                "name": "Точка доступа APN: пользователь"
+            },
+            "apn_password": {
+                "name": "Точка доступа APN: пароль"
+            },
             "new_sensor_name": {
                 "name": "Новое имя датчика"
             },
             "new_device_name": {
                 "name": "Новое имя реле"
+            }
+        },
+        "number": {
+            "alarm_siren_duration": {
+                "name": "Длительность: сирена тревоги"
+            },
+            "arm_delay": {
+                "name": "Задержка: вооружение"
+            },
+            "alarm_delay": {
+                "name": "Задержка: тревога"
+            },
+            "backlight_duration": {
+                "name": "Длительность: подсветка"
+            },
+            "ring_duration": {
+                "name": "Длительность: звонок"
+            },
+            "timezone_offset_m": {
+                "name": "Смещение часового пояса"
             }
         },
         "notifications": {

@@ -159,6 +159,12 @@
             },
             "simulate_alerts_from_history": {
                 "name": "Simuleer meldingen uit geschiedenis"
+            },
+            "ap_enabled": {
+                "name": "Toegangspunt: ingeschakeld"
+            },
+            "gprs_enabled": {
+                "name": "Mobiel: ingeschakeld"
             }
         },
         "sensor": {
@@ -169,10 +175,13 @@
                 "name": "GSM-signaal"
             },
             "last_device_packet": {
-                "name": "Laatste apparaatpakket"
+                "name": "Laatst apparaatpakket"
             },
             "last_upstream_packet": {
-                "name": "Laatste upstream-pakket"
+                "name": "Laatst upstream-pakket"
+            },
+            "cellular_operator": {
+                "name": "Mobiele provider"
             }
         },
         "select": {
@@ -185,18 +194,82 @@
                 }
             },
             "new_sensor_type": {
-                "name": "Nieuw sensortype"
+                "name": "Nieuwe sensor: type"
             },
             "new_device_type": {
-                "name": "Nieuw relaistype"
+                "name": "Nieuw relais: type"
+            },
+            "alarm_volume_level": {
+                "name": "Volume: Alarm",
+                "state": {
+                    "mute": "Uit",
+                    "low": "Laag",
+                    "high": "Hoog"
+                }
+            },
+            "speech_volume_level": {
+                "name": "Volume: Spraak",
+                "state": {
+                    "mute": "Uit",
+                    "low": "Laag",
+                    "high": "Hoog"
+                }
+            },
+            "key_tone_volume_level": {
+                "name": "Volume: Toetssignaal",
+                "state": {
+                    "mute": "Uit",
+                    "low": "Laag",
+                    "high": "Hoog"
+                }
+            },
+            "ring_volume_level": {
+                "name": "Volume: Beltoon",
+                "state": {
+                    "mute": "Uit",
+                    "low": "Laag",
+                    "high": "Hoog"
+                }
+            },
+            "speech_language": {
+                "name": "Spraak: Taal",
+                "state": {
+                    "english_female": "Engels (Vrouw)",
+                    "english_male": "Engels (Man)",
+                    "chinese_female": "Chinees (Vrouw)",
+                    "chinese_male": "Chinees (Man)",
+                    "german_female": "Duits (Vrouw)",
+                    "german_male": "Duits (Man)",
+                    "spanish_female": "Spaans (Vrouw)",
+                    "spanish_male": "Spaans (Man)",
+                    "dutch_female": "Nederlands (Vrouw)",
+                    "dutch_male": "Nederlands (Man)",
+                    "swedish_female": "Zweeds (Vrouw)",
+                    "swedish_male": "Zweeds (Man)",
+                    "french_female": "Frans (Vrouw)",
+                    "french_male": "Frans (Man)",
+                    "turkish_female": "Turks (Vrouw)",
+                    "turkish_male": "Turks (Man)",
+                    "russian_female": "Russisch (Vrouw)",
+                    "russian_male": "Russisch (Man)"
+                }
+            },
+            "apn_auth": {
+                "name": "Mobiel: APN-authenticatie",
+                "state": {
+                    "none": "Geen",
+                    "pap": "PAP",
+                    "chap": "CHAP",
+                    "pap_or_chap": "PAP of CHAP"
+                }
             }
         },
         "button": {
             "sensor_register": {
-                "name": "Nieuwe sensor registreren"
+                "name": "Nieuwe sensor: registreren"
             },
             "device_register": {
-                "name": "Nieuw relais registreren"
+                "name": "Nieuw relais: registreren"
             },
             "device_delete": {
                 "name": "Verwijderen"
@@ -207,10 +280,72 @@
         },
         "text": {
             "new_sensor_name": {
-                "name": "Nieuwe sensornaam"
+                "name": "Nieuwe sensor: naam"
             },
             "new_device_name": {
-                "name": "Nieuwe relaisnaam"
+                "name": "Nieuw relais: naam"
+            },
+            "panel_password": {
+                "name": "Paneel: wachtwoord"
+            },
+            "panel_phone_number": {
+                "name": "Paneel: telefoonnummer"
+            },
+            "phone_number_1": {
+                "name": "Alarm: telefoon 1"
+            },
+            "phone_number_2": {
+                "name": "Alarm: telefoon 2"
+            },
+            "phone_number_3": {
+                "name": "Alarm: telefoon 3"
+            },
+            "phone_number_4": {
+                "name": "Alarm: telefoon 4"
+            },
+            "phone_number_5": {
+                "name": "Alarm: telefoon 5"
+            },
+            "phone_number_6": {
+                "name": "Alarm: telefoon 6"
+            },
+            "sms_push_number_1": {
+                "name": "Alarm: SMS push telefoon 1"
+            },
+            "sms_push_number_2": {
+                "name": "Alarm: SMS push telefoon 2"
+            },
+            "ap_password": {
+                "name": "Toegangspunt: wachtwoord"
+            },
+            "apn_name": {
+                "name": "Mobiel: APN-naam"
+            },
+            "apn_user": {
+                "name": "Mobiel: APN-gebruiker"
+            },
+            "apn_password": {
+                "name": "Mobiel: APN-wachtwoord"
+            }
+        },
+        "number": {
+            "alarm_siren_duration": {
+                "name": "Duur: alarmsirene"
+            },
+            "arm_delay": {
+                "name": "Vertraging: inschakeling"
+            },
+            "alarm_delay": {
+                "name": "Vertraging: alarm"
+            },
+            "backlight_duration": {
+                "name": "Duur: achtergrondverlichting"
+            },
+            "ring_duration": {
+                "name": "Duur: beltoon"
+            },
+            "timezone_offset_m": {
+                "name": "Tijdzone-offset"
             }
         },
         "notifications": {

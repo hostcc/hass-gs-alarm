@@ -159,23 +159,96 @@
             },
             "simulate_alerts_from_history": {
                 "name": "Simular alertas de dispositivos a partir do histórico"
+            },
+            "ap_enabled": {
+                "name": "Ponto de acesso: ativado"
+            },
+            "gprs_enabled": {
+                "name": "Celular: ativado"
             }
         },
         "sensor": {
-           "wifi_signal": {
+            "wifi_signal": {
                 "name": "Sinal WiFi"
             },
             "gsm_signal": {
                 "name": "Sinal GSM"
             },
             "last_device_packet": {
-                "name": "Último pacote do dispositivo"
+                "name": "Último pacote de dispositivo"
             },
             "last_upstream_packet": {
-                "name": "Hora do último pacote recebido da nuvem"
+                "name": "Último pacote de upstream"
+            },
+            "cellular_operator": {
+                "name": "Operadora celular"
             }
         },
         "select": {
+            "alarm_volume_level": {
+                "name": "Volume: Alarme",
+                "state": {
+                    "mute": "Mudo",
+                    "low": "Baixo",
+                    "high": "Alto"
+                }
+            },
+            "speech_volume_level": {
+                "name": "Volume: Fala",
+                "state": {
+                    "mute": "Mudo",
+                    "low": "Baixo",
+                    "high": "Alto"
+                }
+            },
+            "key_tone_volume_level": {
+                "name": "Volume: Tom de tecla",
+                "state": {
+                    "mute": "Mudo",
+                    "low": "Baixo",
+                    "high": "Alto"
+                }
+            },
+            "ring_volume_level": {
+                "name": "Volume: Toque",
+                "state": {
+                    "mute": "Mudo",
+                    "low": "Baixo",
+                    "high": "Alto"
+                }
+            },
+            "speech_language": {
+                "name": "Fala: Idioma",
+                "state": {
+                    "english_female": "Inglês (Feminino)",
+                    "english_male": "Inglês (Masculino)",
+                    "spanish_female": "Espanhol (Feminino)",
+                    "spanish_male": "Espanhol (Masculino)",
+                    "french_female": "Francês (Feminino)",
+                    "french_male": "Francês (Masculino)",
+                    "german_female": "Alemão (Feminino)",
+                    "german_male": "Alemão (Masculino)",
+                    "italian_female": "Italiano (Feminino)",
+                    "italian_male": "Italiano (Masculino)",
+                    "portuguese_female": "Português (Feminino)",
+                    "portuguese_male": "Português (Masculino)",
+                    "russian_female": "Russo (Feminino)",
+                    "russian_male": "Russo (Masculino)",
+                    "ukrainian_female": "Ucraniano (Feminino)",
+                    "ukrainian_male": "Ucraniano (Masculino)",
+                    "bulgarian_female": "Búlgaro (Feminino)",
+                    "bulgarian_male": "Búlgaro (Masculino)"
+                }
+            },
+            "apn_auth": {
+                "name": "Ponto de acesso APN: autenticação",
+                "state": {
+                    "none": "Nenhuma",
+                    "pap": "PAP",
+                    "chap": "CHAP",
+                    "pap_chap": "PAP, CHAP"
+                }
+            },
             "sensor_alert_mode": {
                 "name": "Modo de alerta",
                 "state": {
@@ -185,18 +258,18 @@
                 }
             },
             "new_sensor_type": {
-                "name": "Novo tipo de sensor"
+                "name": "Novo sensor: tipo"
             },
             "new_device_type": {
-                "name": "Novo tipo de relé"
+                "name": "Novo relé: tipo"
             }
         },
         "button": {
             "sensor_register": {
-                "name": "Registrar novo sensor"
+                "name": "Novo sensor: registro"
             },
             "device_register": {
-                "name": "Registrar novo relé"
+                "name": "Novo relé: registro"
             },
             "device_delete": {
                 "name": "Excluir"
@@ -205,14 +278,76 @@
                 "name": "Excluir"
             }
         },
-        "text": {
+        "text": {            
+            "panel_password": {
+                "name": "Painel: senha"
+            },
+            "panel_phone_number": {
+                "name": "Painel: número de telefone"
+            },
+            "phone_number_1": {
+                "name": "Alarme: telefone 1"
+            },
+            "phone_number_2": {
+                "name": "Alarme: telefone 2"
+            },
+            "phone_number_3": {
+                "name": "Alarme: telefone 3"
+            },
+            "phone_number_4": {
+                "name": "Alarme: telefone 4"
+            },
+            "phone_number_5": {
+                "name": "Alarme: telefone 5"
+            },
+            "phone_number_6": {
+                "name": "Alarme: telefone 6"
+            },
+            "sms_push_number_1": {
+                "name": "SMS push: número 1"
+            },
+            "sms_push_number_2": {
+                "name": "SMS push: número 2"
+            },
+            "ap_password": {
+                "name": "Ponto de acesso: senha"
+            },
+            "apn_name": {
+                "name": "Ponto de acesso APN: nome"
+            },
+            "apn_user": {
+                "name": "Ponto de acesso APN: usuário"
+            },
+            "apn_password": {
+                "name": "Ponto de acesso APN: senha"
+            },            
             "new_sensor_name": {
-                "name": "Novo nome do sensor"
+                "name": "Novo sensor: nome"
             },
             "new_device_name": {
-                "name": "Novo nome do relé"
+                "name": "Novo relé: nome"
             }
-        },
+        },       
+        "number": {
+            "alarm_siren_duration": {
+                "name": "Duração: sirene de alarme"
+            },
+            "arm_delay": {
+                "name": "Atraso: armamento"
+            },
+            "alarm_delay": {
+                "name": "Atraso: alarme"
+            },
+            "backlight_duration": {
+                "name": "Duração: iluminação de fundo"
+            },
+            "ring_duration": {
+                "name": "Duração: toque"
+            },
+            "timezone_offset_m": {
+                "name": "Deslocamento de fuso horário"
+            }
+        },        
         "notifications": {
             "register_device_starting": {
                 "name": "Registrando um novo dispositivo do tipo \"{type}\", certifique-se de que está no modo de aprendizagem"

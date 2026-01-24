@@ -12,7 +12,7 @@ from datetime import datetime
 from pyg90alarm import (
     G90Alarm, G90Error, G90TimeoutError,
     G90Sensor, G90Device, G90HostInfo, G90HostStatus,
-    G90AlertConfigFlags
+    G90AlertConfigFlags, G90HostConfig, G90NetConfig, G90AlarmPhones,
 )
 
 from homeassistant.core import HomeAssistant
@@ -32,11 +32,15 @@ class GsAlarmData:
     """
     Class to hold alarm panel data.
     """
+    # pylint: disable=too-many-instance-attributes
     sensors: List[G90Sensor]
     devices: List[G90Device]
     host_info: G90HostInfo
     host_status: G90HostStatus
     alert_config_flags: G90AlertConfigFlags
+    host_config: G90HostConfig
+    net_config: G90NetConfig
+    alarm_phones: G90AlarmPhones
     last_device_packet_time: Optional[datetime]
     last_upstream_packet_time: Optional[datetime]
 
@@ -83,6 +87,9 @@ class GsAlarmCoordinator(DataUpdateCoordinator[GsAlarmData]):
         _LOGGER.info("Initializing coordinator with essential data")
         host_info = await self.client.get_host_info()
         host_status = await self.client.get_host_status()
+        host_config = await self.client.host_config()
+        net_config = await self.client.net_config()
+        alarm_phones = await self.client.alarm_phones()
         self.async_set_updated_data(
             GsAlarmData(
                 sensors=[],
@@ -90,6 +97,9 @@ class GsAlarmCoordinator(DataUpdateCoordinator[GsAlarmData]):
                 host_info=host_info,
                 host_status=host_status,
                 alert_config_flags=G90AlertConfigFlags(0),
+                host_config=host_config,
+                net_config=net_config,
+                alarm_phones=alarm_phones,
                 last_device_packet_time=None,
                 last_upstream_packet_time=None,
             )
@@ -108,6 +118,9 @@ class GsAlarmCoordinator(DataUpdateCoordinator[GsAlarmData]):
                 host_info=await self.client.get_host_info(),
                 host_status=await self.client.get_host_status(),
                 alert_config_flags=await self.client.get_alert_config(),
+                host_config=await self.client.host_config(),
+                net_config=await self.client.net_config(),
+                alarm_phones=await self.client.alarm_phones(),
                 last_device_packet_time=self.client.last_device_packet_time,
                 last_upstream_packet_time=(
                     self.client.last_upstream_packet_time

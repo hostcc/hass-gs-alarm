@@ -159,6 +159,12 @@
             },
             "simulate_alerts_from_history": {
                 "name": "Simulera aviseringar från historik"
+            },
+            "ap_enabled": {
+                "name": "Åtkomstpunkt: aktiverad"
+            },
+            "gprs_enabled": {
+                "name": "Mobil: aktiverad"
             }
         },
         "sensor": {
@@ -173,9 +179,76 @@
             },
             "last_upstream_packet": {
                 "name": "Senaste uppströmspaket"
+            },
+            "cellular_operator": {
+                "name": "Mobilt nätverk"
             }
         },
         "select": {
+            "alarm_volume_level": {
+                "name": "Volym: Larm",
+                "state": {
+                    "mute": "Tyst",
+                    "low": "Låg",
+                    "high": "Höy"
+                }
+            },
+            "speech_volume_level": {
+                "name": "Volym: Tal",
+                "state": {
+                    "mute": "Tyst",
+                    "low": "Låg",
+                    "high": "Höy"
+                }
+            },
+            "key_tone_volume_level": {
+                "name": "Volym: Knappton",
+                "state": {
+                    "mute": "Tyst",
+                    "low": "Låg",
+                    "high": "Höy"
+                }
+            },
+            "ring_volume_level": {
+                "name": "Volym: Ringsignal",
+                "state": {
+                    "mute": "Tyst",
+                    "low": "Låg",
+                    "high": "Höy"
+                }
+            },
+            "speech_language": {
+                "name": "Tal: Språk",
+                "state": {
+                    "english_female": "Engelska (Kvinna)",
+                    "english_male": "Engelska (Man)",
+                    "spanish_female": "Spanska (Kvinna)",
+                    "spanish_male": "Spanska (Man)",
+                    "french_female": "Franska (Kvinna)",
+                    "french_male": "Franska (Man)",
+                    "german_female": "Tyska (Kvinna)",
+                    "german_male": "Tyska (Man)",
+                    "italian_female": "Italienska (Kvinna)",
+                    "italian_male": "Italienska (Man)",
+                    "portuguese_female": "Portugisiska (Kvinna)",
+                    "portuguese_male": "Portugisiska (Man)",
+                    "russian_female": "Ryska (Kvinna)",
+                    "russian_male": "Ryska (Man)",
+                    "ukrainian_female": "Ukrainska (Kvinna)",
+                    "ukrainian_male": "Ukrainska (Man)",
+                    "bulgarian_female": "Bulgariska (Kvinna)",
+                    "bulgarian_male": "Bulgariska (Man)"
+                }
+            },
+            "apn_auth": {
+                "name": "APN-autentisering",
+                "state": {
+                    "none": "Ingen",
+                    "pap": "PAP",
+                    "chap": "CHAP",
+                    "pap_chap": "PAP, CHAP"
+                }
+            },
             "sensor_alert_mode": {
                 "name": "Aviseringsläge",
                 "state": {
@@ -193,10 +266,10 @@
         },
         "button": {
             "sensor_register": {
-                "name": "Registrera ny sensor"
+                "name": "Ny sensor: registrera"
             },
             "device_register": {
-                "name": "Registrera nytt relä"
+                "name": "Nytt relä: registrera"
             },
             "device_delete": {
                 "name": "Ta bort"
@@ -206,11 +279,73 @@
             }
         },
         "text": {
+            "panel_password": {
+                "name": "Panel: lösenord"
+            },
+            "panel_phone_number": {
+                "name": "Panel: telefonnummer"
+            },
+            "phone_number_1": {
+                "name": "Larm: telefon 1"
+            },
+            "phone_number_2": {
+                "name": "Larm: telefon 2"
+            },
+            "phone_number_3": {
+                "name": "Larm: telefon 3"
+            },
+            "phone_number_4": {
+                "name": "Larm: telefon 4"
+            },
+            "phone_number_5": {
+                "name": "Larm: telefon 5"
+            },
+            "phone_number_6": {
+                "name": "Larm: telefon 6"
+            },
+            "sms_push_number_1": {
+                "name": "SMS push: nummer 1"
+            },
+            "sms_push_number_2": {
+                "name": "SMS push: nummer 2"
+            },
+            "ap_password": {
+                "name": "Åtkomstpunkt: lösenord"
+            },
+            "apn_name": {
+                "name": "Åtkomstpunkt APN: namn"
+            },
+            "apn_user": {
+                "name": "Åtkomstpunkt APN: användare"
+            },
+            "apn_password": {
+                "name": "Åtkomstpunkt APN: lösenord"
+            },
             "new_sensor_name": {
                 "name": "Nytt sensornamn"
             },
             "new_device_name": {
                 "name": "Nytt relä-namn"
+            }
+        },
+        "number": {
+            "alarm_siren_duration": {
+                "name": "Varaktighet: larmsiren"
+            },
+            "arm_delay": {
+                "name": "Fördröjning: beväpning"
+            },
+            "alarm_delay": {
+                "name": "Fördröjning: larm"
+            },
+            "backlight_duration": {
+                "name": "Varaktighet: bakgrundsbelysning"
+            },
+            "ring_duration": {
+                "name": "Varaktighet: ringsignal"
+            },
+            "timezone_offset_m": {
+                "name": "Tidszonsförskjutning"
             }
         },
         "notifications": {

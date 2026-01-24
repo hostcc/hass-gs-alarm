@@ -36,7 +36,7 @@ if TYPE_CHECKING:
 _LOGGER = logging.getLogger(__name__)
 PLATFORMS = [
     "alarm_control_panel", "switch", "binary_sensor", "sensor", "select",
-    "button", "text"
+    "button", "text", "number"
 ]
 
 

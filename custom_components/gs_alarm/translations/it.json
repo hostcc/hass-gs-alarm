@@ -159,10 +159,16 @@
             },
             "simulate_alerts_from_history": {
                 "name": "Simula avvisi del dispositivo dalla cronologia"
+            },
+            "ap_enabled": {
+                "name": "Punto di accesso: abilitato"
+            },
+            "gprs_enabled": {
+                "name": "Cellulare: abilitato"
             }
         },
         "sensor": {
-           "wifi_signal": {
+            "wifi_signal": {
                 "name": "Segnale WiFi"
             },
             "gsm_signal": {
@@ -172,7 +178,10 @@
                 "name": "Ultimo pacchetto dispositivo"
             },
             "last_upstream_packet": {
-                "name": "Ora dell'ultimo pacchetto ricevuto dal cloud"
+                "name": "Ultimo pacchetto upstream"
+            },
+            "cellular_operator": {
+                "name": "Operatore cellulare"
             }
         },
         "select": {
@@ -185,18 +194,82 @@
                 }
             },
             "new_sensor_type": {
-                "name": "Nuovo tipo di sensore"
+                "name": "Nuovo sensore: tipo"
             },
             "new_device_type": {
-                "name": "Nuovo tipo di relè"
+                "name": "Nuovo relè: tipo"
+            },
+            "alarm_volume_level": {
+                "name": "Volume: Allarme",
+                "state": {
+                    "mute": "Muto",
+                    "low": "Basso",
+                    "high": "Alto"
+                }
+            },
+            "speech_volume_level": {
+                "name": "Volume: Voce",
+                "state": {
+                    "mute": "Muto",
+                    "low": "Basso",
+                    "high": "Alto"
+                }
+            },
+            "key_tone_volume_level": {
+                "name": "Volume: Tono tasto",
+                "state": {
+                    "mute": "Muto",
+                    "low": "Basso",
+                    "high": "Alto"
+                }
+            },
+            "ring_volume_level": {
+                "name": "Volume: Squillo",
+                "state": {
+                    "mute": "Muto",
+                    "low": "Basso",
+                    "high": "Alto"
+                }
+            },
+            "speech_language": {
+                "name": "Voce: Lingua",
+                "state": {
+                    "english_female": "Inglese (Femminile)",
+                    "english_male": "Inglese (Maschile)",
+                    "chinese_female": "Cinese (Femminile)",
+                    "chinese_male": "Cinese (Maschile)",
+                    "german_female": "Tedesco (Femminile)",
+                    "german_male": "Tedesco (Maschile)",
+                    "spanish_female": "Spagnolo (Femminile)",
+                    "spanish_male": "Spagnolo (Maschile)",
+                    "dutch_female": "Olandese (Femminile)",
+                    "dutch_male": "Olandese (Maschile)",
+                    "swedish_female": "Svedese (Femminile)",
+                    "swedish_male": "Svedese (Maschile)",
+                    "french_female": "Francese (Femminile)",
+                    "french_male": "Francese (Maschile)",
+                    "turkish_female": "Turco (Femminile)",
+                    "turkish_male": "Turco (Maschile)",
+                    "russian_female": "Russo (Femminile)",
+                    "russian_male": "Russo (Maschile)"
+                }
+            },
+            "apn_auth": {
+                "name": "Cellulare: Autenticazione APN",
+                "state": {
+                    "none": "Nessuno",
+                    "pap": "PAP",
+                    "chap": "CHAP",
+                    "pap_or_chap": "PAP o CHAP"
+                }
             }
         },
         "button": {
             "sensor_register": {
-                "name": "Registra nuovo sensore"
+                "name": "Nuovo sensore: registra"
             },
             "device_register": {
-                "name": "Registra nuovo relè"
+                "name": "Nuovo relè: registra"
             },
             "device_delete": {
                 "name": "Elimina"
@@ -207,10 +280,72 @@
         },
         "text": {
             "new_sensor_name": {
-                "name": "Nuovo nome sensore"
+                "name": "Nuovo sensore: nome"
             },
             "new_device_name": {
-                "name": "Nuovo nome relè"
+                "name": "Nuovo relè: nome"
+            },
+            "panel_password": {
+                "name": "Pannello: password"
+            },
+            "panel_phone_number": {
+                "name": "Pannello: numero di telefono"
+            },
+            "phone_number_1": {
+                "name": "Allarme: telefono 1"
+            },
+            "phone_number_2": {
+                "name": "Allarme: telefono 2"
+            },
+            "phone_number_3": {
+                "name": "Allarme: telefono 3"
+            },
+            "phone_number_4": {
+                "name": "Allarme: telefono 4"
+            },
+            "phone_number_5": {
+                "name": "Allarme: telefono 5"
+            },
+            "phone_number_6": {
+                "name": "Allarme: telefono 6"
+            },
+            "sms_push_number_1": {
+                "name": "Allarme: SMS push telefono 1"
+            },
+            "sms_push_number_2": {
+                "name": "Allarme: SMS push telefono 2"
+            },
+            "ap_password": {
+                "name": "Punto di accesso: password"
+            },
+            "apn_name": {
+                "name": "Cellulare: nome APN"
+            },
+            "apn_user": {
+                "name": "Cellulare: utente APN"
+            },
+            "apn_password": {
+                "name": "Cellulare: password APN"
+            }
+        },
+        "number": {
+            "alarm_siren_duration": {
+                "name": "Durata: sirena allarme"
+            },
+            "arm_delay": {
+                "name": "Ritardo: attivazione"
+            },
+            "alarm_delay": {
+                "name": "Ritardo: allarme"
+            },
+            "backlight_duration": {
+                "name": "Durata: retroilluminazione"
+            },
+            "ring_duration": {
+                "name": "Durata: squillo"
+            },
+            "timezone_offset_m": {
+                "name": "Offset fuso orario"
             }
         },
         "notifications": {

@@ -5,7 +5,6 @@ Sensors for `gs_alarm` integration.
 """
 from __future__ import annotations
 from typing import TYPE_CHECKING
-import logging
 
 from homeassistant.core import HomeAssistant, callback
 from homeassistant.components.sensor import (
@@ -21,8 +20,6 @@ from .coordinator import GsAlarmCoordinator
 if TYPE_CHECKING:
     from . import GsAlarmConfigEntry
 
-_LOGGER = logging.getLogger(__name__)
-
 
 async def async_setup_entry(_hass: HomeAssistant, entry: GsAlarmConfigEntry,
                             async_add_entities: AddEntitiesCallback) -> None:
@@ -34,6 +31,7 @@ async def async_setup_entry(_hass: HomeAssistant, entry: GsAlarmConfigEntry,
         G90GsmSignal(entry.runtime_data),
         G90LastDevicePacket(entry.runtime_data),
         G90LastUpstreamPacket(entry.runtime_data),
+        G90CellularOperator(entry.runtime_data),
     ]
     async_add_entities(g90sensors)
 
@@ -167,5 +165,33 @@ class G90LastUpstreamPacket(G90BaseSensor):
         """
         self._attr_native_value = (
             self.coordinator.data.last_upstream_packet_time
+        )
+        self.async_write_ha_state()
+
+
+class G90CellularOperator(G90BaseSensor):
+    """
+    Sensor for cellular operator code.
+
+    :param coordinator: The coordinator to use.
+    """
+    # pylint: disable=too-many-ancestors
+
+    UNIQUE_ID_FMT = "{guid}_sensor_cellular_operator"
+    ENTITY_ID_FMT = "{guid}_cellular_operator"
+
+    def __init__(self, coordinator: GsAlarmCoordinator) -> None:
+        super().__init__(coordinator)
+        self._attr_translation_key = 'cellular_operator'
+        self._attr_icon = 'mdi:cellphone-information'
+        self._attr_entity_category = EntityCategory.DIAGNOSTIC
+
+    @callback
+    def _handle_coordinator_update(self) -> None:
+        """
+        Invoked when HomeAssistant needs to update the sensor state.
+        """
+        self._attr_native_value = (
+            self.coordinator.data.net_config.gsm_operator
         )
         self.async_write_ha_state()

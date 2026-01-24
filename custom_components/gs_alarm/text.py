@@ -5,6 +5,7 @@ Text entities for `gs_alarm` integration.
 """
 from __future__ import annotations
 from typing import TYPE_CHECKING
+import logging
 
 from homeassistant.core import HomeAssistant
 from homeassistant.const import EntityCategory
@@ -13,10 +14,12 @@ from homeassistant.helpers.entity_platform import AddEntitiesCallback
 from homeassistant.core import Event
 
 from .const import DOMAIN
-from .entity_base import GSAlarmEntityBase
+from .entity_base import GSAlarmEntityBase, G90ConfigTextField
 from .coordinator import GsAlarmCoordinator
 if TYPE_CHECKING:
     from . import GsAlarmConfigEntry
+
+_LOGGER = logging.getLogger(__name__)
 
 
 async def async_setup_entry(
@@ -25,10 +28,68 @@ async def async_setup_entry(
 ) -> None:
     """Set up a config entry."""
 
-    # Text entities for new sensor and relay names
     async_add_entities([
+        # Text entities for new sensor and relay names
         G90NewSensorName(entry.runtime_data),
         G90NewDeviceName(entry.runtime_data),
+        # Add phone number entities
+        G90ConfigTextField(
+            entry.runtime_data, entry.runtime_data.data.alarm_phones,
+            'panel_password', 'mdi:lock', True
+        ),
+        G90ConfigTextField(
+            entry.runtime_data, entry.runtime_data.data.alarm_phones,
+            'panel_phone_number', 'mdi:phone-settings', False
+        ),
+        G90ConfigTextField(
+            entry.runtime_data, entry.runtime_data.data.alarm_phones,
+            'phone_number_1', 'mdi:phone', False
+        ),
+        G90ConfigTextField(
+            entry.runtime_data, entry.runtime_data.data.alarm_phones,
+            'phone_number_2', 'mdi:phone', False
+        ),
+        G90ConfigTextField(
+            entry.runtime_data, entry.runtime_data.data.alarm_phones,
+            'phone_number_3', 'mdi:phone', False
+        ),
+        G90ConfigTextField(
+            entry.runtime_data, entry.runtime_data.data.alarm_phones,
+            'phone_number_4', 'mdi:phone', False
+        ),
+        G90ConfigTextField(
+            entry.runtime_data, entry.runtime_data.data.alarm_phones,
+            'phone_number_5', 'mdi:phone', False
+        ),
+        G90ConfigTextField(
+            entry.runtime_data, entry.runtime_data.data.alarm_phones,
+            'phone_number_6', 'mdi:phone', False
+        ),
+        G90ConfigTextField(
+            entry.runtime_data, entry.runtime_data.data.alarm_phones,
+            'sms_push_number_1', 'mdi:message-alert', False
+        ),
+        G90ConfigTextField(
+            entry.runtime_data, entry.runtime_data.data.alarm_phones,
+            'sms_push_number_2', 'mdi:message-alert', False
+        ),
+        # Add network config entities
+        G90ConfigTextField(
+            entry.runtime_data, entry.runtime_data.data.net_config,
+            'ap_password', 'mdi:lock-wireless', True
+        ),
+        G90ConfigTextField(
+            entry.runtime_data, entry.runtime_data.data.net_config,
+            'apn_name', 'mdi:sim', False
+        ),
+        G90ConfigTextField(
+            entry.runtime_data, entry.runtime_data.data.net_config,
+            'apn_user', 'mdi:account', False
+        ),
+        G90ConfigTextField(
+            entry.runtime_data, entry.runtime_data.data.net_config,
+            'apn_password', 'mdi:lock-check', True
+        ),
     ])
 
 

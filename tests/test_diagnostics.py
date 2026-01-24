@@ -57,6 +57,9 @@ async def test_diagnostics(
         'sensors',
         'devices',
         'alert_config',
+        'host_config',
+        'net_config',
+        'alarm_phones',
     ])
 
     # Simulate diagnostics download for the config entry

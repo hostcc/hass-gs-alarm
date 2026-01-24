@@ -130,27 +130,27 @@ async def test_setup_unload_and_reload_entry_afresh(
             }, {
                 'unique_id': 'dummy_guid_new_sensor_type',
                 'entity_id': 'select.dummy_guid_new_sensor_type',
-                'name': 'New sensor type',
+                'name': 'New sensor: type',
             }, {
                 'unique_id': 'dummy_guid_new_sensor_name',
                 'entity_id': 'text.dummy_guid_new_sensor_name',
-                'name': 'New sensor name',
+                'name': 'New sensor: name',
             }, {
                 'unique_id': 'dummy_guid_new_sensor_register',
                 'entity_id': 'button.dummy_guid_new_sensor_register',
-                'name': 'Register new sensor',
+                'name': 'New sensor: register',
             }, {
                 'unique_id': 'dummy_guid_new_device_type',
                 'entity_id': 'select.dummy_guid_new_device_type',
-                'name': 'New relay type',
+                'name': 'New relay: type',
             }, {
                 'unique_id': 'dummy_guid_new_device_name',
                 'entity_id': 'text.dummy_guid_new_device_name',
-                'name': 'New relay name',
+                'name': 'New relay: name',
             }, {
                 'unique_id': 'dummy_guid_new_device_register',
                 'entity_id': 'button.dummy_guid_new_device_register',
-                'name': 'Register new relay',
+                'name': 'New relay: register',
             }, {
                 'unique_id': 'dummy_guid_simulate_alerts_from_history',
                 'entity_id':
@@ -160,7 +160,124 @@ async def test_setup_unload_and_reload_entry_afresh(
                 'unique_id': 'dummy_guid_sms_alert_when_armed',
                 'entity_id': 'switch.dummy_guid_sms_alert_when_armed',
                 'name': 'SMS alerts only when armed',
-            },])
+            }, {
+                'unique_id': 'dummy_guid_ap_enabled',
+                'entity_id': 'switch.dummy_guid_ap_enabled',
+                'name': 'Access point: enabled',
+            }, {
+                'unique_id': 'dummy_guid_gprs_enabled',
+                'entity_id': 'switch.dummy_guid_gprs_enabled',
+                'name': 'Cellular: enabled',
+            }, {
+                'unique_id': 'dummy_guid_alarm_volume_level',
+                'entity_id': 'select.dummy_guid_alarm_volume_level',
+                'name': 'Volume: Alarm',
+            }, {
+                'unique_id': 'dummy_guid_speech_volume_level',
+                'entity_id': 'select.dummy_guid_speech_volume_level',
+                'name': 'Volume: Speech',
+            }, {
+                'unique_id': 'dummy_guid_key_tone_volume_level',
+                'entity_id': 'select.dummy_guid_key_tone_volume_level',
+                'name': 'Volume: Key tone',
+            }, {
+                'unique_id': 'dummy_guid_ring_volume_level',
+                'entity_id': 'select.dummy_guid_ring_volume_level',
+                'name': 'Volume: Ring',
+            }, {
+                'unique_id': 'dummy_guid_speech_language',
+                'entity_id': 'select.dummy_guid_speech_language',
+                'name': 'Speech: Language',
+            }, {
+                'unique_id': 'dummy_guid_apn_auth',
+                'entity_id': 'select.dummy_guid_apn_auth',
+                'name': 'Cellular: APN Authentication',
+            }, {
+                'unique_id': 'dummy_guid_panel_password',
+                'entity_id': 'text.dummy_guid_panel_password',
+                'name': 'Panel: Password',
+            }, {
+                'unique_id': 'dummy_guid_panel_phone_number',
+                'entity_id': 'text.dummy_guid_panel_phone_number',
+                'name': 'Panel: Phone number',
+            }, {
+                'unique_id': 'dummy_guid_phone_number_1',
+                'entity_id': 'text.dummy_guid_phone_number_1',
+                'name': 'Alarm: Phone 1',
+            }, {
+                'unique_id': 'dummy_guid_phone_number_2',
+                'entity_id': 'text.dummy_guid_phone_number_2',
+                'name': 'Alarm: Phone 2',
+            }, {
+                'unique_id': 'dummy_guid_phone_number_3',
+                'entity_id': 'text.dummy_guid_phone_number_3',
+                'name': 'Alarm: Phone 3',
+            }, {
+                'unique_id': 'dummy_guid_phone_number_4',
+                'entity_id': 'text.dummy_guid_phone_number_4',
+                'name': 'Alarm: Phone 4',
+            }, {
+                'unique_id': 'dummy_guid_phone_number_5',
+                'entity_id': 'text.dummy_guid_phone_number_5',
+                'name': 'Alarm: Phone 5',
+            }, {
+                'unique_id': 'dummy_guid_phone_number_6',
+                'entity_id': 'text.dummy_guid_phone_number_6',
+                'name': 'Alarm: Phone 6',
+            }, {
+                'unique_id': 'dummy_guid_sms_push_number_1',
+                'entity_id': 'text.dummy_guid_sms_push_number_1',
+                'name': 'Alarm: SMS push phone 1',
+            }, {
+                'unique_id': 'dummy_guid_sms_push_number_2',
+                'entity_id': 'text.dummy_guid_sms_push_number_2',
+                'name': 'Alarm: SMS push phone 2',
+            }, {
+                'unique_id': 'dummy_guid_ap_password',
+                'entity_id': 'text.dummy_guid_ap_password',
+                'name': 'Access point: Password',
+            }, {
+                'unique_id': 'dummy_guid_apn_name',
+                'entity_id': 'text.dummy_guid_apn_name',
+                'name': 'Cellular: APN Name',
+            }, {
+                'unique_id': 'dummy_guid_apn_user',
+                'entity_id': 'text.dummy_guid_apn_user',
+                'name': 'Cellular: APN User',
+            }, {
+                'unique_id': 'dummy_guid_apn_password',
+                'entity_id': 'text.dummy_guid_apn_password',
+                'name': 'Cellular: APN Password',
+            }, {
+                'unique_id': 'dummy_guid_alarm_siren_duration',
+                'entity_id': 'number.dummy_guid_alarm_siren_duration',
+                'name': 'Duration: Alarm siren',
+            }, {
+                'unique_id': 'dummy_guid_arm_delay',
+                'entity_id': 'number.dummy_guid_arm_delay',
+                'name': 'Delay: Arm',
+            }, {
+                'unique_id': 'dummy_guid_alarm_delay',
+                'entity_id': 'number.dummy_guid_alarm_delay',
+                'name': 'Delay: Alarm',
+            }, {
+                'unique_id': 'dummy_guid_backlight_duration',
+                'entity_id': 'number.dummy_guid_backlight_duration',
+                'name': 'Duration: Backlight',
+            }, {
+                'unique_id': 'dummy_guid_ring_duration',
+                'entity_id': 'number.dummy_guid_ring_duration',
+                'name': 'Duration: Ring',
+            }, {
+                'unique_id': 'dummy_guid_timezone_offset_m',
+                'entity_id': 'number.dummy_guid_timezone_offset_m',
+                'name': 'Timezone offset',
+            }, {
+                'unique_id': 'dummy_guid_sensor_cellular_operator',
+                'entity_id': 'sensor.dummy_guid_cellular_operator',
+                'name': 'Cellular operator',
+            },
+            ])
         },
         {
             'device': 'Dummy sensor',

@@ -159,6 +159,12 @@
             },
             "simulate_alerts_from_history": {
                 "name": "Simuler beskeder fra historik"
+            },
+            "ap_enabled": {
+                "name": "Adgangspunkt: aktiveret"
+            },
+            "gprs_enabled": {
+                "name": "Mobilnet: aktiveret"
             }
         },
         "sensor": {
@@ -173,6 +179,9 @@
             },
             "last_upstream_packet": {
                 "name": "Sidste upstream-pakke"
+            },
+            "cellular_operator": {
+                "name": "Mobilnetoperatør"
             }
         },
         "select": {
@@ -185,18 +194,82 @@
                 }
             },
             "new_sensor_type": {
-                "name": "Ny sensortype"
+                "name": "Ny sensor: type"
             },
             "new_device_type": {
-                "name": "Ny relaistype"
+                "name": "Nyt relais: type"
+            },
+            "alarm_volume_level": {
+                "name": "Lydstyrke: Alarm",
+                "state": {
+                    "mute": "Stille",
+                    "low": "Lav",
+                    "high": "Høj"
+                }
+            },
+            "speech_volume_level": {
+                "name": "Lydstyrke: Tale",
+                "state": {
+                    "mute": "Stille",
+                    "low": "Lav",
+                    "high": "Høj"
+                }
+            },
+            "key_tone_volume_level": {
+                "name": "Lydstyrke: Tast",
+                "state": {
+                    "mute": "Stille",
+                    "low": "Lav",
+                    "high": "Høj"
+                }
+            },
+            "ring_volume_level": {
+                "name": "Lydstyrke: Ringetone",
+                "state": {
+                    "mute": "Stille",
+                    "low": "Lav",
+                    "high": "Høj"
+                }
+            },
+            "speech_language": {
+                "name": "Tale: Sprog",
+                "state": {
+                    "english_female": "Engelsk (Kvinde)",
+                    "english_male": "Engelsk (Mand)",
+                    "chinese_female": "Kinesisk (Kvinde)",
+                    "chinese_male": "Kinesisk (Mand)",
+                    "german_female": "Tysk (Kvinde)",
+                    "german_male": "Tysk (Mand)",
+                    "spanish_female": "Spansk (Kvinde)",
+                    "spanish_male": "Spansk (Mand)",
+                    "dutch_female": "Hollandsk (Kvinde)",
+                    "dutch_male": "Hollandsk (Mand)",
+                    "swedish_female": "Svensk (Kvinde)",
+                    "swedish_male": "Svensk (Mand)",
+                    "french_female": "Fransk (Kvinde)",
+                    "french_male": "Fransk (Mand)",
+                    "turkish_female": "Tyrkisk (Kvinde)",
+                    "turkish_male": "Tyrkisk (Mand)",
+                    "russian_female": "Russisk (Kvinde)",
+                    "russian_male": "Russisk (Mand)"
+                }
+            },
+            "apn_auth": {
+                "name": "Mobilnet: APN-godkendelse",
+                "state": {
+                    "none": "Ingen",
+                    "pap": "PAP",
+                    "chap": "CHAP",
+                    "pap_or_chap": "PAP eller CHAP"
+                }
             }
         },
         "button": {
             "sensor_register": {
-                "name": "Registrer ny sensor"
+                "name": "Ny sensor: registrer"
             },
             "device_register": {
-                "name": "Registrer nyt relais"
+                "name": "Nyt relais: registrer"
             },
             "device_delete": {
                 "name": "Slet"
@@ -207,10 +280,72 @@
         },
         "text": {
             "new_sensor_name": {
-                "name": "Nyt sensornavn"
+                "name": "Ny sensor: navn"
             },
             "new_device_name": {
-                "name": "Nyt relaisnavn"
+                "name": "Nyt relais: navn"
+            },
+            "panel_password": {
+                "name": "Panel: Adgangskode"
+            },
+            "panel_phone_number": {
+                "name": "Panel: Telefonnummer"
+            },
+            "phone_number_1": {
+                "name": "Alarm: Telefon 1"
+            },
+            "phone_number_2": {
+                "name": "Alarm: Telefon 2"
+            },
+            "phone_number_3": {
+                "name": "Alarm: Telefon 3"
+            },
+            "phone_number_4": {
+                "name": "Alarm: Telefon 4"
+            },
+            "phone_number_5": {
+                "name": "Alarm: Telefon 5"
+            },
+            "phone_number_6": {
+                "name": "Alarm: Telefon 6"
+            },
+            "sms_push_number_1": {
+                "name": "Alarm: SMS push-telefon 1"
+            },
+            "sms_push_number_2": {
+                "name": "Alarm: SMS push-telefon 2"
+            },
+            "ap_password": {
+                "name": "Adgangspunkt: Adgangskode"
+            },
+            "apn_name": {
+                "name": "Mobilnet: APN-navn"
+            },
+            "apn_user": {
+                "name": "Mobilnet: APN-bruger"
+            },
+            "apn_password": {
+                "name": "Mobilnet: APN-adgangskode"
+            }
+        },
+        "number": {
+            "alarm_siren_duration": {
+                "name": "Varighed: Alarmsiren"
+            },
+            "arm_delay": {
+                "name": "Forsinkelse: Aktivering"
+            },
+            "alarm_delay": {
+                "name": "Forsinkelse: Alarm"
+            },
+            "backlight_duration": {
+                "name": "Varighed: Baglys"
+            },
+            "ring_duration": {
+                "name": "Varighed: Ringetone"
+            },
+            "timezone_offset_m": {
+                "name": "Tidszone-offset"
             }
         },
         "notifications": {

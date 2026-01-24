@@ -21,8 +21,11 @@ from pyg90alarm import (
     G90Sensor,
     G90SensorUserFlags,
     G90Device,
+    G90History,
+    G90NetConfig,
+    G90AlarmPhones,
+    G90HostConfig,
 )
-from pyg90alarm.local.history import G90History
 
 AlarmMockT = TypeVar('AlarmMockT', bound=AsyncMock)
 
@@ -263,6 +266,71 @@ def mock_g90alarm(request: pytest.FixtureRequest) -> Iterator[AlarmMockT]:
         patch(
             'pyg90alarm.local.config.G90AlertConfig.set_flag',
             autospec=True,
+        ),
+
+        # Patching dataclass `save()` method should come before `load()`,
+        # since load returns instance of the dataclass. Otherwise, `save()`
+        # won't get mocked correctly. Also, `autospec=True` isn't used,
+        # otherwise mock instance won't get create over `save()` method.
+        patch(
+            'pyg90alarm.local.host_config.G90HostConfig.save',
+        ),
+        patch(
+            'pyg90alarm.local.host_config.G90HostConfig.load',
+            autospec=True,
+            side_effect=AsyncMock(
+                return_value=G90HostConfig(
+                    _speech_language=1,
+                    _alarm_volume_level=2,
+                    alarm_siren_duration=120,
+                    arm_delay=30,
+                    alarm_delay=45,
+                    backlight_duration=60,
+                    ring_duration=10,
+                    timezone_offset_m=-300,
+                    _speech_volume_level=2,
+                    _key_tone_volume_level=0,
+                    _ring_volume_level=2,
+                )
+            )
+        ),
+        # See comment above about patching order
+        patch(
+            'pyg90alarm.local.net_config.G90NetConfig.save',
+        ),
+        patch(
+            'pyg90alarm.local.net_config.G90NetConfig.load',
+            autospec=True,
+            side_effect=AsyncMock(
+                return_value=G90NetConfig(
+                    _ap_enabled=0,
+                    ap_password='123456789',
+                    _wifi_enabled=1,
+                    _gprs_enabled=1,
+                    _apn_auth=2,
+                    apn_user='apn_user',
+                    apn_password='aps_pass',
+                    apn_name='an_apn',
+                    gsm_operator='12345',
+                )
+            ),
+        ),
+        # See comment above about patching order
+        patch(
+            'pyg90alarm.local.alarm_phones.G90AlarmPhones.save',
+        ),
+        patch(
+            'pyg90alarm.local.alarm_phones.G90AlarmPhones.load',
+            autospec=True,
+            side_effect=AsyncMock(
+                return_value=G90AlarmPhones(
+                    panel_password='1234',
+                    panel_phone_number='8877665544',
+                    phone_number_1='', phone_number_2='', phone_number_3='',
+                    phone_number_4='', phone_number_5='', phone_number_6='',
+                    sms_push_number_1='00987654321', sms_push_number_2='',
+                )
+            ),
         ),
         patch(
             'pyg90alarm.G90Alarm.history',
