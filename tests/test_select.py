@@ -229,6 +229,11 @@ async def test_net_config_select_entities(
             "speech_language", G90SpeechLanguage.ENGLISH_FEMALE,
             id="Speech language - English female"
         ),
+        pytest.param(
+            "dummy_guid_speech_language", "none",
+            "speech_language", G90SpeechLanguage.NONE,
+            id="Speech language - None"
+        ),
     ],
 )
 # pylint: disable=too-many-positional-arguments,too-many-arguments
