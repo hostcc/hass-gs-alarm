@@ -80,6 +80,7 @@ async def async_setup_entry(
         G90ConfigSelectField(
             entry.runtime_data, entry.runtime_data.data.host_config,
             'speech_language', {
+                G90SpeechLanguage.NONE: "none",
                 G90SpeechLanguage.ENGLISH_FEMALE: "english_female",
                 G90SpeechLanguage.ENGLISH_MALE: "english_male",
                 G90SpeechLanguage.CHINESE_FEMALE: "chinese_female",

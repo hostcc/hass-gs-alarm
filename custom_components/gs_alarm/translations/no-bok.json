@@ -220,6 +220,7 @@
             "speech_language": {
                 "name": "Tale: Språk",
                 "state": {
+                    "none": "Ingen",
                     "english_female": "Engelsk (Kvinne)",
                     "english_male": "Engelsk (Mann)",
                     "spanish_female": "Spansk (Kvinne)",

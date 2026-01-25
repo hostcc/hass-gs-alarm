@@ -220,6 +220,7 @@
             "speech_language": {
                 "name": "Речь: Язык",
                 "state": {
+                    "none": "Нет",
                     "english_female": "Английский (Женский)",
                     "english_male": "Английский (Мужской)",
                     "spanish_female": "Испанский (Женский)",

@@ -220,6 +220,7 @@
             "speech_language": {
                 "name": "Мовленне: Мова",
                 "state": {
+                    "none": "Няма",
                     "english_female": "Ангельская (Жаночая)",
                     "english_male": "Ангельская (Мужская)",
                     "spanish_female": "Іспанская (Жаночая)",

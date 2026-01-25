@@ -234,6 +234,7 @@
             "speech_language": {
                 "name": "Spraak: Taal",
                 "state": {
+                    "none": "Geen",
                     "english_female": "Engels (Vrouw)",
                     "english_male": "Engels (Man)",
                     "chinese_female": "Chinees (Vrouw)",

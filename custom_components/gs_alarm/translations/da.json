@@ -234,6 +234,7 @@
             "speech_language": {
                 "name": "Tale: Sprog",
                 "state": {
+                    "none": "Ingen",
                     "english_female": "Engelsk (Kvinde)",
                     "english_male": "Engelsk (Mand)",
                     "chinese_female": "Kinesisk (Kvinde)",
