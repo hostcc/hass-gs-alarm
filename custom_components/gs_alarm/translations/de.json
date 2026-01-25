@@ -234,6 +234,7 @@
             "speech_language": {
                 "name": "Sprache: Spracheingabe",
                 "state": {
+                    "none": "Keine",
                     "english_female": "Englisch (Weiblich)",
                     "english_male": "Englisch (Männlich)",
                     "chinese_female": "Chinesisch (Weiblich)",

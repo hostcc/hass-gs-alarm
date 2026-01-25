@@ -220,6 +220,7 @@
             "speech_language": {
                 "name": "Fala: Idioma",
                 "state": {
+                    "none": "Nenhum",
                     "english_female": "Inglês (Feminino)",
                     "english_male": "Inglês (Masculino)",
                     "spanish_female": "Espanhol (Feminino)",

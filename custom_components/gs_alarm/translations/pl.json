@@ -220,6 +220,7 @@
             "speech_language": {
                 "name": "Mowa: Język",
                 "state": {
+                    "none": "Brak",
                     "english_female": "Angielski (Kobieta)",
                     "english_male": "Angielski (Mężczyzna)",
                     "spanish_female": "Hiszpański (Kobieta)",

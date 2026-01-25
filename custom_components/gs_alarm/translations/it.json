@@ -234,6 +234,7 @@
             "speech_language": {
                 "name": "Voce: Lingua",
                 "state": {
+                    "none": "Nessuno",
                     "english_female": "Inglese (Femminile)",
                     "english_male": "Inglese (Maschile)",
                     "chinese_female": "Cinese (Femminile)",
