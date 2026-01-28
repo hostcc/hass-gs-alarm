@@ -4,7 +4,7 @@
 Data update coordinator for the `gs-alarm` integration.
 """
 from __future__ import annotations
-from typing import List, TYPE_CHECKING, Optional
+from typing import List, TYPE_CHECKING, Optional, Callable
 import logging
 from dataclasses import dataclass
 from datetime import datetime
@@ -43,6 +43,48 @@ class GsAlarmData:
     alarm_phones: G90AlarmPhones
     last_device_packet_time: Optional[datetime]
     last_upstream_packet_time: Optional[datetime]
+
+    @property
+    def get_alarm_phones_func(self) -> Callable[[], G90AlarmPhones]:
+        """
+        Get a callable that returns the alarm phones data.
+
+        Callable is needed to ensure the latest object is used, since 
+        `G90Alarm.get_alarm_phones()` method returns a new instance every time.
+
+        :return: Callable returning G90AlarmPhones
+        """
+        def wrapper() -> G90AlarmPhones:
+            return self.alarm_phones
+        return wrapper
+
+    @property
+    def get_host_config_func(self) -> Callable[[], G90HostConfig]:
+        """
+        Get a callable that returns the host config data.
+
+        Callable is needed to ensure the latest object is used, since
+        `G90Alarm.get_host_config()` method returns a new instance every time.
+
+        :return: Callable returning G90HostConfig
+        """
+        def wrapper() -> G90HostConfig:
+            return self.host_config
+        return wrapper
+
+    @property
+    def get_net_config_func(self) -> Callable[[], G90NetConfig]:
+        """
+        Get a callable that returns the network config data.
+
+        Callable is needed to ensure the latest object is used, since
+        `G90Alarm.get_net_config()` method returns a new instance every time.
+
+        :return: Callable returning G90NetConfig
+        """
+        def wrapper() -> G90NetConfig:
+            return self.net_config
+        return wrapper
 
 
 class GsAlarmCoordinator(DataUpdateCoordinator[GsAlarmData]):

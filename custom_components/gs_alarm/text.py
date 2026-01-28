@@ -31,60 +31,74 @@ async def async_setup_entry(
         G90NewDeviceName(entry.runtime_data),
         # Add phone number entities
         G90ConfigTextField(
-            entry.runtime_data, entry.runtime_data.data.alarm_phones,
+            entry.runtime_data,
+            entry.runtime_data.data.get_alarm_phones_func,
             'panel_password', 'mdi:lock', True
         ),
         G90ConfigTextField(
-            entry.runtime_data, entry.runtime_data.data.alarm_phones,
+            entry.runtime_data,
+            entry.runtime_data.data.get_alarm_phones_func,
             'panel_phone_number', 'mdi:phone-settings', False
         ),
         G90ConfigTextField(
-            entry.runtime_data, entry.runtime_data.data.alarm_phones,
+            entry.runtime_data,
+            entry.runtime_data.data.get_alarm_phones_func,
             'phone_number_1', 'mdi:phone', False
         ),
         G90ConfigTextField(
-            entry.runtime_data, entry.runtime_data.data.alarm_phones,
+            entry.runtime_data,
+            entry.runtime_data.data.get_alarm_phones_func,
             'phone_number_2', 'mdi:phone', False
         ),
         G90ConfigTextField(
-            entry.runtime_data, entry.runtime_data.data.alarm_phones,
+            entry.runtime_data,
+            entry.runtime_data.data.get_alarm_phones_func,
             'phone_number_3', 'mdi:phone', False
         ),
         G90ConfigTextField(
-            entry.runtime_data, entry.runtime_data.data.alarm_phones,
+            entry.runtime_data,
+            entry.runtime_data.data.get_alarm_phones_func,
             'phone_number_4', 'mdi:phone', False
         ),
         G90ConfigTextField(
-            entry.runtime_data, entry.runtime_data.data.alarm_phones,
+            entry.runtime_data,
+            entry.runtime_data.data.get_alarm_phones_func,
             'phone_number_5', 'mdi:phone', False
         ),
         G90ConfigTextField(
-            entry.runtime_data, entry.runtime_data.data.alarm_phones,
+            entry.runtime_data,
+            entry.runtime_data.data.get_alarm_phones_func,
             'phone_number_6', 'mdi:phone', False
         ),
         G90ConfigTextField(
-            entry.runtime_data, entry.runtime_data.data.alarm_phones,
+            entry.runtime_data,
+            entry.runtime_data.data.get_alarm_phones_func,
             'sms_push_number_1', 'mdi:message-alert', False
         ),
         G90ConfigTextField(
-            entry.runtime_data, entry.runtime_data.data.alarm_phones,
+            entry.runtime_data,
+            entry.runtime_data.data.get_alarm_phones_func,
             'sms_push_number_2', 'mdi:message-alert', False
         ),
         # Add network config entities
         G90ConfigTextField(
-            entry.runtime_data, entry.runtime_data.data.net_config,
+            entry.runtime_data,
+            entry.runtime_data.data.get_net_config_func,
             'ap_password', 'mdi:lock-wireless', True
         ),
         G90ConfigTextField(
-            entry.runtime_data, entry.runtime_data.data.net_config,
+            entry.runtime_data,
+            entry.runtime_data.data.get_net_config_func,
             'apn_name', 'mdi:sim', False
         ),
         G90ConfigTextField(
-            entry.runtime_data, entry.runtime_data.data.net_config,
+            entry.runtime_data,
+            entry.runtime_data.data.get_net_config_func,
             'apn_user', 'mdi:account', False
         ),
         G90ConfigTextField(
-            entry.runtime_data, entry.runtime_data.data.net_config,
+            entry.runtime_data,
+            entry.runtime_data.data.get_net_config_func,
             'apn_password', 'mdi:lock-check', True
         ),
     ])

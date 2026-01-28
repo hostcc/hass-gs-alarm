@@ -4,9 +4,11 @@
 Test for selects in the custom component.
 """
 from __future__ import annotations
+from datetime import timedelta
 import pytest
 
 from pytest_homeassistant_custom_component.common import (
+    async_fire_time_changed,
     MockConfigEntry,
 )
 
@@ -14,6 +16,7 @@ from homeassistant.core import HomeAssistant
 from homeassistant.const import (
     ATTR_ENTITY_ID,
 )
+from homeassistant.util import dt
 from homeassistant.components.select import (
     ATTR_OPTION,
     DOMAIN as SELECT_DOMAIN,
@@ -154,41 +157,80 @@ async def test_sensor_alert_modes_exception(
         ),
     ],
 )
-# pylint: disable=too-many-positional-arguments,too-many-arguments
-async def test_net_config_select_entities(
-    unique_id: str, option: str, field: str, value: G90APNAuth,
-    hass: HomeAssistant, mock_g90alarm: AlarmMockT
-) -> None:
+class TestNetConfigSelectEntities:
     """
-    Tests network config select entities can be set correctly.
+    Tests for network config select entities.
     """
-    config_entry = MockConfigEntry(
-        domain=DOMAIN,
-        data={'ip_addr': 'dummy-ip'},
-        options={},
-        entry_id="test_net_config_select"
-    )
-    config_entry.add_to_hass(hass)
-    await hass.config_entries.async_setup(config_entry.entry_id)
-    await hass.async_block_till_done()
+    # pylint: disable=too-many-positional-arguments,too-many-arguments
+    async def test_net_config_select_entities(
+        self,
+        unique_id: str, option: str, field: str, value: G90APNAuth,
+        hass: HomeAssistant, mock_g90alarm: AlarmMockT
+    ) -> None:
+        """
+        Tests network config select entities can be set correctly.
+        """
+        config_entry = MockConfigEntry(
+            domain=DOMAIN,
+            data={'ip_addr': 'dummy-ip'},
+            options={},
+            entry_id="test_net_config_select"
+        )
+        config_entry.add_to_hass(hass)
+        await hass.config_entries.async_setup(config_entry.entry_id)
+        await hass.async_block_till_done()
 
-    entity_id = hass_get_entity_id_by_unique_id(hass, 'select', unique_id)
+        entity_id = hass_get_entity_id_by_unique_id(hass, 'select', unique_id)
 
-    # Set the option
-    await hass.services.async_call(
-        SELECT_DOMAIN,
-        SERVICE_SELECT_OPTION,
-        {ATTR_ENTITY_ID: entity_id, ATTR_OPTION: option},
-        blocking=True,
-    )
-    await hass.async_block_till_done()
+        # Set the option
+        await hass.services.async_call(
+            SELECT_DOMAIN,
+            SERVICE_SELECT_OPTION,
+            {ATTR_ENTITY_ID: entity_id, ATTR_OPTION: option},
+            blocking=True,
+        )
+        await hass.async_block_till_done()
 
-    # Verify save was called
-    (await mock_g90alarm.return_value.net_config()).save.assert_called()
-    # Verify the value was set correctly
-    assert getattr(
-        await mock_g90alarm.return_value.net_config(), field
-    ) == value
+        # Verify save was called
+        (await mock_g90alarm.return_value.net_config()).save.assert_called()
+        # Verify the value was set correctly
+        assert getattr(
+            await mock_g90alarm.return_value.net_config(), field
+        ) == value
+
+    # pylint: disable=too-many-positional-arguments,too-many-arguments
+    async def test_net_config_select_data_change(
+        self,
+        unique_id: str, field: str, option: str, value: G90APNAuth,
+        hass: HomeAssistant, mock_g90alarm: AlarmMockT
+    ) -> None:
+        """
+        Tests data change propagation in network config select entities.
+        """
+        config_entry = MockConfigEntry(
+            domain=DOMAIN,
+            data={'ip_addr': 'dummy-ip'},
+            options={},
+            entry_id="test_net_config_select_data_change"
+        )
+        config_entry.add_to_hass(hass)
+        await hass.config_entries.async_setup(config_entry.entry_id)
+        await hass.async_block_till_done()
+
+        # Simulate data update
+        cfg = await mock_g90alarm.return_value.net_config()
+        setattr(cfg, field, value)
+
+        # Simulate some time has passed for HomeAssistant to invoke
+        # update for coordinators and entities
+        async_fire_time_changed(hass, dt.utcnow() + timedelta(hours=1))
+        await hass.async_block_till_done()
+
+        # Verify the entity state was updated correctly
+        entity_id = hass_get_entity_id_by_unique_id(hass, 'select', unique_id)
+        entity = hass.states.get(entity_id)
+        assert entity is not None
+        assert entity.state == option
 
 
 @pytest.mark.parametrize(
@@ -236,39 +278,78 @@ async def test_net_config_select_entities(
         ),
     ],
 )
-# pylint: disable=too-many-positional-arguments,too-many-arguments
-async def test_host_config_select_entities(
-    unique_id: str, option: str,
-    field: str, value: G90VolumeLevel | G90SpeechLanguage,
-    hass: HomeAssistant, mock_g90alarm: AlarmMockT
-) -> None:
+class TestHostConfigSelectEntities:
     """
-    Tests host config select entities can be set correctly.
+    Tests for host config select entities.
     """
-    config_entry = MockConfigEntry(
-        domain=DOMAIN,
-        data={'ip_addr': 'dummy-ip'},
-        options={},
-        entry_id="test_host_config_select"
-    )
-    config_entry.add_to_hass(hass)
-    await hass.config_entries.async_setup(config_entry.entry_id)
-    await hass.async_block_till_done()
+    # pylint: disable=too-many-positional-arguments,too-many-arguments
+    async def test_host_config_select_entities(
+        self,
+        unique_id: str, option: str,
+        field: str, value: G90VolumeLevel | G90SpeechLanguage,
+        hass: HomeAssistant, mock_g90alarm: AlarmMockT
+    ) -> None:
+        """
+        Tests host config select entities can be set correctly.
+        """
+        config_entry = MockConfigEntry(
+            domain=DOMAIN,
+            data={'ip_addr': 'dummy-ip'},
+            options={},
+            entry_id="test_host_config_select"
+        )
+        config_entry.add_to_hass(hass)
+        await hass.config_entries.async_setup(config_entry.entry_id)
+        await hass.async_block_till_done()
 
-    entity_id = hass_get_entity_id_by_unique_id(hass, 'select', unique_id)
+        entity_id = hass_get_entity_id_by_unique_id(hass, 'select', unique_id)
 
-    # Set the option
-    await hass.services.async_call(
-        SELECT_DOMAIN,
-        SERVICE_SELECT_OPTION,
-        {ATTR_ENTITY_ID: entity_id, ATTR_OPTION: option},
-        blocking=True,
-    )
-    await hass.async_block_till_done()
+        # Set the option
+        await hass.services.async_call(
+            SELECT_DOMAIN,
+            SERVICE_SELECT_OPTION,
+            {ATTR_ENTITY_ID: entity_id, ATTR_OPTION: option},
+            blocking=True,
+        )
+        await hass.async_block_till_done()
 
-    # Verify save was called
-    (await mock_g90alarm.return_value.host_config()).save.assert_called()
-    # Verify the value was set correctly
-    assert getattr(
-        await mock_g90alarm.return_value.host_config(), field
-    ) == value
+        # Verify save was called
+        (await mock_g90alarm.return_value.host_config()).save.assert_called()
+        # Verify the value was set correctly
+        assert getattr(
+            await mock_g90alarm.return_value.host_config(), field
+        ) == value
+
+    # pylint: disable=too-many-positional-arguments,too-many-arguments
+    async def test_host_config_select_data_change(
+        self,
+        unique_id: str, field: str, option: str,
+        value: G90VolumeLevel | G90SpeechLanguage,
+        hass: HomeAssistant, mock_g90alarm: AlarmMockT
+    ) -> None:
+        """
+        Tests data change propagation in host config select entities.
+        """
+        config_entry = MockConfigEntry(
+            domain=DOMAIN,
+            data={'ip_addr': 'dummy-ip'},
+            options={},
+            entry_id="test_host_config_select_data_change"
+        )
+        config_entry.add_to_hass(hass)
+        await hass.config_entries.async_setup(config_entry.entry_id)
+        await hass.async_block_till_done()
+
+        # Simulate data update
+        setattr(await mock_g90alarm.return_value.host_config(), field, value)
+
+        # Simulate some time has passed for HomeAssistant to invoke
+        # update for coordinators and entities
+        async_fire_time_changed(hass, dt.utcnow() + timedelta(hours=1))
+        await hass.async_block_till_done()
+
+        # Verify the entity state was updated correctly
+        entity_id = hass_get_entity_id_by_unique_id(hass, 'select', unique_id)
+        entity = hass.states.get(entity_id)
+        assert entity is not None
+        assert entity.state == option

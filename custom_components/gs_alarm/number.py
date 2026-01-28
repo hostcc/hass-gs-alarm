@@ -21,27 +21,33 @@ async def async_setup_entry(
     """Set up a config entry."""
     async_add_entities([
         G90ConfigNumberField(
-            entry.runtime_data, entry.runtime_data.data.host_config,
+            entry.runtime_data,
+            entry.runtime_data.data.get_host_config_func,
             'alarm_siren_duration', 'mdi:bell', 's'
         ),
         G90ConfigNumberField(
-            entry.runtime_data, entry.runtime_data.data.host_config,
+            entry.runtime_data,
+            entry.runtime_data.data.get_host_config_func,
             'arm_delay', 'mdi:timer', 's'
         ),
         G90ConfigNumberField(
-            entry.runtime_data, entry.runtime_data.data.host_config,
+            entry.runtime_data,
+            entry.runtime_data.data.get_host_config_func,
             'alarm_delay', 'mdi:clock-alert', 's'
         ),
         G90ConfigNumberField(
-            entry.runtime_data, entry.runtime_data.data.host_config,
+            entry.runtime_data,
+            entry.runtime_data.data.get_host_config_func,
             'backlight_duration', 'mdi:lightbulb', 's'
         ),
         G90ConfigNumberField(
-            entry.runtime_data, entry.runtime_data.data.host_config,
+            entry.runtime_data,
+            entry.runtime_data.data.get_host_config_func,
             'ring_duration', 'mdi:phone-ring', 's'
         ),
         G90ConfigNumberField(
-            entry.runtime_data, entry.runtime_data.data.host_config,
+            entry.runtime_data,
+            entry.runtime_data.data.get_host_config_func,
             'timezone_offset_m', 'mdi:map-clock', 'm'
         ),
     ])

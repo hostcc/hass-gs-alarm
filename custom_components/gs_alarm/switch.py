@@ -142,13 +142,13 @@ async def async_setup_entry(
         # Add network config switches
         G90ConfigSwitchField(
             entry.runtime_data,
-            entry.runtime_data.data.net_config,
+            entry.runtime_data.data.get_net_config_func,
             'ap_enabled',
             'mdi:wifi-marker',
         ),
         G90ConfigSwitchField(
             entry.runtime_data,
-            entry.runtime_data.data.net_config,
+            entry.runtime_data.data.get_net_config_func,
             'gprs_enabled',
             'mdi:signal-cellular',
         ),

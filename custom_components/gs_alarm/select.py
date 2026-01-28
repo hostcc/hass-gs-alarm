@@ -54,7 +54,8 @@ async def async_setup_entry(
         G90NewDeviceType(entry.runtime_data),
         # Add host config select entities
         G90ConfigSelectField(
-            entry.runtime_data, entry.runtime_data.data.host_config,
+            entry.runtime_data,
+            entry.runtime_data.data.get_host_config_func,
             'alarm_volume_level', {
                 G90VolumeLevel.MUTE: "mute",
                 G90VolumeLevel.LOW: "low",
@@ -62,7 +63,8 @@ async def async_setup_entry(
             }, 'mdi:volume-high'
         ),
         G90ConfigSelectField(
-            entry.runtime_data, entry.runtime_data.data.host_config,
+            entry.runtime_data,
+            entry.runtime_data.data.get_host_config_func,
             'speech_volume_level', {
                 G90VolumeLevel.MUTE: "mute",
                 G90VolumeLevel.LOW: "low",
@@ -70,7 +72,8 @@ async def async_setup_entry(
             }, 'mdi:account-voice'
         ),
         G90ConfigSelectField(
-            entry.runtime_data, entry.runtime_data.data.host_config,
+            entry.runtime_data,
+            entry.runtime_data.data.get_host_config_func,
             'key_tone_volume_level', {
                 G90VolumeLevel.MUTE: "mute",
                 G90VolumeLevel.LOW: "low",
@@ -78,7 +81,8 @@ async def async_setup_entry(
             }, 'mdi:dialpad'
         ),
         G90ConfigSelectField(
-            entry.runtime_data, entry.runtime_data.data.host_config,
+            entry.runtime_data,
+            entry.runtime_data.data.get_host_config_func,
             'speech_language', {
                 G90SpeechLanguage.NONE: "none",
                 G90SpeechLanguage.ENGLISH_FEMALE: "english_female",
@@ -103,7 +107,8 @@ async def async_setup_entry(
         ),
         # Add network config select entity
         G90ConfigSelectField(
-            entry.runtime_data, entry.runtime_data.data.net_config,
+            entry.runtime_data,
+            entry.runtime_data.data.get_net_config_func,
             'apn_auth', {
                 G90APNAuth.NONE: "none",
                 G90APNAuth.PAP: "pap",
@@ -117,7 +122,8 @@ async def async_setup_entry(
     if entry.runtime_data.data.host_config.ring_volume_level is not None:
         entities.append(
             G90ConfigSelectField(
-                entry.runtime_data, entry.runtime_data.data.host_config,
+                entry.runtime_data,
+                entry.runtime_data.data.get_host_config_func,
                 'ring_volume_level', {
                     G90VolumeLevel.MUTE: "mute",
                     G90VolumeLevel.LOW: "low",

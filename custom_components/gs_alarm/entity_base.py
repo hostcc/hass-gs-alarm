@@ -4,7 +4,7 @@
 Base classes for common entities of `gs-alarm` integration.
 """
 from __future__ import annotations
-from typing import Any
+from typing import Any, Callable
 import logging
 
 from homeassistant.const import STATE_ON
@@ -105,7 +105,13 @@ class G90ConfigFieldBase(
     `DataclassLoadSave`.
 
     :param coordinator: The coordinator to use.
-    :param config_object: The configuration object to bind the entity to.
+    :param config_object_func: Callable returning the configuration object to
+     bind the entity to.
+     Callable is needed to ensure the latest object is used, since certain
+     `G90Alarm` methods return a new instance every time (for example,
+     `G90Alarm.get_host_config()`, `G90Alarm.get_net_config()` or
+     `G90Alarm.get_alarm_phones()`) - thus storing the object directly would
+     lead to stale data.
     :param field_name: The field name within the configuration object.
     :param icon: The icon to use for the entity.
     """
@@ -118,7 +124,7 @@ class G90ConfigFieldBase(
     # pylint: disable=too-many-arguments,too-many-positional-arguments
     def __init__(
         self, coordinator: GsAlarmCoordinator,
-        config_object: DataclassLoadSave,
+        config_object_func: Callable[[], DataclassLoadSave],
         field_name: str, icon: str
     ) -> None:
         super().__init__(coordinator)
@@ -126,7 +132,7 @@ class G90ConfigFieldBase(
         self._attr_has_entity_name = True
         self._attr_icon = icon
         self._attr_translation_key = field_name
-        self._config_object = config_object
+        self._config_object_func = config_object_func
         self._field_name = field_name
 
         # The entity is bound to the HASS device for the alarm panel itself
@@ -160,11 +166,14 @@ class G90ConfigFieldBase(
         :param value: The new value to set.
         """
         try:
+            # Retrieve the configuration object
+            config_object = self._config_object_func()
+            
             # Set the attribute value
-            setattr(self._config_object, self._field_name, value)
+            setattr(config_object, self._field_name, value)
 
             # Save to the panel
-            await self._config_object.save()
+            await config_object.save()
 
             # Refresh coordinator to update entity state
             await self.coordinator.async_request_refresh()
@@ -185,7 +194,7 @@ class G90ConfigFieldBase(
 
         :return: The current value of the field.
         """
-        return getattr(self._config_object, self._field_name)
+        return getattr(self._config_object_func(), self._field_name)
 
 
 class G90ConfigSelectField(SelectEntity, G90ConfigFieldBase):
@@ -204,10 +213,10 @@ class G90ConfigSelectField(SelectEntity, G90ConfigFieldBase):
     # pylint: disable=too-many-arguments,too-many-positional-arguments
     def __init__(
         self, coordinator: GsAlarmCoordinator,
-        config_object: G90HostConfig | G90NetConfig,
+        config_object_func: Callable[[], G90HostConfig | G90NetConfig],
         field_name: str, states_map: dict[Any, str], icon: str
     ) -> None:
-        super().__init__(coordinator, config_object, field_name, icon)
+        super().__init__(coordinator, config_object_func, field_name, icon)
         self._attr_current_option = None
         self.states_map = states_map
         self.reverse_states_map = dict(
@@ -240,7 +249,8 @@ class G90ConfigNumberField(NumberEntity, G90ConfigFieldBase):
     Base class for panel configuration number entities.
 
     :param coordinator: The coordinator to use.
-    :param config_object: The configuration object to bind the entity to.
+    :param config_object_func: Callable returning the configuration object to
+      bind the entity to.
     :param field_name: The field name within the configuration object.
     :param icon: The icon to use for the entity.
     :param unit: The unit of measurement for the number entity.
@@ -249,16 +259,16 @@ class G90ConfigNumberField(NumberEntity, G90ConfigFieldBase):
     # pylint: disable=too-many-arguments,too-many-positional-arguments
     def __init__(
         self, coordinator: GsAlarmCoordinator,
-        config_object: G90HostConfig, field_name: str,
+        config_object_func: Callable[[], G90HostConfig], field_name: str,
         icon: str, unit: str
     ) -> None:
-        super().__init__(coordinator, config_object, field_name, icon)
+        super().__init__(coordinator, config_object_func, field_name, icon)
         self._attr_native_value = None
         self._attr_mode = NumberMode.BOX
         self._attr_native_unit_of_measurement = unit
 
         constraints = get_field_validation_constraints(
-            self._config_object, self._field_name, int
+            self._config_object_func(), self._field_name, int
         )
         if constraints.max_value is not None:
             self._attr_native_max_value = constraints.max_value
@@ -288,7 +298,8 @@ class G90ConfigTextField(TextEntity, G90ConfigFieldBase):
     Base class for panel configuration text entities.
 
     :param coordinator: The coordinator to use.
-    :param config_object: The configuration object to bind the entity to.
+    :param config_object_func: Callable returning the configuration object to
+      bind the entity to.
     :param field_name: The field name within the configuration object.
     :param icon: The icon to use for the entity.
     :param is_password: Whether the text field is a password field.
@@ -298,16 +309,16 @@ class G90ConfigTextField(TextEntity, G90ConfigFieldBase):
     # pylint: disable=too-many-arguments,too-many-positional-arguments
     def __init__(
         self, coordinator: GsAlarmCoordinator,
-        config_object: G90AlarmPhones | G90NetConfig, field_name: str,
-        icon: str, is_password: bool
+        config_object_func: Callable[[], G90AlarmPhones | G90NetConfig],
+        field_name: str, icon: str, is_password: bool
     ) -> None:
-        super().__init__(coordinator, config_object, field_name, icon)
+        super().__init__(coordinator, config_object_func, field_name, icon)
         self._attr_native_value = None
         if is_password:
             self._attr_mode = TextMode.PASSWORD
 
         constraints = get_field_validation_constraints(
-            self._config_object, self._field_name, str
+            self._config_object_func(), self._field_name, str
         )
         if constraints.max_length is not None:
             self._attr_native_max = constraints.max_length
@@ -345,7 +356,8 @@ class G90ConfigSwitchField(SwitchEntity, G90ConfigFieldBase):
     Base class for panel configuration switch entities.
 
     :param coordinator: The coordinator to use.
-    :param config_object: The configuration object to bind the entity to.
+    :param config_object_func: Callable returning the configuration object to
+     bind the entity to.
     :param field_name: The field name within the configuration object.
     :param icon: The icon to use for the entity.
     """
@@ -354,10 +366,10 @@ class G90ConfigSwitchField(SwitchEntity, G90ConfigFieldBase):
     # pylint: disable=too-many-arguments,too-many-positional-arguments
     def __init__(
         self, coordinator: GsAlarmCoordinator,
-        config_object: G90HostConfig | G90NetConfig, field_name: str,
-        icon: str
+        config_object_func: Callable[[], G90HostConfig | G90NetConfig],
+        field_name: str, icon: str
     ) -> None:
-        super().__init__(coordinator, config_object, field_name, icon)
+        super().__init__(coordinator, config_object_func, field_name, icon)
         self._attr_is_on = None
 
     async def async_turn_on(self, **_kwargs: Any) -> None:
