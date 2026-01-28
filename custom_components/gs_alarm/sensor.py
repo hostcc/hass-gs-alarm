@@ -232,6 +232,12 @@ class G90BatteryVoltage(G90BaseSensor):
         """
         Invoked when HomeAssistant needs to update the sensor state.
         """
-        host_info = self.coordinator.data.host_info
-        self._attr_native_value = host_info.battery_voltage
+        voltage_str = self.coordinator.data.host_info.battery_voltage
+        # The value is string, convert to int (millivolts), otherwise set to
+        # None if conversion fails
+        try:
+            voltage_mv = int(voltage_str)
+            self._attr_native_value = voltage_mv
+        except ValueError:
+            self._attr_native_value = None
         self.async_write_ha_state()
