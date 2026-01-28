@@ -150,7 +150,7 @@ async def async_setup_entry(
         G90NetConfigSwitchField(
             entry.runtime_data,
             'gprs_enabled',
-            'mdi:signal-cellular',
+            'mdi:signal-3g',
         ),
     ]
 

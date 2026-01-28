@@ -634,11 +634,11 @@ async def test_config_flags_restore_state(
         ),
         pytest.param(
             "dummy_guid_gprs_enabled", "turn_on", "gprs_enabled", True,
-            id="GPRS enabled"
+            id="GPRS/3G enabled"
         ),
         pytest.param(
             "dummy_guid_gprs_enabled", "turn_off", "gprs_enabled", False,
-            id="GPRS disabled"
+            id="GPRS/3G disabled"
         ),
     ],
 )

@@ -12,7 +12,9 @@ from homeassistant.components.sensor import (
     SensorStateClass,
     SensorDeviceClass,
 )
-from homeassistant.const import EntityCategory, PERCENTAGE
+from homeassistant.const import (
+    EntityCategory, PERCENTAGE, UnitOfElectricPotential,
+)
 from homeassistant.helpers.entity_platform import AddEntitiesCallback
 
 from .entity_base import GSAlarmEntityBase
@@ -32,6 +34,7 @@ async def async_setup_entry(_hass: HomeAssistant, entry: GsAlarmConfigEntry,
         G90LastDevicePacket(entry.runtime_data),
         G90LastUpstreamPacket(entry.runtime_data),
         G90CellularOperator(entry.runtime_data),
+        G90BatteryVoltage(entry.runtime_data),
     ]
     async_add_entities(g90sensors)
 
@@ -194,4 +197,41 @@ class G90CellularOperator(G90BaseSensor):
         self._attr_native_value = (
             self.coordinator.data.net_config.gsm_operator
         )
+        self.async_write_ha_state()
+
+
+class G90BatteryVoltage(G90BaseSensor):
+    """
+    Sensor for panel battery voltage.
+
+    :param coordinator: The coordinator to use.
+    """
+    # pylint: disable=too-few-public-methods,too-many-instance-attributes
+    # pylint: disable=too-many-ancestors
+
+    UNIQUE_ID_FMT = "{guid}_sensor_battery_voltage"
+    ENTITY_ID_FMT = "{guid}_battery_voltage"
+
+    def __init__(self, coordinator: GsAlarmCoordinator) -> None:
+        super().__init__(coordinator)
+        self._attr_translation_key = 'battery_voltage'
+        self._attr_icon = 'mdi:battery'
+        self._attr_native_unit_of_measurement = (
+            UnitOfElectricPotential.MILLIVOLT
+        )
+        self._attr_suggested_display_precision = 2
+        self._attr_suggested_unit_of_measurement = (
+            UnitOfElectricPotential.VOLT
+        )
+        self._attr_device_class = SensorDeviceClass.VOLTAGE
+        self._attr_state_class = SensorStateClass.MEASUREMENT
+        self._attr_entity_category = EntityCategory.DIAGNOSTIC
+
+    @callback
+    def _handle_coordinator_update(self) -> None:
+        """
+        Invoked when HomeAssistant needs to update the sensor state.
+        """
+        host_info = self.coordinator.data.host_info
+        self._attr_native_value = host_info.battery_voltage
         self.async_write_ha_state()

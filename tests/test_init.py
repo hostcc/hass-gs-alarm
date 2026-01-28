@@ -167,7 +167,7 @@ async def test_setup_unload_and_reload_entry_afresh(
             }, {
                 'unique_id': 'dummy_guid_gprs_enabled',
                 'entity_id': 'switch.dummy_guid_gprs_enabled',
-                'name': 'Cellular: enabled',
+                'name': 'Cellular: GPRS/3G enabled',
             }, {
                 'unique_id': 'dummy_guid_alarm_volume_level',
                 'entity_id': 'select.dummy_guid_alarm_volume_level',
@@ -276,6 +276,14 @@ async def test_setup_unload_and_reload_entry_afresh(
                 'unique_id': 'dummy_guid_sensor_cellular_operator',
                 'entity_id': 'sensor.dummy_guid_cellular_operator',
                 'name': 'Cellular operator',
+            }, {
+                'unique_id': 'dummy_guid_sensor_gprs_3g_active',
+                'entity_id': 'binary_sensor.dummy_guid_gprs_3g_active',
+                'name': 'GPRS/3G active',
+            }, {
+                'unique_id': 'dummy_guid_sensor_battery_voltage',
+                'entity_id': 'sensor.dummy_guid_battery_voltage',
+                'name': 'Battery voltage',
             },
             ])
         },

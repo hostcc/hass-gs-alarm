@@ -84,9 +84,9 @@ def mock_g90alarm(request: pytest.FixtureRequest) -> Iterator[AlarmMockT]:
         wifi_hw_version='1.0-test',
         gsm_status_data=0,
         wifi_status_data=0,
-        reserved1=0,
-        reserved2=0,
-        band_frequency='',
+        gprs_3g_active_data=1,
+        wifi_setup_progress_data=0,
+        battery_voltage='4567',
         gsm_signal_level=100,
         wifi_signal_level=100,
     )
