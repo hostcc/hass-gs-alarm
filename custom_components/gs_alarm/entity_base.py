@@ -105,13 +105,6 @@ class G90ConfigFieldBase(
     `DataclassLoadSave`.
 
     :param coordinator: The coordinator to use.
-    :param config_object_func: Callable returning the configuration object to
-     bind the entity to.
-     Callable is needed to ensure the latest object is used, since certain
-     `G90Alarm` methods return a new instance every time (for example,
-     `G90Alarm.get_host_config()`, `G90Alarm.get_net_config()` or
-     `G90Alarm.get_alarm_phones()`) - thus storing the object directly would
-     lead to stale data.
     :param field_name: The field name within the configuration object.
     :param icon: The icon to use for the entity.
     """
@@ -244,7 +237,7 @@ class G90AlarmPhonesMixin(CoordinatorEntity[GsAlarmCoordinator]):
         return self.coordinator.data.alarm_phones
 
 
-class G90ConfigSelectFieldBase(SelectEntity, G90ConfigFieldBase):
+class G90ConfigSelectFieldBase(G90ConfigFieldBase, SelectEntity):
     """
     Base class for panel configuration select entities.
 
@@ -303,7 +296,7 @@ class G90NetConfigSelectField(G90NetConfigMixin, G90ConfigSelectFieldBase):
     """
 
 
-class G90ConfigNumberFieldBase(NumberEntity, G90ConfigFieldBase):
+class G90ConfigNumberFieldBase(G90ConfigFieldBase, NumberEntity):
     """
     Base class for panel configuration number entities.
 
@@ -363,7 +356,7 @@ class G90NetConfigNumberField(G90NetConfigMixin, G90ConfigNumberFieldBase):
     """
 
 
-class G90ConfigTextFieldBase(TextEntity, G90ConfigFieldBase):
+class G90ConfigTextFieldBase(G90ConfigFieldBase, TextEntity):
     """
     Base class for panel configuration text entities.
 
@@ -439,7 +432,7 @@ class G90AlarmPhonesTextField(G90AlarmPhonesMixin, G90ConfigTextFieldBase):
     """
 
 
-class G90ConfigSwitchFieldBase(SwitchEntity, G90ConfigFieldBase):
+class G90ConfigSwitchFieldBase(G90ConfigFieldBase, SwitchEntity):
     """
     Base class for panel configuration switch entities.
 
