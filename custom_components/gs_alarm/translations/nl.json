@@ -103,6 +103,9 @@
             },
             "sensor_active_when_arming": {
                 "name": "Actief bij inschakeling"
+            },
+            "gprs_3g_active": {
+                "name": "GPRS/3G actief"
             }
         },
         "switch": {
@@ -164,7 +167,7 @@
                 "name": "Toegangspunt: ingeschakeld"
             },
             "gprs_enabled": {
-                "name": "Mobiel: ingeschakeld"
+                "name": "Mobiel: GPRS/3G ingeschakeld"
             }
         },
         "sensor": {
@@ -182,6 +185,9 @@
             },
             "cellular_operator": {
                 "name": "Mobiele provider"
+            },
+            "battery_voltage": {
+                "name": "Batterijspanning"
             }
         },
         "select": {

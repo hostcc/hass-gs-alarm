@@ -103,6 +103,9 @@
             },
             "sensor_active_when_arming": {
                 "name": "Aktiv vid aktivering"
+            },
+            "gprs_3g_active": {
+                "name": "GPRS/3G aktiv"
             }
         },
         "switch": {
@@ -164,7 +167,7 @@
                 "name": "Åtkomstpunkt: aktiverad"
             },
             "gprs_enabled": {
-                "name": "Mobil: aktiverad"
+                "name": "Mobil: GPRS/3G aktiverad"
             }
         },
         "sensor": {
@@ -182,6 +185,9 @@
             },
             "cellular_operator": {
                 "name": "Mobilt nätverk"
+            },
+            "battery_voltage": {
+                "name": "Batterispänning"
             }
         },
         "select": {

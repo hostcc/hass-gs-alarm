@@ -103,6 +103,9 @@
             },
             "sensor_active_when_arming": {
                 "name": "Aktiv beim Scharfschalten"
+            },
+            "gprs_3g_active": {
+                "name": "GPRS/3G aktiv"
             }
         },
         "switch": {
@@ -164,7 +167,7 @@
                 "name": "Zugriffspunkt: aktiviert"
             },
             "gprs_enabled": {
-                "name": "Mobilfunk: aktiviert"
+                "name": "Mobilfunk: GPRS/3G aktiviert"
             }
         },
         "sensor": {
@@ -182,6 +185,9 @@
             },
             "cellular_operator": {
                 "name": "Mobilfunkanbieter"
+            },
+            "battery_voltage": {
+                "name": "Batteriespannung"
             }
         },
         "select": {

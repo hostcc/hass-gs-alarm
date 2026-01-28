@@ -103,6 +103,9 @@
             },
             "sensor_active_when_arming": {
                 "name": "Ativo ao armar"
+            },
+            "gprs_3g_active": {
+                "name": "GPRS/3G ativo"
             }
         },
         "switch": {
@@ -164,7 +167,7 @@
                 "name": "Ponto de acesso: ativado"
             },
             "gprs_enabled": {
-                "name": "Celular: ativado"
+                "name": "Celular: GPRS/3G ativado"
             }
         },
         "sensor": {
@@ -182,6 +185,9 @@
             },
             "cellular_operator": {
                 "name": "Operadora celular"
+            },
+            "battery_voltage": {
+                "name": "Tensão da bateria"
             }
         },
         "select": {

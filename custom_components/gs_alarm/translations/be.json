@@ -103,6 +103,9 @@
             },
             "sensor_active_when_arming": {
                 "name": "Актыўны пры ўзвадзенні"
+            },
+            "gprs_3g_active": {
+                "name": "GPRS/3G актыўны"
             }
         },
         "switch": {
@@ -164,7 +167,7 @@
                 "name": "Пункт доступу: уключаны"
             },
             "gprs_enabled": {
-                "name": "Сотавая сувязь: уключана"
+                "name": "Сотавая сувязь: GPRS/3G уключаны"
             }
         },
         "sensor": {
@@ -182,6 +185,9 @@
             },
             "cellular_operator": {
                 "name": "Аператар сотавай сувязі"
+            },
+            "battery_voltage": {
+                "name": "Напружанне батарэі"
             }
         },
         "select": {           

@@ -103,6 +103,9 @@
             },
             "sensor_active_when_arming": {
                 "name": "Активен при постановке на охрану"
+            },
+            "gprs_3g_active": {
+                "name": "GPRS/3G активен"
             }
         },
         "switch": {
@@ -164,7 +167,7 @@
                 "name": "Точка доступа: включено"
             },
             "gprs_enabled": {
-                "name": "Сотовая связь: включено"
+                "name": "Сотовая связь: GPRS/3G включен"
             }
         },
         "sensor": {
@@ -182,6 +185,9 @@
             },
             "cellular_operator": {
                 "name": "Оператор сотовой связи"
+            },
+            "battery_voltage": {
+                "name": "Напряжение батареи"
             }
         },
         "select": {            

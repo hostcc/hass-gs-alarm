@@ -7,7 +7,7 @@ from __future__ import annotations
 from typing import Mapping, Any, TYPE_CHECKING
 import logging
 
-from homeassistant.core import HomeAssistant
+from homeassistant.core import HomeAssistant, callback
 from homeassistant.const import EntityCategory
 from homeassistant.helpers.update_coordinator import CoordinatorEntity
 from homeassistant.components.binary_sensor import (
@@ -89,10 +89,11 @@ async def async_setup_entry(
         sensor_list_change_callback
     )
 
-    # Add WiFi and GSM status sensors
+    # Add WiFi, GSM and GPRS/3G status sensors
     async_add_entities([
         G90WifiStatusSensor(entry.runtime_data),
         G90GsmStatusSensor(entry.runtime_data),
+        G90Gprs3GActiveSensor(entry.runtime_data),
     ])
 
 
@@ -405,6 +406,7 @@ class G90WifiStatusSensor(
         self._attr_device_class = BinarySensorDeviceClass.CONNECTIVITY
         self._attr_entity_category = EntityCategory.DIAGNOSTIC
 
+    @callback
     def _handle_coordinator_update(self) -> None:
         """
         Invoked when HomeAssistant needs to update the sensor state.
@@ -438,6 +440,7 @@ class G90GsmStatusSensor(
         self._attr_device_class = BinarySensorDeviceClass.CONNECTIVITY
         self._attr_entity_category = EntityCategory.DIAGNOSTIC
 
+    @callback
     def _handle_coordinator_update(self) -> None:
         """
         Invoked when HomeAssistant needs to update the sensor state.
@@ -446,4 +449,35 @@ class G90GsmStatusSensor(
         self._attr_is_on = (
             host_info.gsm_status == G90HostInfoGsmStatus.OPERATIONAL
         )
+        self.async_write_ha_state()
+
+
+class G90Gprs3GActiveSensor(
+    GSAlarmEntityBase, BinarySensorEntity
+):
+    """
+    GPRS/3G status sensor.
+
+    :param coordinator: Instance of `GsAlarmCoordinator` to coordinate updates.
+    """
+    # pylint: disable=too-few-public-methods,too-many-instance-attributes
+    # pylint: disable=too-many-ancestors
+
+    UNIQUE_ID_FMT = "{guid}_sensor_gprs_3g_active"
+    ENTITY_ID_FMT = "{guid}_gprs_3g_active"
+
+    def __init__(self, coordinator: GsAlarmCoordinator) -> None:
+        super().__init__(coordinator)
+        self._attr_has_entity_name = True
+        self._attr_translation_key = 'gprs_3g_active'
+        self._attr_icon = 'mdi:signal-3g'
+        self._attr_entity_category = EntityCategory.DIAGNOSTIC
+
+    @callback
+    def _handle_coordinator_update(self) -> None:
+        """
+        Invoked when HomeAssistant needs to update the sensor state.
+        """
+        host_info = self.coordinator.data.host_info
+        self._attr_is_on = host_info.gprs_3g_active
         self.async_write_ha_state()

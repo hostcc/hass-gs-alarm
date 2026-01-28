@@ -75,7 +75,7 @@ async def async_setup_entry(
         # Add network config entities
         G90NetConfigTextField(
             entry.runtime_data,
-            'ap_password', 'mdi:lock-wireless', True
+            'ap_password', 'mdi:lock-check', True
         ),
         G90NetConfigTextField(
             entry.runtime_data,
