@@ -716,7 +716,7 @@ class TestNetConfigSwitchEntities:
         entity_id = hass_get_entity_id_by_unique_id(hass, 'switch', unique_id)
         entity = hass.states.get(entity_id)
         assert entity is not None
-        assert entity.state == STATE_ON if value else STATE_OFF
+        assert entity.state == (STATE_ON if value else STATE_OFF)
 
 
 async def test_net_config_switch_exception(
