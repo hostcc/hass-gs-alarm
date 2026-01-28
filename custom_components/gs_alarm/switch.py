@@ -18,7 +18,9 @@ from pyg90alarm import (
     G90SensorUserFlags, G90AlertConfigFlags,
 )
 
-from .entity_base import GsAlarmSwitchRestoreEntityBase, G90ConfigSwitchField
+from .entity_base import (
+    G90NetConfigSwitchField, GsAlarmSwitchRestoreEntityBase
+)
 from .mixin import (
     GSAlarmGenerateIDsDeviceMixin, GSAlarmGenerateIDsSensorMixin,
     GSAlarmGenerateIDsCommonMixin
@@ -140,15 +142,13 @@ async def async_setup_entry(
         G90SmsAlertWhenArmed(entry.runtime_data),
         G90SimulateAlertsFromHistory(entry.runtime_data),
         # Add network config switches
-        G90ConfigSwitchField(
+        G90NetConfigSwitchField(
             entry.runtime_data,
-            entry.runtime_data.data.get_net_config_func,
             'ap_enabled',
             'mdi:wifi-marker',
         ),
-        G90ConfigSwitchField(
+        G90NetConfigSwitchField(
             entry.runtime_data,
-            entry.runtime_data.data.get_net_config_func,
             'gprs_enabled',
             'mdi:signal-cellular',
         ),

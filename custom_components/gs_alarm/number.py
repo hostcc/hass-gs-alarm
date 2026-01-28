@@ -9,7 +9,7 @@ from typing import TYPE_CHECKING
 from homeassistant.core import HomeAssistant
 from homeassistant.helpers.entity_platform import AddEntitiesCallback
 
-from .entity_base import G90ConfigNumberField
+from .entity_base import G90HostConfigNumberField
 if TYPE_CHECKING:
     from . import GsAlarmConfigEntry
 
@@ -20,34 +20,28 @@ async def async_setup_entry(
 ) -> None:
     """Set up a config entry."""
     async_add_entities([
-        G90ConfigNumberField(
+        G90HostConfigNumberField(
             entry.runtime_data,
-            entry.runtime_data.data.get_host_config_func,
             'alarm_siren_duration', 'mdi:bell', 's'
         ),
-        G90ConfigNumberField(
+        G90HostConfigNumberField(
             entry.runtime_data,
-            entry.runtime_data.data.get_host_config_func,
             'arm_delay', 'mdi:timer', 's'
         ),
-        G90ConfigNumberField(
+        G90HostConfigNumberField(
             entry.runtime_data,
-            entry.runtime_data.data.get_host_config_func,
             'alarm_delay', 'mdi:clock-alert', 's'
         ),
-        G90ConfigNumberField(
+        G90HostConfigNumberField(
             entry.runtime_data,
-            entry.runtime_data.data.get_host_config_func,
             'backlight_duration', 'mdi:lightbulb', 's'
         ),
-        G90ConfigNumberField(
+        G90HostConfigNumberField(
             entry.runtime_data,
-            entry.runtime_data.data.get_host_config_func,
             'ring_duration', 'mdi:phone-ring', 's'
         ),
-        G90ConfigNumberField(
+        G90HostConfigNumberField(
             entry.runtime_data,
-            entry.runtime_data.data.get_host_config_func,
             'timezone_offset_m', 'mdi:map-clock', 'm'
         ),
     ])
