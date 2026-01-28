@@ -49,7 +49,7 @@ class GsAlarmData:
         """
         Get a callable that returns the alarm phones data.
 
-        Callable is needed to ensure the latest object is used, since 
+        Callable is needed to ensure the latest object is used, since
         `G90Alarm.get_alarm_phones()` method returns a new instance every time.
 
         :return: Callable returning G90AlarmPhones

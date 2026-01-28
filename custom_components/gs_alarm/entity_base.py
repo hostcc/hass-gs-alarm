@@ -168,7 +168,7 @@ class G90ConfigFieldBase(
         try:
             # Retrieve the configuration object
             config_object = self._config_object_func()
-            
+
             # Set the attribute value
             setattr(config_object, self._field_name, value)
 
