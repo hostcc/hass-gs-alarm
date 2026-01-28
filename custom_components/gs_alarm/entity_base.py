@@ -292,26 +292,14 @@ class G90ConfigSelectFieldBase(SelectEntity, G90ConfigFieldBase):
 class G90HostConfigSelectField(G90HostConfigMixin, G90ConfigSelectFieldBase):
     # pylint: disable=too-many-ancestors
     """
-    Base class for panel configuration select entities bound to host config.
-
-    :param coordinator: The coordinator to use.
-    :param field_name: The field name within the configuration object.
-    :param states_map: The mapping between possible states of `pyg90alarm`
-     entity and its string representations.
-    :param icon: The icon to use for the entity.
+    Panel configuration select entities bound to host config.
     """
 
 
 class G90NetConfigSelectField(G90NetConfigMixin, G90ConfigSelectFieldBase):
     # pylint: disable=too-many-ancestors
     """
-    Base class for panel configuration select entities bound to network config.
-
-    :param coordinator: The coordinator to use.
-    :param field_name: The field name within the configuration object.
-    :param states_map: The mapping between possible states of `pyg90alarm`
-     entity and its string representations.
-    :param icon: The icon to use for the entity.
+    Panel configuration select entities bound to network config.
     """
 
 
@@ -364,24 +352,14 @@ class G90ConfigNumberFieldBase(NumberEntity, G90ConfigFieldBase):
 class G90HostConfigNumberField(G90HostConfigMixin, G90ConfigNumberFieldBase):
     # pylint: disable=too-many-ancestors
     """
-    Base class for panel configuration number entities bound to host config.
-
-    :param coordinator: The coordinator to use.
-    :param field_name: The field name within the configuration object.
-    :param icon: The icon to use for the entity.
-    :param unit: The unit of measurement for the number entity.
+    Panel configuration number entities bound to host config.
     """
 
 
 class G90NetConfigNumberField(G90NetConfigMixin, G90ConfigNumberFieldBase):
     # pylint: disable=too-many-ancestors
     """
-    Base class for panel configuration number entities bound to network config.
-
-    :param coordinator: The coordinator to use.
-    :param field_name: The field name within the configuration object.
-    :param icon: The icon to use for the entity.
-    :param unit: The unit of measurement for the number entity.
+    Panel configuration number entities bound to network config.
     """
 
 
@@ -443,36 +421,21 @@ class G90ConfigTextFieldBase(TextEntity, G90ConfigFieldBase):
 class G90HostConfigTextField(G90HostConfigMixin, G90ConfigTextFieldBase):
     # pylint: disable=too-many-ancestors
     """
-    Base class for panel configuration text entities bound to host config.
-
-    :param coordinator: The coordinator to use.
-    :param field_name: The field name within the configuration object.
-    :param icon: The icon to use for the entity.
-    :param is_password: Whether the text field is a password field.
+    Panel configuration text entities bound to host config.
     """
 
 
 class G90NetConfigTextField(G90NetConfigMixin, G90ConfigTextFieldBase):
     # pylint: disable=too-many-ancestors
     """
-    Base class for panel configuration text entities bound to network config.
-
-    :param coordinator: The coordinator to use.
-    :param field_name: The field name within the configuration object.
-    :param icon: The icon to use for the entity.
-    :param is_password: Whether the text field is a password field.
+    Panel configuration text entities bound to network config.
     """
 
 
 class G90AlarmPhonesTextField(G90AlarmPhonesMixin, G90ConfigTextFieldBase):
     # pylint: disable=too-many-ancestors
     """
-    Base class for panel configuration text entities bound to alarm phones.
-
-    :param coordinator: The coordinator to use.
-    :param field_name: The field name within the configuration object.
-    :param icon: The icon to use for the entity.
-    :param is_password: Whether the text field is a password field.
+    Panel configuration text entities bound to alarm phones.
     """
 
 
@@ -518,20 +481,12 @@ class G90ConfigSwitchFieldBase(SwitchEntity, G90ConfigFieldBase):
 class G90HostConfigSwitchField(G90HostConfigMixin, G90ConfigSwitchFieldBase):
     # pylint: disable=too-many-ancestors
     """
-    Base class for panel configuration switch entities bound to host config.
-
-    :param coordinator: The coordinator to use.
-    :param field_name: The field name within the configuration object.
-    :param icon: The icon to use for the entity.
+    Panel configuration switch entities bound to host config.
     """
 
 
 class G90NetConfigSwitchField(G90NetConfigMixin, G90ConfigSwitchFieldBase):
     # pylint: disable=too-many-ancestors
     """
-    Base class for panel configuration switch entities bound to network config.
-
-    :param coordinator: The coordinator to use.
-    :param field_name: The field name within the configuration object.
-    :param icon: The icon to use for the entity.
+    Panel configuration switch entities bound to network config.
     """
