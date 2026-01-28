@@ -22,6 +22,7 @@ from homeassistant.const import (
     ATTR_ENTITY_ID,
     SERVICE_TURN_ON,
     SERVICE_TURN_OFF,
+    STATE_ON, STATE_OFF,
 )
 from homeassistant.components.switch.const import (
     DOMAIN as SWITCH_DOMAIN
@@ -641,41 +642,81 @@ async def test_config_flags_restore_state(
         ),
     ],
 )
-# pylint: disable=too-many-positional-arguments,too-many-arguments
-async def test_net_config_switch_entities(
-    unique_id: str, service: str, field: str, value: bool,
-    hass: HomeAssistant, mock_g90alarm: AlarmMockT
-) -> None:
+class TestNetConfigSwitchEntities:
     """
-    Tests network config switch entities can be toggled correctly.
+    Tests for network configuration switch entities.
     """
-    config_entry = MockConfigEntry(
-        domain=DOMAIN,
-        data={'ip_addr': 'dummy-ip'},
-        options={},
-        entry_id="test_net_config_switch"
-    )
-    config_entry.add_to_hass(hass)
-    await hass.config_entries.async_setup(config_entry.entry_id)
-    await hass.async_block_till_done()
+    # pylint: disable=too-many-positional-arguments,too-many-arguments
+    async def test_net_config_switch_entities(
+        self,
+        unique_id: str, service: str, field: str, value: bool,
+        hass: HomeAssistant, mock_g90alarm: AlarmMockT
+    ) -> None:
+        """
+        Tests network config switch entities can be toggled correctly.
+        """
+        config_entry = MockConfigEntry(
+            domain=DOMAIN,
+            data={'ip_addr': 'dummy-ip'},
+            options={},
+            entry_id="test_net_config_switch"
+        )
+        config_entry.add_to_hass(hass)
+        await hass.config_entries.async_setup(config_entry.entry_id)
+        await hass.async_block_till_done()
 
-    entity_id = hass_get_entity_id_by_unique_id(hass, 'switch', unique_id)
+        entity_id = hass_get_entity_id_by_unique_id(hass, 'switch', unique_id)
 
-    # Toggle the switch
-    await hass.services.async_call(
-        SWITCH_DOMAIN,
-        service,
-        {ATTR_ENTITY_ID: entity_id},
-        blocking=True,
-    )
-    await hass.async_block_till_done()
+        # Toggle the switch
+        await hass.services.async_call(
+            SWITCH_DOMAIN,
+            service,
+            {ATTR_ENTITY_ID: entity_id},
+            blocking=True,
+        )
+        await hass.async_block_till_done()
 
-    # Verify save was called
-    (await mock_g90alarm.return_value.net_config()).save.assert_called()
-    # Verify the value was set correctly
-    assert getattr(
-        await mock_g90alarm.return_value.net_config(), field
-    ) == value
+        # Verify save was called
+        (await mock_g90alarm.return_value.net_config()).save.assert_called()
+        # Verify the value was set correctly
+        assert getattr(
+            await mock_g90alarm.return_value.net_config(), field
+        ) == value
+
+    # pylint: disable=too-many-positional-arguments,too-many-arguments
+    async def test_net_config_switch_data_change(
+        self,
+        unique_id: str,
+        service: str,  # pylint: disable=unused-argument
+        field: str, value: bool,
+        hass: HomeAssistant, mock_g90alarm: AlarmMockT
+    ) -> None:
+        """
+        Tests data change propagation in network configuration.
+        """
+        config_entry = MockConfigEntry(
+            domain=DOMAIN,
+            data={'ip_addr': 'dummy-ip'},
+            options={},
+            entry_id="test_net_config_switch_data_change"
+        )
+        config_entry.add_to_hass(hass)
+        await hass.config_entries.async_setup(config_entry.entry_id)
+        await hass.async_block_till_done()
+
+        # Simulate data update
+        setattr(await mock_g90alarm.return_value.net_config(), field, value)
+
+        # Simulate some time has passed for HomeAssistant to invoke
+        # update for coordinators and entities
+        async_fire_time_changed(hass, dt.utcnow() + timedelta(hours=1))
+        await hass.async_block_till_done()
+
+        # Verify the entity state was updated correctly
+        entity_id = hass_get_entity_id_by_unique_id(hass, 'switch', unique_id)
+        entity = hass.states.get(entity_id)
+        assert entity is not None
+        assert entity.state == (STATE_ON if value else STATE_OFF)
 
 
 async def test_net_config_switch_exception(

@@ -105,7 +105,6 @@ class G90ConfigFieldBase(
     `DataclassLoadSave`.
 
     :param coordinator: The coordinator to use.
-    :param config_object: The configuration object to bind the entity to.
     :param field_name: The field name within the configuration object.
     :param icon: The icon to use for the entity.
     """
@@ -118,7 +117,6 @@ class G90ConfigFieldBase(
     # pylint: disable=too-many-arguments,too-many-positional-arguments
     def __init__(
         self, coordinator: GsAlarmCoordinator,
-        config_object: DataclassLoadSave,
         field_name: str, icon: str
     ) -> None:
         super().__init__(coordinator)
@@ -126,7 +124,6 @@ class G90ConfigFieldBase(
         self._attr_has_entity_name = True
         self._attr_icon = icon
         self._attr_translation_key = field_name
-        self._config_object = config_object
         self._field_name = field_name
 
         # The entity is bound to the HASS device for the alarm panel itself
@@ -152,6 +149,15 @@ class G90ConfigFieldBase(
         :return: True if the field is sensitive, False otherwise.
         """
         return False
+
+    @property
+    def _config_object(self) -> DataclassLoadSave:
+        """
+        Retrieve the configuration object.
+
+        :return: The configuration object.
+        """
+        raise NotImplementedError()
 
     async def _set_value(self, value: Any) -> None:
         """
@@ -188,14 +194,56 @@ class G90ConfigFieldBase(
         return getattr(self._config_object, self._field_name)
 
 
-class G90ConfigSelectField(SelectEntity, G90ConfigFieldBase):
+class G90HostConfigMixin(CoordinatorEntity[GsAlarmCoordinator]):
+    """
+    Mixin to provide access to host configuration.
+
+    """
+    @property
+    def _config_object(self) -> G90HostConfig:
+        """
+        Get the latest host configuration.
+
+        :return: The host configuration.
+        """
+        return self.coordinator.data.host_config
+
+
+class G90NetConfigMixin(CoordinatorEntity[GsAlarmCoordinator]):
+    """
+    Mixin to provide access to network configuration.
+    """
+    @property
+    def _config_object(self) -> G90NetConfig:
+        """
+        Get the latest network configuration.
+
+        :return: The network configuration.
+        """
+        return self.coordinator.data.net_config
+
+
+class G90AlarmPhonesMixin(CoordinatorEntity[GsAlarmCoordinator]):
+    """
+    Mixin to provide access to alarm phones configuration.
+    """
+    @property
+    def _config_object(self) -> G90AlarmPhones:
+        """
+        Get the latest alarm phones configuration.
+
+        :return: The alarm phones configuration.
+        """
+        return self.coordinator.data.alarm_phones
+
+
+class G90ConfigSelectFieldBase(G90ConfigFieldBase, SelectEntity):
     """
     Base class for panel configuration select entities.
 
     :param coordinator: The coordinator to use.
     :param states_map: The mapping between possible states of `pyg90alarm`
      entity and its string representations.
-    :param config_object: The configuration object to bind the entity to.
     :param field_name: The field name within the configuration object.
     :param icon: The icon to use for the entity.
     """
@@ -204,10 +252,9 @@ class G90ConfigSelectField(SelectEntity, G90ConfigFieldBase):
     # pylint: disable=too-many-arguments,too-many-positional-arguments
     def __init__(
         self, coordinator: GsAlarmCoordinator,
-        config_object: G90HostConfig | G90NetConfig,
         field_name: str, states_map: dict[Any, str], icon: str
     ) -> None:
-        super().__init__(coordinator, config_object, field_name, icon)
+        super().__init__(coordinator, field_name, icon)
         self._attr_current_option = None
         self.states_map = states_map
         self.reverse_states_map = dict(
@@ -235,12 +282,25 @@ class G90ConfigSelectField(SelectEntity, G90ConfigFieldBase):
         self.async_write_ha_state()
 
 
-class G90ConfigNumberField(NumberEntity, G90ConfigFieldBase):
+class G90HostConfigSelectField(G90HostConfigMixin, G90ConfigSelectFieldBase):
+    # pylint: disable=too-many-ancestors
+    """
+    Panel configuration select entities bound to host config.
+    """
+
+
+class G90NetConfigSelectField(G90NetConfigMixin, G90ConfigSelectFieldBase):
+    # pylint: disable=too-many-ancestors
+    """
+    Panel configuration select entities bound to network config.
+    """
+
+
+class G90ConfigNumberFieldBase(G90ConfigFieldBase, NumberEntity):
     """
     Base class for panel configuration number entities.
 
     :param coordinator: The coordinator to use.
-    :param config_object: The configuration object to bind the entity to.
     :param field_name: The field name within the configuration object.
     :param icon: The icon to use for the entity.
     :param unit: The unit of measurement for the number entity.
@@ -248,11 +308,10 @@ class G90ConfigNumberField(NumberEntity, G90ConfigFieldBase):
     # pylint:disable=too-many-ancestors,too-many-instance-attributes
     # pylint: disable=too-many-arguments,too-many-positional-arguments
     def __init__(
-        self, coordinator: GsAlarmCoordinator,
-        config_object: G90HostConfig, field_name: str,
+        self, coordinator: GsAlarmCoordinator, field_name: str,
         icon: str, unit: str
     ) -> None:
-        super().__init__(coordinator, config_object, field_name, icon)
+        super().__init__(coordinator, field_name, icon)
         self._attr_native_value = None
         self._attr_mode = NumberMode.BOX
         self._attr_native_unit_of_measurement = unit
@@ -283,12 +342,25 @@ class G90ConfigNumberField(NumberEntity, G90ConfigFieldBase):
         self.async_write_ha_state()
 
 
-class G90ConfigTextField(TextEntity, G90ConfigFieldBase):
+class G90HostConfigNumberField(G90HostConfigMixin, G90ConfigNumberFieldBase):
+    # pylint: disable=too-many-ancestors
+    """
+    Panel configuration number entities bound to host config.
+    """
+
+
+class G90NetConfigNumberField(G90NetConfigMixin, G90ConfigNumberFieldBase):
+    # pylint: disable=too-many-ancestors
+    """
+    Panel configuration number entities bound to network config.
+    """
+
+
+class G90ConfigTextFieldBase(G90ConfigFieldBase, TextEntity):
     """
     Base class for panel configuration text entities.
 
     :param coordinator: The coordinator to use.
-    :param config_object: The configuration object to bind the entity to.
     :param field_name: The field name within the configuration object.
     :param icon: The icon to use for the entity.
     :param is_password: Whether the text field is a password field.
@@ -298,10 +370,9 @@ class G90ConfigTextField(TextEntity, G90ConfigFieldBase):
     # pylint: disable=too-many-arguments,too-many-positional-arguments
     def __init__(
         self, coordinator: GsAlarmCoordinator,
-        config_object: G90AlarmPhones | G90NetConfig, field_name: str,
-        icon: str, is_password: bool
+        field_name: str, icon: str, is_password: bool
     ) -> None:
-        super().__init__(coordinator, config_object, field_name, icon)
+        super().__init__(coordinator, field_name, icon)
         self._attr_native_value = None
         if is_password:
             self._attr_mode = TextMode.PASSWORD
@@ -340,12 +411,32 @@ class G90ConfigTextField(TextEntity, G90ConfigFieldBase):
         self.async_write_ha_state()
 
 
-class G90ConfigSwitchField(SwitchEntity, G90ConfigFieldBase):
+class G90HostConfigTextField(G90HostConfigMixin, G90ConfigTextFieldBase):
+    # pylint: disable=too-many-ancestors
+    """
+    Panel configuration text entities bound to host config.
+    """
+
+
+class G90NetConfigTextField(G90NetConfigMixin, G90ConfigTextFieldBase):
+    # pylint: disable=too-many-ancestors
+    """
+    Panel configuration text entities bound to network config.
+    """
+
+
+class G90AlarmPhonesTextField(G90AlarmPhonesMixin, G90ConfigTextFieldBase):
+    # pylint: disable=too-many-ancestors
+    """
+    Panel configuration text entities bound to alarm phones.
+    """
+
+
+class G90ConfigSwitchFieldBase(G90ConfigFieldBase, SwitchEntity):
     """
     Base class for panel configuration switch entities.
 
     :param coordinator: The coordinator to use.
-    :param config_object: The configuration object to bind the entity to.
     :param field_name: The field name within the configuration object.
     :param icon: The icon to use for the entity.
     """
@@ -354,10 +445,9 @@ class G90ConfigSwitchField(SwitchEntity, G90ConfigFieldBase):
     # pylint: disable=too-many-arguments,too-many-positional-arguments
     def __init__(
         self, coordinator: GsAlarmCoordinator,
-        config_object: G90HostConfig | G90NetConfig, field_name: str,
-        icon: str
+        field_name: str, icon: str
     ) -> None:
-        super().__init__(coordinator, config_object, field_name, icon)
+        super().__init__(coordinator, field_name, icon)
         self._attr_is_on = None
 
     async def async_turn_on(self, **_kwargs: Any) -> None:
@@ -379,3 +469,17 @@ class G90ConfigSwitchField(SwitchEntity, G90ConfigFieldBase):
         """
         self._attr_is_on = bool(self._get_value())
         self.async_write_ha_state()
+
+
+class G90HostConfigSwitchField(G90HostConfigMixin, G90ConfigSwitchFieldBase):
+    # pylint: disable=too-many-ancestors
+    """
+    Panel configuration switch entities bound to host config.
+    """
+
+
+class G90NetConfigSwitchField(G90NetConfigMixin, G90ConfigSwitchFieldBase):
+    # pylint: disable=too-many-ancestors
+    """
+    Panel configuration switch entities bound to network config.
+    """

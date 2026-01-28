@@ -4,14 +4,17 @@
 Tests for text entities in the custom component.
 """
 from __future__ import annotations
+from datetime import timedelta
 import pytest
 
 from pytest_homeassistant_custom_component.common import (
+    async_fire_time_changed,
     MockConfigEntry,
 )
 
 from homeassistant.core import HomeAssistant
 from homeassistant.const import ATTR_ENTITY_ID
+from homeassistant.util import dt
 
 from homeassistant.components.text.const import (
     ATTR_VALUE,
@@ -138,41 +141,79 @@ async def test_net_config_text_entities(
         ),
     ],
 )
-# pylint: disable=too-many-positional-arguments,too-many-arguments
-async def test_alarm_phones_text_entities(
-    unique_id: str, field: str, value: str,
-    hass: HomeAssistant, mock_g90alarm: AlarmMockT
-) -> None:
+class TestAlarmPhonesTextEntities:
     """
-    Tests alarm phones text entities can be set correctly.
+    Tests for alarm phones text entities.
     """
-    config_entry = MockConfigEntry(
-        domain=DOMAIN,
-        data={'ip_addr': 'dummy-ip'},
-        options={},
-        entry_id="test_alarm_phones_text"
-    )
-    config_entry.add_to_hass(hass)
-    await hass.config_entries.async_setup(config_entry.entry_id)
-    await hass.async_block_till_done()
+    # pylint: disable=too-many-positional-arguments,too-many-arguments
+    async def test_alarm_phones_text_entities(
+        self,
+        unique_id: str, field: str, value: str,
+        hass: HomeAssistant, mock_g90alarm: AlarmMockT
+    ) -> None:
+        """
+        Tests alarm phones text entities can be set correctly.
+        """
+        config_entry = MockConfigEntry(
+            domain=DOMAIN,
+            data={'ip_addr': 'dummy-ip'},
+            options={},
+            entry_id="test_alarm_phones_text"
+        )
+        config_entry.add_to_hass(hass)
+        await hass.config_entries.async_setup(config_entry.entry_id)
+        await hass.async_block_till_done()
 
-    entity_id = hass_get_entity_id_by_unique_id(hass, 'text', unique_id)
+        entity_id = hass_get_entity_id_by_unique_id(hass, 'text', unique_id)
 
-    # Set the value
-    await hass.services.async_call(
-        TEXT_DOMAIN,
-        SERVICE_SET_VALUE,
-        {ATTR_ENTITY_ID: entity_id, ATTR_VALUE: value},
-        blocking=True,
-    )
-    await hass.async_block_till_done()
+        # Set the value
+        await hass.services.async_call(
+            TEXT_DOMAIN,
+            SERVICE_SET_VALUE,
+            {ATTR_ENTITY_ID: entity_id, ATTR_VALUE: value},
+            blocking=True,
+        )
+        await hass.async_block_till_done()
 
-    # Verify save was called
-    (await mock_g90alarm.return_value.alarm_phones()).save.assert_called()
-    # Verify the value was set correctly
-    assert getattr(
-        await mock_g90alarm.return_value.alarm_phones(), field
-    ) == value
+        # Verify save was called
+        (await mock_g90alarm.return_value.alarm_phones()).save.assert_called()
+        # Verify the value was set correctly
+        assert getattr(
+            await mock_g90alarm.return_value.alarm_phones(), field
+        ) == value
+
+    # pylint: disable=too-many-positional-arguments,too-many-arguments
+    async def test_alarm_phones_text_data_change(
+        self,
+        unique_id: str, field: str, value: str,
+        hass: HomeAssistant, mock_g90alarm: AlarmMockT
+    ) -> None:
+        """
+        Tests data change propagation in alarm phones text entities.
+        """
+        config_entry = MockConfigEntry(
+            domain=DOMAIN,
+            data={'ip_addr': 'dummy-ip'},
+            options={},
+            entry_id="test_alarm_phones_text_data_change"
+        )
+        config_entry.add_to_hass(hass)
+        await hass.config_entries.async_setup(config_entry.entry_id)
+        await hass.async_block_till_done()
+
+        # Simulate data update
+        setattr(await mock_g90alarm.return_value.alarm_phones(), field, value)
+
+        # Simulate some time has passed for HomeAssistant to invoke
+        # update for coordinators and entities
+        async_fire_time_changed(hass, dt.utcnow() + timedelta(hours=1))
+        await hass.async_block_till_done()
+
+        # Verify the entity state was updated correctly
+        entity_id = hass_get_entity_id_by_unique_id(hass, 'text', unique_id)
+        entity = hass.states.get(entity_id)
+        assert entity is not None
+        assert entity.state == value
 
 
 async def test_alarm_phones_text_exception(
