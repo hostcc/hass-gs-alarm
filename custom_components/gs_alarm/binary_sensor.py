@@ -453,7 +453,7 @@ class G90GsmStatusSensor(
 
 
 class G90Gprs3GActiveSensor(
-    BinarySensorEntity, GSAlarmEntityBase,
+    GSAlarmEntityBase, BinarySensorEntity
 ):
     """
     GPRS/3G status sensor.
