@@ -427,3 +427,29 @@ async def test_setup_unload_and_reload_entry_afresh(
     # Unload the integration
     await hass.config_entries.async_unload(config_entry.entry_id)
     await hass.async_block_till_done()
+
+
+async def test_setup_set_cloud_server_address_not_called(
+    hass: HomeAssistant, mock_g90alarm: AlarmMockT
+) -> None:
+    """
+    Verifies that during integration setup there is no call to configure cloud
+    server address - that should only be a part of options flow when cloud
+    notifications protocol is selected.
+    """
+    config_entry = MockConfigEntry(
+        domain=DOMAIN,
+        data={'ip_addr': 'dummy-ip'},
+        options={
+            'notifications_protocol': 'cloud',
+            'cloud_ip': '127.0.0.1',
+            'cloud_port': 9000,
+            'cloud_local_port': 9000,
+        },
+        entry_id="test"
+    )
+    config_entry.add_to_hass(hass)
+    await hass.config_entries.async_setup(config_entry.entry_id)
+    await hass.async_block_till_done()
+
+    mock_g90alarm.return_value.set_cloud_server_address.assert_not_called()

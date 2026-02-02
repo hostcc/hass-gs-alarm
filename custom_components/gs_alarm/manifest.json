@@ -19,7 +19,7 @@
   ],
   "quality_scale": "gold",
   "requirements": [
-    "pyg90alarm==2.6.0"
+    "pyg90alarm==2.7.1"
   ],
   "version": "3.5.0"
 }

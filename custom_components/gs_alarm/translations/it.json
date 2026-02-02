@@ -16,6 +16,11 @@
             }
         }
     },
+    "exceptions": {
+        "invalid_cloud_notifications_options": {
+            "message": "Per i protocolli cloud, le opzioni 'Indirizzo IP per inviare notifiche', 'Porta per inviare notifiche' e 'Porta per ascoltare il traffico del pannello' sono necessarie. Si prega di configurare le opzioni di integrazione di conseguenza, quindi ricaricare l'integrazione."
+        }
+    },
     "options": {
         "step": {
             "init": {
@@ -23,21 +28,35 @@
                     "notifications_protocol": "Protocollo di notifica"
                 },
                 "data_description": {
-                    "notifications_protocol": "* **Locale**: Il pannello ha l'indirizzo IP `10.10.10.250`\n* **Cloud**: Il traffico del pannello verso il cloud può essere deviato verso\nHome Assistant a livello di rete, nessun traffico inviato ai server cloud\n* **Cloud concatenato**: Come **Cloud**, ma il traffico viene inviato anche ai server cloud\nper far funzionare l'applicazione mobile"
+                    "notifications_protocol": "* **Cloud**: Home Assistant riceve il traffico cloud dal pannello senza server cloud effettivi coinvolti\n* **Locale**: Il pannello ha l'indirizzo IP `10.10.10.250`\n* **Cloud concatenato**: Come **Cloud**, ma il traffico viene inviato anche ai server cloud\nper far funzionare l'applicazione mobile"
                 }
             },
             "cloud": {
                 "description": "Protocollo Cloud",
                 "data": {
+                    "cloud_ip": "Indirizzo IP per inviare notifiche",
+                    "cloud_port": "Porta per inviare notifiche",
                     "cloud_local_port": "Porta per ascoltare il traffico del pannello"
+                },
+                "data_description": {
+                    "cloud_ip": "Indirizzo IP dell'istanza Home Assistant come visibile sulla rete e raggiungibile dal pannello",
+                    "cloud_port": "Porta dell'istanza Home Assistant per inviare notifiche del pannello",
+                    "cloud_local_port": "Porta dell'istanza Home Assistant per ascoltare il traffico del pannello. Solitamente uguale a quella sopra, a meno che la configurazione di rete non richieda diversamente"
                 }
             },
             "cloud_upstream": {
                 "description": "Protocollo Cloud concatenato",
                 "data": {
+                    "cloud_ip": "Indirizzo IP per inviare notifiche",
+                    "cloud_port": "Porta per inviare notifiche",
                     "cloud_local_port": "Porta per ascoltare il traffico del pannello",
                     "cloud_upstream_host": "Host a cui inviare le notifiche del pannello dopo l'elaborazione",
                     "cloud_upstream_port": "Porta a cui inviare le notifiche del pannello dopo l'elaborazione"
+                },
+                "data_description": {
+                    "cloud_ip": "Indirizzo IP dell'istanza Home Assistant come visibile sulla rete e raggiungibile dal pannello",
+                    "cloud_port": "Porta dell'istanza Home Assistant per inviare notifiche del pannello",
+                    "cloud_local_port": "Porta dell'istanza Home Assistant per ascoltare il traffico del pannello. Solitamente uguale a quella sopra, a meno che la configurazione di rete non richieda diversamente"
                 }
             }
         }
@@ -46,7 +65,7 @@
         "notifications_protocol": {
             "options": {
                 "local": "Locale",
-                "cloud": "Cloud",
+                "cloud": "Cloud (consigliato)",
                 "cloud_upstream": "Cloud concatenato"
             }
         }

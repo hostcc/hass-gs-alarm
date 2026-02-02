@@ -16,6 +16,11 @@
             }
         }
     },
+    "exceptions": {
+        "invalid_cloud_notifications_options": {
+            "message": "For skyprotokoller kreves alternativene 'IP-adresse for å sende varsler', 'Port for å sende varsler' og 'Port å lytte for paneltrafikk på'. Konfigurer integrasjonsalternativene deretter, og last deretter inn integrationen på nytt."
+        }
+    },
     "options": {
         "step": {
             "init": {
@@ -23,21 +28,35 @@
                     "notifications_protocol": "Varslingsprotokoll"
                 },
                 "data_description": {
-                    "notifications_protocol": "* **Lokalt**: Panelet har IP-adresse `10.10.10.250`\n* **Sky**: Paneltrafikk til sky kan omdirigeres til\nHome Assistant på nettverksnivå, ingen trafikk sendt til skyservere\n* **Kjedes sky**: Det samme som **Sky**, men trafikk sendes også til skyservere\nfor mobilapplikasjonen til å fungere"
+                    "notifications_protocol": "* **Sky**: Home Assistant mottar skytrafikk fra panelet uten faktiske skyservere involvert\n* **Lokalt**: Panelet har IP-adresse `10.10.10.250`\n* **Kjedes sky**: Det samme som **Sky**, men trafikk sendes også til skyservere\nfor mobilapplikasjonen til å fungere"
                 }
             },
             "cloud": {
                 "description": "Skyprotokoll",
                 "data": {
+                    "cloud_ip": "IP-adresse for å sende varsler",
+                    "cloud_port": "Port for å sende varsler",
                     "cloud_local_port": "Port å lytte for paneltrafikk på"
+                },
+                "data_description": {
+                    "cloud_ip": "IP-adresse for Home Assistant-instansen som den ses på nettverket og som er tilgjengelig for panelet",
+                    "cloud_port": "Port for Home Assistant-instansen for å sende panelvarsler",
+                    "cloud_local_port": "Port for Home Assistant-instansen å lytte for paneltrafikk på. Vanligvis det samme som ovenfor, med mindre nettverkskonfigurasjonen din krever noe annet"
                 }
             },
             "cloud_upstream": {
                 "description": "Kjedes skyprotokoll",
                 "data": {
+                    "cloud_ip": "IP-adresse for å sende varsler",
+                    "cloud_port": "Port for å sende varsler",
                     "cloud_local_port": "Port å lytte for paneltrafikk på",
                     "cloud_upstream_host": "Vert å sende panelvarsler til etter behandling",
                     "cloud_upstream_port": "Port å sende panelvarsler til etter behandling"
+                },
+                "data_description": {
+                    "cloud_ip": "IP-adresse for Home Assistant-instansen som den ses på nettverket og som er tilgjengelig for panelet",
+                    "cloud_port": "Port for Home Assistant-instansen for å sende panelvarsler",
+                    "cloud_local_port": "Port for Home Assistant-instansen å lytte for paneltrafikk på. Vanligvis det samme som ovenfor, med mindre nettverkskonfigurasjonen din krever noe annet"
                 }
             }
         }
@@ -46,7 +65,7 @@
         "notifications_protocol": {
             "options": {
                 "local": "Lokalt",
-                "cloud": "Sky",
+                "cloud": "Sky (anbefales)",
                 "cloud_upstream": "Kjedes sky"
             }
         }

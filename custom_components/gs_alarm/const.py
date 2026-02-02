@@ -8,6 +8,8 @@ MANUFACTURER = "Golden Security"
 
 # Configuration options
 CONF_IP_ADDR = "ip_addr"
+CONF_CLOUD_IP = "cloud_ip"
+CONF_CLOUD_PORT = "cloud_port"
 CONF_CLOUD_LOCAL_PORT = "cloud_local_port"
 CONF_CLOUD_UPSTREAM_HOST = "cloud_upstream_host"
 CONF_CLOUD_UPSTREAM_PORT = "cloud_upstream_port"

@@ -16,6 +16,11 @@
             }
         }
     },
+    "exceptions": {
+        "invalid_cloud_notifications_options": {
+            "message": "For sky-protokoller er indstillingerne 'IP-adresse til at sende beskeder til', 'Port til at sende beskeder til' og 'Port til at lytte efter paneltrafik på' påkrævet. Konfigurer integrationsindstillingerne i overensstemmelse hermed, og genindlæs derefter integrationen."
+        }
+    },
     "options": {
         "step": {
             "init": {
@@ -23,21 +28,35 @@
                     "notifications_protocol": "Beskedprotokol"
                 },
                 "data_description": {
-                    "notifications_protocol": "* **Lokalt**: Panelet har IP-adresse `10.10.10.250`\n* **Sky**: Paneltrafik til sky kan omdirigeres til\nHome Assistant på netværksniveau, ingen trafik sendt til cloud-servere\n* **Kædet sky**: Samme som **Sky**, men trafik sendes også til cloud-servere\nfor at mobilapplikationen kan fungere"
+                    "notifications_protocol": "* **Sky**: Home Assistant modtager sky-trafik fra panelet uden faktiske sky-servere involveret\n* **Lokalt**: Panelet har IP-adresse `10.10.10.250`\n* **Kædet sky**: Samme som **Sky**, men trafik sendes også til sky-servere\nfor at mobilapplikationen kan fungere"
                 }
             },
             "cloud": {
                 "description": "Sky-protokol",
                 "data": {
+                    "cloud_ip": "IP-adresse til at sende beskeder til",
+                    "cloud_port": "Port til at sende beskeder til",
                     "cloud_local_port": "Port til at lytte efter paneltrafik på"
+                },
+                "data_description": {
+                    "cloud_ip": "IP-adresse på Home Assistant-instansen som den ses på netværket og som er tilgængelig for panelet",
+                    "cloud_port": "Port på Home Assistant-instansen til at sende panelbeskeder til",
+                    "cloud_local_port": "Port på Home Assistant-instansen til at lytte efter paneltrafik på. Typisk den samme som ovenfor, medmindre din netværkskonfiguration kræver andet"
                 }
             },
             "cloud_upstream": {
                 "description": "Kædet sky-protokol",
                 "data": {
+                    "cloud_ip": "IP-adresse til at sende beskeder til",
+                    "cloud_port": "Port til at sende beskeder til",
                     "cloud_local_port": "Port til at lytte efter paneltrafik på",
                     "cloud_upstream_host": "Vært til at sende panelbeskeder til efter behandling",
                     "cloud_upstream_port": "Port til at sende panelbeskeder til efter behandling"
+                },
+                "data_description": {
+                    "cloud_ip": "IP-adresse på Home Assistant-instansen som den ses på netværket og som er tilgængelig for panelet",
+                    "cloud_port": "Port på Home Assistant-instansen til at sende panelbeskeder til",
+                    "cloud_local_port": "Port på Home Assistant-instansen til at lytte efter paneltrafik på. Typisk den samme som ovenfor, medmindre din netværkskonfiguration kræver andet"
                 }
             }
         }
@@ -46,7 +65,7 @@
         "notifications_protocol": {
             "options": {
                 "local": "Lokalt",
-                "cloud": "Sky",
+                "cloud": "Sky (anbefales)",
                 "cloud_upstream": "Kædet sky"
             }
         }

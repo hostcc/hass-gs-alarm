@@ -16,6 +16,11 @@
             }
         }
     },
+    "exceptions": {
+        "invalid_cloud_notifications_options": {
+            "message": "Para los protocolos en la nube, se requieren las opciones 'Dirección IP para enviar notificaciones', 'Puerto para enviar notificaciones' y 'Puerto para escuchar el tráfico del panel'. Por favor, configure las opciones de integración en consecuencia y luego recargue la integración."
+        }
+    },
     "options": {
         "step": {
             "init": {
@@ -23,21 +28,35 @@
                     "notifications_protocol": "Protocolo de notificaciones"
                 },
                 "data_description": {
-                    "notifications_protocol": "* **Local**: El panel tiene la dirección IP `10.10.10.250`\n* **Nube**: El tráfico del panel a la nube se puede desviar a\nHome Assistant a nivel de red, no se envía tráfico a servidores en la nube\n* **Nube encadenada**: Igual que **Nube**, pero el tráfico también se envía a servidores en la nube\npara que funcione la aplicación móvil"
+                    "notifications_protocol": "* **Nube**: Home Assistant recibe tráfico en la nube del panel sin servidores en la nube reales involucrados\n* **Local**: El panel tiene la dirección IP `10.10.10.250`\n* **Nube encadenada**: Igual que **Nube**, pero el tráfico también se envía a servidores en la nube\npara que funcione la aplicación móvil"
                 }
             },
             "cloud": {
                 "description": "Protocolo de nube",
                 "data": {
+                    "cloud_ip": "Dirección IP para enviar notificaciones",
+                    "cloud_port": "Puerto para enviar notificaciones",
                     "cloud_local_port": "Puerto para escuchar el tráfico del panel"
+                },
+                "data_description": {
+                    "cloud_ip": "Dirección IP de la instancia de Home Assistant como se ve en la red y que es accesible por el panel",
+                    "cloud_port": "Puerto de la instancia de Home Assistant para enviar notificaciones del panel",
+                    "cloud_local_port": "Puerto de la instancia de Home Assistant para escuchar el tráfico del panel. Normalmente el mismo que arriba, a menos que su configuración de red lo requiera de otra manera"
                 }
             },
             "cloud_upstream": {
                 "description": "Protocolo de nube encadenada",
                 "data": {
+                    "cloud_ip": "Dirección IP para enviar notificaciones",
+                    "cloud_port": "Puerto para enviar notificaciones",
                     "cloud_local_port": "Puerto para escuchar el tráfico del panel",
                     "cloud_upstream_host": "Host al que enviar notificaciones del panel después del procesamiento",
                     "cloud_upstream_port": "Puerto al que enviar notificaciones del panel después del procesamiento"
+                },
+                "data_description": {
+                    "cloud_ip": "Dirección IP de la instancia de Home Assistant como se ve en la red y que es accesible por el panel",
+                    "cloud_port": "Puerto de la instancia de Home Assistant para enviar notificaciones del panel",
+                    "cloud_local_port": "Puerto de la instancia de Home Assistant para escuchar el tráfico del panel. Normalmente el mismo que arriba, a menos que su configuración de red lo requiera de otra manera"
                 }
             }
         }
@@ -46,7 +65,7 @@
         "notifications_protocol": {
             "options": {
                 "local": "Local",
-                "cloud": "Nube",
+                "cloud": "Nube (recomendado)",
                 "cloud_upstream": "Nube encadenada"
             }
         }

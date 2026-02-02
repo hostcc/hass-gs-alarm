@@ -20,8 +20,11 @@ from homeassistant.exceptions import (
 )
 
 from .const import (
+    DOMAIN,
     CONF_IP_ADDR,
     CONF_NOTIFICATIONS_PROTOCOL,
+    CONF_CLOUD_IP,
+    CONF_CLOUD_PORT,
     CONF_CLOUD_LOCAL_PORT,
     CONF_CLOUD_UPSTREAM_HOST,
     CONF_CLOUD_UPSTREAM_PORT,
@@ -62,21 +65,31 @@ async def _options_notifications_protocol(
 
     if notifications_protocol in [CONF_OPT_NOTIFICATIONS_CLOUD,
                                   CONF_OPT_NOTIFICATIONS_CLOUD_UPSTREAM]:
-        # Cloud notifications protocol requires local port to be set
+        # Cloud notifications protocol requires local host and IP/port to be
+        # set
+        cloud_ip = options.get(CONF_CLOUD_IP)
+        cloud_port = options.get(CONF_CLOUD_PORT)
         cloud_local_port = options.get(CONF_CLOUD_LOCAL_PORT)
-        if cloud_local_port is None:
+        if (
+            cloud_ip is None
+            or cloud_port is None
+            or cloud_local_port is None
+        ):
             raise ConfigEntryError(
-                f"'{CONF_CLOUD_LOCAL_PORT}' option is required"
+                translation_key="invalid_cloud_notifications_options",
+                translation_domain=DOMAIN
             )
 
     # Cloud notifications protocol has been selected
     if notifications_protocol == CONF_OPT_NOTIFICATIONS_CLOUD:
         _LOGGER.debug(
             'Using cloud notifications protocol:'
-            ' local port %d',
-            cloud_local_port
+            ' cloud IP %s, cloud port %d, local port %d',
+            cloud_ip, cloud_port, cloud_local_port
         )
         await g90_client.use_cloud_notifications(
+            cloud_ip=cast(str, cloud_ip),
+            cloud_port=cast(int, cloud_port),
             cloud_local_port=cast(int, cloud_local_port),
             upstream_host=None,
             upstream_port=None
@@ -89,10 +102,13 @@ async def _options_notifications_protocol(
 
         _LOGGER.debug(
             'Using chained cloud notifications protocol:'
-            " local port %d, host '%s', port %d",
-            cloud_local_port, cloud_upstream_host, cloud_upstream_port
+            " cloud IP: %s, cloud port: %d, local port %d, host '%s', port %d",
+            cloud_ip, cloud_port, cloud_local_port,
+            cloud_upstream_host, cloud_upstream_port
         )
         await g90_client.use_cloud_notifications(
+            cloud_ip=cast(str, cloud_ip),
+            cloud_port=cast(int, cloud_port),
             cloud_local_port=cast(int, cloud_local_port),
             upstream_host=cloud_upstream_host,
             upstream_port=cloud_upstream_port

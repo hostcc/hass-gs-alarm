@@ -16,6 +16,11 @@
             }
         }
     },
+    "exceptions": {
+        "invalid_cloud_notifications_options": {
+            "message": "For cloud protocols, 'IP address to send notifications to', 'Port to send notifications to', and 'Port to listen for panel traffic on' options are required. Please configure the integration options accordingly, and then reload the integration."
+        }
+    },
     "options": {
         "step": {
             "init": {
@@ -23,21 +28,35 @@
                     "notifications_protocol": "Notifications protocol"
                 },
                 "data_description": {
-                    "notifications_protocol": "* **Local**: The panel has `10.10.10.250` IP address\n* **Cloud**: Panel traffic to cloud could be diverted to\nHome Assistant on network level, no traffic sent to cloud servers\n* **Chained cloud**: Same as **Cloud**, but traffic is also sent to cloud servers\nfor mobile application to work"
+                    "notifications_protocol": "* **Cloud**: Home Assistant receives cloud traffic from the panel with no actual cloud servers involved\n* **Local**: The panel has `10.10.10.250` IP address\n* **Chained cloud**: Same as **Cloud**, but traffic is also sent to cloud servers\nfor mobile application to work"
                 }
             },
             "cloud": {
                 "description": "Cloud protocol",
                 "data": {
+                    "cloud_ip": "IP address to send notifications to",
+                    "cloud_port": "Port to send notifications to",
                     "cloud_local_port": "Port to listen for panel traffic on"
+                },
+                "data_description": {
+                    "cloud_ip": "IP address of the Home Assistant instance as seen on the network, and which is reachable by the panel",
+                    "cloud_port": "Port of the Home Assistant instance to send panel notifications to",
+                    "cloud_local_port": "Port of the Home Assistant instance to listen for panel traffic on. Typically same as above, unless your network setup requires otherwise"
                 }
             },
             "cloud_upstream": {
                 "description": "Chained cloud protocol",
                 "data": {
+                    "cloud_ip": "IP address to send notifications to",
+                    "cloud_port": "Port to send notifications to",
                     "cloud_local_port": "Port to listen for panel traffic on",
                     "cloud_upstream_host": "Host to send panel notifications to after processing",
                     "cloud_upstream_port": "Port to send panel notifications to after processing"
+                },
+                "data_description": {
+                    "cloud_ip": "IP address of the Home Assistant instance as seen on the network, and which is reachable by the panel",
+                    "cloud_port": "Port of the Home Assistant instance to send panel notifications to",
+                    "cloud_local_port": "Port of the Home Assistant instance to listen for panel traffic on. Typically same as above, unless your network setup requires otherwise"
                 }
             }
         }
@@ -46,7 +65,7 @@
         "notifications_protocol": {
             "options": {
                 "local": "Local",
-                "cloud": "Cloud",
+                "cloud": "Cloud (recommended)",
                 "cloud_upstream": "Chained cloud"
             }
         }

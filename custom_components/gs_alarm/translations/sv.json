@@ -16,6 +16,11 @@
             }
         }
     },
+    "exceptions": {
+        "invalid_cloud_notifications_options": {
+            "message": "För molnprotokoll krävs alternativen 'IP-adress för att skicka aviseringar', 'Port för att skicka aviseringar' och 'Port för att lyssna på paneltrafik'. Konfigurera integrationsalternativen därefter och ladda sedan om integrationen."
+        }
+    },
     "options": {
         "step": {
             "init": {
@@ -23,21 +28,35 @@
                     "notifications_protocol": "Aviseringsprotokoll"
                 },
                 "data_description": {
-                    "notifications_protocol": "* **Lokalt**: Panelen har IP-adressen `10.10.10.250`\n* **Moln**: Panelens trafik till molnet kan omdirigeras till\nHome Assistant på nätverksnivå, ingen trafik skickas till molnservrar\n* **Kedjat moln**: Samma som **Moln**, men trafik skickas också till molnservrar\nför att mobilapplikationen ska fungera"
+                    "notifications_protocol": "* **Moln**: Home Assistant tar emot molntrafik från panelen utan faktiska molnservrar inblandade\n* **Lokalt**: Panelen har IP-adressen `10.10.10.250`\n* **Kedjat moln**: Samma som **Moln**, men trafik skickas också till molnservrar\nför att mobilapplikationen ska fungera"
                 }
             },
             "cloud": {
                 "description": "Molnprotokoll",
                 "data": {
+                    "cloud_ip": "IP-adress för att skicka aviseringar",
+                    "cloud_port": "Port för att skicka aviseringar",
                     "cloud_local_port": "Port att lyssna på för paneltrafik"
+                },
+                "data_description": {
+                    "cloud_ip": "IP-adress för Home Assistant-instansen som den syns på nätverket och som är nåbar av panelen",
+                    "cloud_port": "Port för Home Assistant-instansen för att skicka panelaviseringar",
+                    "cloud_local_port": "Port för Home Assistant-instansen att lyssna på för paneltrafik. Vanligtvis samma som ovan, om inte din nätverkskonfiguration kräver annat"
                 }
             },
             "cloud_upstream": {
                 "description": "Kedjat molnprotokoll",
                 "data": {
+                    "cloud_ip": "IP-adress för att skicka aviseringar",
+                    "cloud_port": "Port för att skicka aviseringar",
                     "cloud_local_port": "Port att lyssna på för paneltrafik",
                     "cloud_upstream_host": "Värd att skicka panelaviseringar till efter bearbetning",
                     "cloud_upstream_port": "Port att skicka panelaviseringar till efter bearbetning"
+                },
+                "data_description": {
+                    "cloud_ip": "IP-adress för Home Assistant-instansen som den syns på nätverket och som är nåbar av panelen",
+                    "cloud_port": "Port för Home Assistant-instansen för att skicka panelaviseringar",
+                    "cloud_local_port": "Port för Home Assistant-instansen att lyssna på för paneltrafik. Vanligtvis samma som ovan, om inte din nätverkskonfiguration kräver annat"
                 }
             }
         }
@@ -46,7 +65,7 @@
         "notifications_protocol": {
             "options": {
                 "local": "Lokalt",
-                "cloud": "Moln",
+                "cloud": "Moln (rekommenderas)",
                 "cloud_upstream": "Kedjat moln"
             }
         }
