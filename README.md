@@ -78,8 +78,8 @@ Notifications from the alarm panel are essential for the integration -
 the notifications allow to reflect sensor and panel states change as they occurs.
 
 The integration supports several protocols for the notifications:
-* Local protocol (the default)
-* Cloud protocol
+* Cloud protocol (the default, recommended)
+* Local protocol 
 * Cloud protocol with chaining
 
 Please see below for the details on each.
@@ -103,35 +103,29 @@ broadcast packets, thus you'll need those forwarded to the Home Assistant
 subnet. Alternatively, you could consider the alert simulation or a different
 protocol below.
 
-### Cloud notifications protocol
+### Cloud notifications protocol (recommended)
 
 Despite its name the procotol does not depend on any Internet connectivity
 (unless using the chained mode below), the integration just implements same
 protocol the panel uses to communicate with cloud servers - the devices is
 "tricked" into thinking it is still communicating with the cloud servers,
-while actual communication happens with the integration.
+while actual communication happens with the integration. As the result, no
+alarm panel's traffic will be sent to vendor's cloud servers - they
+will consider the panel being offline, so does the mobile application.
 
 With this protocol it is no longer required for the alarm panel to have
-`10.10.10.250` IP address. However, the protocol requires re-routing network
-traffic coming from alarm panel to cloud servers to reach Home Assitant instance
-insted. The re-routing could be done using DNAT (Destination Network
-Address Translation), port mapping or similar techniques your network gear is
-capable of.
+`10.10.10.250` IP address. 
 
-Principle of the re-routing is as follows:
+The protocol requires the Home Assistant instance to be reachable by the alarm
+panel over the network using IP address and port configured in the integration,
+`IP address to send notifications to` and `Port to send notifications to` options.
+Depending on your network setup you might need to adjust
+`Port to listen for panel traffic on` to be different from the above. For example,
+you run Home Assistant under Kubernetes and expose the service on a different
+port - in that case you could leave ``Port to listen for panel traffic on` with
+default value, and configure the service's port as `Port to send notifications to`.
+Same applies to other network setups like Docker, reverse proxies etc.
 
-* For all TCP traffic
-  * From: alarm panel
-  * To: cloud servers and corresponding port - `47.88.7.61` and `5678` as of writing,
-    respectively
-* Change destination to
-  * Home Assistant IP address and
-  * Cloud notifications port configured in integration's options - `5678` by default
-
-Please consult with your network equipment's documentation on how to implement that.
-
-As the result, no alarm panel's traffic will be sent to vendor's cloud servers - they
-will consider the panel being offline, so does the mobile application.
 
 ### Cloud notifications with chaining
 
@@ -144,37 +138,21 @@ The integration will still properly reflect sensor and panel state changes even
 if cloud servers are down, it won't just send notifications copy there for
 apparent reasons.
 
-Traffic re-routing principles described in
-[Cloud notifications protocol](#cloud-notifications-protocol) apply.
-Depending on your network equipment sending the notifications copy to cloud servers
-might result in a loop, so you'll need another rule configured:
-
-* For all TCP traffic
-  * From: Home Assistant instance
-  * To: an arbitrary IP address in your network and port configured in the integration
-    options
-* Change destination to
-  * Cloud servers and corresponding port - `47.88.7.61` and `5678` as of writing,
-    respectively
-
-You may also avoid the loop by configuring a port for cloud servers to send
-traffic to different from `5678`, and using it to match the rule above. 
-
 ### Quick guide on selecting notifications protocol
 
+* Use cloud notifications protocol if
+  * You cannot or don't want to assign the alarm panel `10.10.10.250` IP address
+  * You would like to be fully local with no dependency on cloud servers
+  * You are ok to have mobile application showing the panel as offline (apparently,
+    only applies when the mobile application works still)
+
 * Use local notifications protocol if
-  * You can assing the alarm panel `10.10.10.250` IP address and
+  * You can assign the alarm panel `10.10.10.250` IP address and
   * You are ok to have sensors not reflecting state change when cloud server
     are down
 
-* Use cloud notifications protocol if
-  * You cannot assing the alarm panel `10.10.10.250` IP address or
-  * You do not want sensors not reflecting their state when cloud servers
-    are down
-  * You are ok to have mobile application showing the panel as offline
-
 * Use cloud notifications protocol with chaining if
-  * You cannot assing the alarm panel `10.10.10.250` IP address or
+  * You cannot or don't want to assign the alarm panel `10.10.10.250` IP address or
   * Do not want sensors not reflecting their state when cloud servers
     are down 
   * Would like the mobile application to work normally

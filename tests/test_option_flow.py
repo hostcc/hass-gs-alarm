@@ -25,35 +25,46 @@ from .conftest import AlarmMockT
 @pytest.mark.parametrize(
     "protocol,user_input,expected_call,expected_kwargs",
     [
-        (
+        pytest.param(
             CONF_OPT_NOTIFICATIONS_LOCAL,
             {}, 'use_local_notifications', {},
+            id="local_notifications"
         ),
-        (
+        pytest.param(
             CONF_OPT_NOTIFICATIONS_CLOUD,
             {
+                'cloud_ip': '127.0.0.1',
+                'cloud_port': 4321,
                 'cloud_local_port': 1234
             },
             'use_cloud_notifications',
             {
+                'cloud_ip': '127.0.0.1',
+                'cloud_port': 4321,
                 'cloud_local_port': 1234,
                 'upstream_host': None,
                 'upstream_port': None
             },
+            id="cloud_notifications"
         ),
-        (
+        pytest.param(
             CONF_OPT_NOTIFICATIONS_CLOUD_UPSTREAM,
             {
+                'cloud_ip': '127.0.0.1',
+                'cloud_port': 4321,
                 'cloud_local_port': 1234,
                 'cloud_upstream_host': 'test-host.example.com',
                 'cloud_upstream_port': 5678,
             },
             'use_cloud_notifications',
             {
+                'cloud_ip': '127.0.0.1',
+                'cloud_port': 4321,
                 'cloud_local_port': 1234,
                 'upstream_host': 'test-host.example.com',
                 'upstream_port': 5678
             },
+            id="cloud_upstream_notifications"
         ),
     ],
 )
@@ -135,3 +146,13 @@ async def test_config_flow_options_notifications_protocol(
         getattr(call, expected_call)(**expected_kwargs),
         call.listen_notifications(),
     ])
+
+    # For cloud protocols, verify that the cloud server address
+    # has been set
+    if protocol != CONF_OPT_NOTIFICATIONS_LOCAL:
+        (
+            mock_g90alarm.return_value
+        ).set_cloud_server_address.assert_called_once_with(
+            cloud_ip=user_input['cloud_ip'],
+            cloud_port=user_input['cloud_port'],
+        )

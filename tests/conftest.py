@@ -420,6 +420,10 @@ def mock_g90alarm(request: pytest.FixtureRequest) -> Iterator[AlarmMockT]:
                 private_data=0,
             )
         ),
+        patch(
+            'pyg90alarm.G90Alarm.set_cloud_server_address',
+            autospec=True,
+        ),
     ):
         yield mock
 

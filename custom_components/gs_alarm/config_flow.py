@@ -27,13 +27,15 @@ from homeassistant.helpers.selector import (
 
 from pyg90alarm import G90Alarm
 from pyg90alarm.const import (
-    CLOUD_NOTIFICATIONS_PORT, REMOTE_CLOUD_HOST, REMOTE_CLOUD_PORT
+    LOCAL_CLOUD_NOTIFICATIONS_PORT, REMOTE_CLOUD_PORT,
 )
 
 from .const import (
     DOMAIN,
     CONF_NOTIFICATIONS_PROTOCOL,
     CONF_IP_ADDR,
+    CONF_CLOUD_IP,
+    CONF_CLOUD_PORT,
     CONF_CLOUD_LOCAL_PORT,
     CONF_CLOUD_UPSTREAM_HOST,
     CONF_CLOUD_UPSTREAM_PORT,
@@ -147,6 +149,57 @@ class OptionsFlowHandler(OptionsFlow):
     # use second step merging the input with the data from the first step
     init_step_data: Dict[str, Any] = {}
 
+    @property
+    def common_cloud_notifications_schema(self) -> vol.Schema:
+        """
+        Returns the common schema for cloud notifications configuration.
+        """
+        return vol.Schema(
+            {
+                vol.Required(
+                    CONF_CLOUD_IP,
+                    default=self.config_entry.options.get(
+                        CONF_CLOUD_IP, None
+                    )
+                ): str,
+                vol.Required(
+                    CONF_CLOUD_PORT,
+                    default=self.config_entry.options.get(
+                        CONF_CLOUD_PORT, REMOTE_CLOUD_PORT
+                    )
+                ): int,
+                vol.Required(
+                    CONF_CLOUD_LOCAL_PORT,
+                    default=self.config_entry.options.get(
+                        CONF_CLOUD_LOCAL_PORT, LOCAL_CLOUD_NOTIFICATIONS_PORT
+                    )
+                ): int,
+            }
+        )
+
+    async def set_cloud_server_address(
+        self, user_input: dict[str, Any]
+    ) -> None:
+        """
+        Sets the cloud server address on the client.
+
+        The reason the operation is under options flow is that the
+        cloud server address should only be done once, not every time the
+        integration starts.
+
+        :param user_input: The user input containing cloud server
+         configuration.
+        """
+        _LOGGER.debug(
+            "Setting cloud server address to %s:%d",
+            user_input[CONF_CLOUD_IP],
+            user_input[CONF_CLOUD_PORT],
+        )
+        await self.config_entry.runtime_data.client.set_cloud_server_address(
+            cloud_ip=user_input[CONF_CLOUD_IP],
+            cloud_port=user_input[CONF_CLOUD_PORT],
+        )
+
     async def async_step_init(
         self, user_input: dict[str, Any] | None = None
     ) -> ConfigFlowResult:
@@ -160,13 +213,13 @@ class OptionsFlowHandler(OptionsFlow):
             vol.Required(
                 CONF_NOTIFICATIONS_PROTOCOL,
                 default=self.config_entry.options.get(
-                    CONF_NOTIFICATIONS_PROTOCOL, CONF_OPT_NOTIFICATIONS_LOCAL
+                    CONF_NOTIFICATIONS_PROTOCOL, CONF_OPT_NOTIFICATIONS_CLOUD
                 ),
             ): SelectSelector(
                 SelectSelectorConfig(
                     options=[
-                        CONF_OPT_NOTIFICATIONS_LOCAL,
                         CONF_OPT_NOTIFICATIONS_CLOUD,
+                        CONF_OPT_NOTIFICATIONS_LOCAL,
                         CONF_OPT_NOTIFICATIONS_CLOUD_UPSTREAM,
                     ],
                     multiple=False,
@@ -206,27 +259,21 @@ class OptionsFlowHandler(OptionsFlow):
         """
         Handles the cloud configuration.
         """
-        schema = vol.Schema(
-            {
-                vol.Required(
-                    CONF_CLOUD_LOCAL_PORT,
-                    default=self.config_entry.options.get(
-                        CONF_CLOUD_LOCAL_PORT, CLOUD_NOTIFICATIONS_PORT
-                    )
-                ): int,
-            }
-        )
-
         if user_input is None:
             return self.async_show_form(
                     step_id='cloud',
-                    data_schema=schema,
+                    data_schema=self.common_cloud_notifications_schema,
                     last_step=True,
                 )
 
         # Merge the user input with the data from the first step to create
         # the final configuration
         user_input.update(self.init_step_data)
+
+        # Set cloud server address immediately
+        await self.set_cloud_server_address(user_input)
+
+        # Create the entry with updated options
         return self.async_create_entry(title=DOMAIN, data=user_input)
 
     async def async_step_cloud_upstream(
@@ -235,24 +282,17 @@ class OptionsFlowHandler(OptionsFlow):
         """
         Handles the cloud upstream configuration.
         """
-        schema = vol.Schema(
-            {
-                vol.Required(
-                    CONF_CLOUD_LOCAL_PORT,
-                    default=self.config_entry.options.get(
-                        CONF_CLOUD_LOCAL_PORT, CLOUD_NOTIFICATIONS_PORT
-                    )
-                ): int,
+        schema = self.common_cloud_notifications_schema.extend({
                 vol.Required(
                     CONF_CLOUD_UPSTREAM_HOST,
                     default=self.config_entry.options.get(
-                        CONF_CLOUD_UPSTREAM_HOST, REMOTE_CLOUD_HOST
+                        CONF_CLOUD_UPSTREAM_HOST
                     )
                 ): str,
                 vol.Required(
                     CONF_CLOUD_UPSTREAM_PORT,
                     default=self.config_entry.options.get(
-                        CONF_CLOUD_UPSTREAM_PORT, REMOTE_CLOUD_PORT
+                        CONF_CLOUD_UPSTREAM_PORT
                     )
                 ): int,
             }
@@ -268,4 +308,9 @@ class OptionsFlowHandler(OptionsFlow):
         # Merge the user input with the data from the first step to create
         # the final configuration
         user_input.update(self.init_step_data)
+
+        # Set cloud server address immediately
+        await self.set_cloud_server_address(user_input)
+
+        # Create the entry with updated options
         return self.async_create_entry(title=DOMAIN, data=user_input)

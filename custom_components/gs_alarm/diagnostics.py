@@ -24,7 +24,7 @@ TO_REDACT = [
     'panel_password', 'panel_phone_number', 'phone_number_1', 'phone_number_2',
     'phone_number_3', 'phone_number_4', 'phone_number_5', 'phone_number_6',
     'sms_push_number_1', 'sms_push_number_2', 'ap_password', 'apn_user',
-    'apn_name', 'apn_password',
+    'apn_name', 'apn_password', 'cloud_ip',
 ]
 
 

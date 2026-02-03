@@ -16,6 +16,11 @@
             }
         }
     },
+    "exceptions": {
+        "invalid_cloud_notifications_options": {
+            "message": "Dla protokołów chmurowych wymagane są opcje 'Adres IP do wysyłania powiadomień', 'Port do wysyłania powiadomień' i 'Port do nasłuchiwania ruchu panelu'. Proszę odpowiednio skonfigurować opcje integracji, a następnie przeładować integrację."
+        }
+    },
     "options": {
         "step": {
             "init": {
@@ -23,21 +28,35 @@
                     "notifications_protocol": "Protokół powiadomień"
                 },
                 "data_description": {
-                    "notifications_protocol": "* **Lokalny**: Panel ma adres IP `10.10.10.250`\n* **Chmura**: Ruch panelu do chmury może być przekierowany do\nHome Assistant na poziomie sieci, żaden ruch nie jest wysyłany do serwerów chmury\n* **Połączona chmura**: Tak samo jak **Chmura**, ale ruch jest również wysyłany do serwerów chmury,\naby aplikacja mobilna działała"
+                    "notifications_protocol": "* **Chmura**: Home Assistant odbiera ruch chmurowy z panelu bez faktycznego udziału serwerów chmurowych\n* **Lokalny**: Panel ma adres IP `10.10.10.250`\n* **Połączona chmura**: Tak samo jak **Chmura**, ale ruch jest również wysyłany do serwerów chmury,\naby aplikacja mobilna działała"
                 }
             },
             "cloud": {
                 "description": "Protokół chmury",
                 "data": {
+                    "cloud_ip": "Adres IP do wysyłania powiadomień",
+                    "cloud_port": "Port do wysyłania powiadomień",
                     "cloud_local_port": "Port do nasłuchiwania ruchu panelu"
+                },
+                "data_description": {
+                    "cloud_ip": "Adres IP instancji Home Assistant widoczny w sieci i osiągalny przez panel",
+                    "cloud_port": "Port instancji Home Assistant do wysyłania powiadomień panelu",
+                    "cloud_local_port": "Port instancji Home Assistant do nasłuchiwania ruchu panelu. Zazwyczaj taki sam jak powyżej, chyba że konfiguracja sieci wymaga inaczej"
                 }
             },
             "cloud_upstream": {
                 "description": "Protokół połączonej chmury",
                 "data": {
+                    "cloud_ip": "Adres IP do wysyłania powiadomień",
+                    "cloud_port": "Port do wysyłania powiadomień",
                     "cloud_local_port": "Port do nasłuchiwania ruchu panelu",
                     "cloud_upstream_host": "Host, do którego wysyłane są powiadomienia panelu po przetworzeniu",
                     "cloud_upstream_port": "Port, do którego wysyłane są powiadomienia panelu po przetworzeniu"
+                },
+                "data_description": {
+                    "cloud_ip": "Adres IP instancji Home Assistant widoczny w sieci i osiągalny przez panel",
+                    "cloud_port": "Port instancji Home Assistant do wysyłania powiadomień panelu",
+                    "cloud_local_port": "Port instancji Home Assistant do nasłuchiwania ruchu panelu. Zazwyczaj taki sam jak powyżej, chyba że konfiguracja sieci wymaga inaczej"
                 }
             }
         }
@@ -46,7 +65,7 @@
         "notifications_protocol": {
             "options": {
                 "local": "Lokalny",
-                "cloud": "Chmura",
+                "cloud": "Chmura (zalecane)",
                 "cloud_upstream": "Połączona chmura"
             }
         }

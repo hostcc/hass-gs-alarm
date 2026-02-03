@@ -16,6 +16,11 @@
             }
         }
     },
+    "exceptions": {
+        "invalid_cloud_notifications_options": {
+            "message": "Para protocolos de nuvem, as opções 'Endereço IP para enviar notificações', 'Porta para enviar notificações' e 'Porta para escutar o tráfego do painel' são necessárias. Por favor, configure as opções de integração adequadamente e depois recarregue a integração."
+        }
+    },
     "options": {
         "step": {
             "init": {
@@ -23,21 +28,35 @@
                     "notifications_protocol": "Protocolo de notificações"
                 },
                 "data_description": {
-                    "notifications_protocol": "* **Local**: O painel tem o endereço IP `10.10.10.250`\n* **Nuvem**: O tráfego do painel para a nuvem pode ser desviado para\nHome Assistant ao nível da rede, nenhum tráfego enviado para servidores na nuvem\n* **Nuvem encadeada**: Igual a **Nuvem**, mas o tráfego também é enviado para servidores na nuvem\npara que o aplicativo móvel funcione"
+                    "notifications_protocol": "* **Nuvem**: Home Assistant recebe tráfego de nuvem do painel sem servidores de nuvem reais envolvidos\n* **Local**: O painel tem o endereço IP `10.10.10.250`\n* **Nuvem encadeada**: Igual a **Nuvem**, mas o tráfego também é enviado para servidores na nuvem\npara que o aplicativo móvel funcione"
                 }
             },
             "cloud": {
                 "description": "Protocolo de nuvem",
                 "data": {
+                    "cloud_ip": "Endereço IP para enviar notificações",
+                    "cloud_port": "Porta para enviar notificações",
                     "cloud_local_port": "Porta para escutar o tráfego do painel"
+                },
+                "data_description": {
+                    "cloud_ip": "Endereço IP da instância Home Assistant como visto na rede e que é acessível pelo painel",
+                    "cloud_port": "Porta da instância Home Assistant para enviar notificações do painel",
+                    "cloud_local_port": "Porta da instância Home Assistant para escutar o tráfego do painel. Normalmente a mesma que acima, a menos que sua configuração de rede exija o contrário"
                 }
             },
             "cloud_upstream": {
                 "description": "Protocolo de nuvem encadeada",
                 "data": {
+                    "cloud_ip": "Endereço IP para enviar notificações",
+                    "cloud_port": "Porta para enviar notificações",
                     "cloud_local_port": "Porta para escutar o tráfego do painel",
                     "cloud_upstream_host": "Host para enviar notificações do painel após processamento",
                     "cloud_upstream_port": "Porta para enviar notificações do painel após processamento"
+                },
+                "data_description": {
+                    "cloud_ip": "Endereço IP da instância Home Assistant como visto na rede e que é acessível pelo painel",
+                    "cloud_port": "Porta da instância Home Assistant para enviar notificações do painel",
+                    "cloud_local_port": "Porta da instância Home Assistant para escutar o tráfego do painel. Normalmente a mesma que acima, a menos que sua configuração de rede exija o contrário"
                 }
             }
         }
@@ -46,7 +65,7 @@
         "notifications_protocol": {
             "options": {
                 "local": "Local",
-                "cloud": "Nuvem",
+                "cloud": "Nuvem (recomendado)",
                 "cloud_upstream": "Nuvem encadeada"
             }
         }

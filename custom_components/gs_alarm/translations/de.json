@@ -16,6 +16,11 @@
             }
         }
     },
+    "exceptions": {
+        "invalid_cloud_notifications_options": {
+            "message": "Für Cloud-Protokolle sind die Optionen 'IP-Adresse zum Senden von Benachrichtigungen', 'Port zum Senden von Benachrichtigungen' und 'Port zum Abhören des Panel-Verkehrs' erforderlich. Bitte konfigurieren Sie die Integrationsoptionen entsprechend und laden Sie dann die Integration neu."
+        }
+    },
     "options": {
         "step": {
             "init": {
@@ -23,21 +28,35 @@
                     "notifications_protocol": "Benachrichtigungsprotokoll"
                 },
                 "data_description": {
-                    "notifications_protocol": "* **Lokal**: Das Panel hat die IP-Adresse `10.10.10.250`\n* **Cloud**: Der Panel-Verkehr zur Cloud kann auf Netzwerkebene zu\nHome Assistant umgeleitet werden, kein Datenverkehr wird an Cloud-Server gesendet\n* **Verkettete Cloud**: Wie **Cloud**, aber der Datenverkehr wird auch an Cloud-Server gesendet,\ndamit die mobile Anwendung funktioniert"
+                    "notifications_protocol": "* **Cloud**: Home Assistant empfängt Cloud-Verkehr vom Panel ohne tatsächliche Cloud-Server\n* **Lokal**: Das Panel hat die IP-Adresse `10.10.10.250`\n* **Verkettete Cloud**: Wie **Cloud**, aber der Datenverkehr wird auch an Cloud-Server gesendet,\ndamit die mobile Anwendung funktioniert"
                 }
             },
             "cloud": {
                 "description": "Cloud-Protokoll",
                 "data": {
+                    "cloud_ip": "IP-Adresse zum Senden von Benachrichtigungen",
+                    "cloud_port": "Port zum Senden von Benachrichtigungen",
                     "cloud_local_port": "Port zum Abhören des Panel-Verkehrs"
+                },
+                "data_description": {
+                    "cloud_ip": "IP-Adresse der Home Assistant-Instanz, wie sie im Netzwerk sichtbar ist und vom Panel erreichbar ist",
+                    "cloud_port": "Port der Home Assistant-Instanz zum Senden von Panel-Benachrichtigungen",
+                    "cloud_local_port": "Port der Home Assistant-Instanz zum Abhören des Panel-Verkehrs. Normalerweise derselbe wie oben, es sei denn, Ihre Netzwerkkonfiguration erfordert etwas anderes"
                 }
             },
             "cloud_upstream": {
                 "description": "Verkettetes Cloud-Protokoll",
                 "data": {
+                    "cloud_ip": "IP-Adresse zum Senden von Benachrichtigungen",
+                    "cloud_port": "Port zum Senden von Benachrichtigungen",
                     "cloud_local_port": "Port zum Abhören des Panel-Verkehrs",
                     "cloud_upstream_host": "Host, an den Panel-Benachrichtigungen nach der Verarbeitung gesendet werden",
                     "cloud_upstream_port": "Port, an den Panel-Benachrichtigungen nach der Verarbeitung gesendet werden"
+                },
+                "data_description": {
+                    "cloud_ip": "IP-Adresse der Home Assistant-Instanz, wie sie im Netzwerk sichtbar ist und vom Panel erreichbar ist",
+                    "cloud_port": "Port der Home Assistant-Instanz zum Senden von Panel-Benachrichtigungen",
+                    "cloud_local_port": "Port der Home Assistant-Instanz zum Abhören des Panel-Verkehrs. Normalerweise derselbe wie oben, es sei denn, Ihre Netzwerkkonfiguration erfordert etwas anderes"
                 }
             }
         }
@@ -46,7 +65,7 @@
         "notifications_protocol": {
             "options": {
                 "local": "Lokal",
-                "cloud": "Cloud",
+                "cloud": "Cloud (empfohlen)",
                 "cloud_upstream": "Verkettete Cloud"
             }
         }
