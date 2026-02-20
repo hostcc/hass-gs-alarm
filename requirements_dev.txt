@@ -4,7 +4,7 @@ pytest-homeassistant-custom-component==0.13.315
 pytest-cov==7.0.0
 pytest-unordered==0.7.0
 mypy[reports]==1.19.1
-pyg90alarm==2.7.2
+pyg90alarm==2.7.3
 # These are pinned by `pytest-homeassistant-custom-component` package
 pytest
 coverage
