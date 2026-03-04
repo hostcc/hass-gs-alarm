@@ -4,8 +4,10 @@
 Tests for loading/unloading the custom component.
 """
 import re
+from typing import Any
 from datetime import timedelta
 from unittest.mock import ANY
+import pytest
 from pytest_unordered import unordered
 
 from pytest_homeassistant_custom_component.common import (
@@ -22,17 +24,45 @@ from .conftest import (
 
 
 # pylint: disable=too-many-locals
+@pytest.mark.parametrize("options", [
+    pytest.param(
+        {
+            'notifications_protocol': 'local',
+        },
+        id="local_notifications"
+    ), pytest.param(
+        {
+            'notifications_protocol': 'cloud',
+            'cloud_ip': '127.0.0.1',
+            'cloud_port': 9000,
+            'cloud_local_port': 9000,
+        },
+        id="cloud_notifications"
+    ), pytest.param(
+        {
+            'notifications_protocol': 'cloud_upstream',
+            'cloud_ip': '127.0.0.1',
+            'cloud_port': 9000,
+            'cloud_local_port': 9000,
+            'cloud_upstream_host': '127.0.0.1',
+            'cloud_upstream_port': 9000,
+        },
+        id="cloud_upstream_notifications"
+    ),
+])
 async def test_setup_unload_and_reload_entry_afresh(
-    hass: HomeAssistant, mock_g90alarm: AlarmMockT
+    hass: HomeAssistant, mock_g90alarm: AlarmMockT,
+    options: dict[str, Any]
 ) -> None:
     """
     Tests the custom integration load and then unloads properly, simulating it
-    just been added to HASS with no options persisted previously.
+    just been added to HASS with different notification protocols persisted in
+    options.
     """
     config_entry = MockConfigEntry(
         domain=DOMAIN,
         data={'ip_addr': 'dummy-ip'},
-        options={},
+        options=options,
         entry_id="test"
     )
     config_entry.add_to_hass(hass)
@@ -123,10 +153,6 @@ async def test_setup_unload_and_reload_entry_afresh(
                 'unique_id': 'dummy_guid_sensor_last_device_packet',
                 'entity_id': 'sensor.dummy_guid_last_device_packet',
                 'name': 'Last device packet',
-            }, {
-                'unique_id': 'dummy_guid_sensor_last_upstream_packet',
-                'entity_id': 'sensor.dummy_guid_last_upstream_packet',
-                'name': 'Last upstream packet',
             }, {
                 'unique_id': 'dummy_guid_new_sensor_type',
                 'entity_id': 'select.dummy_guid_new_sensor_type',
@@ -285,7 +311,16 @@ async def test_setup_unload_and_reload_entry_afresh(
                 'entity_id': 'sensor.dummy_guid_battery_voltage',
                 'name': 'Battery voltage',
             },
-            ])
+                # Test for last upstream packet sensor if notification
+                # protocol is set to cloud upstream
+            ] + ([{
+                'unique_id': 'dummy_guid_sensor_last_upstream_packet',
+                'entity_id': 'sensor.dummy_guid_last_upstream_packet',
+                'name': 'Last upstream packet',
+            }] if (
+                options.get('notifications_protocol') == 'cloud_upstream'
+            ) else []
+            ))
         },
         {
             'device': 'Dummy sensor',

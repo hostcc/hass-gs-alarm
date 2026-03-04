@@ -19,6 +19,11 @@ from homeassistant.helpers.entity_platform import AddEntitiesCallback
 
 from .entity_base import GSAlarmEntityBase
 from .coordinator import GsAlarmCoordinator
+from .const import (
+    CONF_OPT_NOTIFICATIONS_CLOUD_UPSTREAM,
+    CONF_NOTIFICATIONS_PROTOCOL,
+    CONF_OPT_NOTIFICATIONS_LOCAL,
+)
 if TYPE_CHECKING:
     from . import GsAlarmConfigEntry
 
@@ -32,10 +37,17 @@ async def async_setup_entry(_hass: HomeAssistant, entry: GsAlarmConfigEntry,
         G90WifiSignal(entry.runtime_data),
         G90GsmSignal(entry.runtime_data),
         G90LastDevicePacket(entry.runtime_data),
-        G90LastUpstreamPacket(entry.runtime_data),
         G90CellularOperator(entry.runtime_data),
         G90BatteryVoltage(entry.runtime_data),
     ]
+
+    # Add last upstream packet sensor only if notification protocol is set to
+    # cloud upstream, since it doesn't make sense for other protocols
+    if entry.options.get(
+        CONF_NOTIFICATIONS_PROTOCOL, CONF_OPT_NOTIFICATIONS_LOCAL
+    ) == CONF_OPT_NOTIFICATIONS_CLOUD_UPSTREAM:
+        g90sensors.append(G90LastUpstreamPacket(entry.runtime_data))
+
     async_add_entities(g90sensors)
 
 
