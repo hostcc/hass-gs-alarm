@@ -140,6 +140,10 @@ class G90AlarmPanel(
                 self.unique_id,
                 repr(exc)
             )
+            return
+
+        # Refresh coordinator to update entity state
+        await self.coordinator.async_request_refresh()
 
     async def async_alarm_arm_home(self, _code: str | None = None) -> None:
         """Send arm home command."""
@@ -152,6 +156,10 @@ class G90AlarmPanel(
                 self.unique_id,
                 repr(exc)
             )
+            return
+
+        # See comment above
+        await self.coordinator.async_request_refresh()
 
     async def async_alarm_arm_away(self, _code: str | None = None) -> None:
         """Send arm away command."""
@@ -164,3 +172,7 @@ class G90AlarmPanel(
                 self.unique_id,
                 repr(exc)
             )
+            return
+
+        # See comment above
+        await self.coordinator.async_request_refresh()
