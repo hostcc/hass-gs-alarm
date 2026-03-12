@@ -131,6 +131,9 @@
             "relay": {
                 "name": "{relay}"
             },
+            "reboot": {
+                "name": "Panel neu starten"
+            },
             "sensor_flag_arm_delay": {
                 "name": "Scharfschaltverzögerung"
             },

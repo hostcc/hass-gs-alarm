@@ -131,6 +131,9 @@
             "relay": {
                 "name": "{relay}"
             },
+            "reboot": {
+                "name": "Redémarrer le panneau"
+            },
             "sensor_flag_arm_delay": {
                 "name": "Délai d'armement"
             },

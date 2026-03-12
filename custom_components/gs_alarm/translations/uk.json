@@ -131,6 +131,9 @@
             "relay": {
                 "name": "{relay}"
             },
+            "reboot": {
+                "name": "Перезавантажити панель"
+            },
             "sensor_flag_arm_delay": {
                 "name": "Затримка постановки на охорону"
             },

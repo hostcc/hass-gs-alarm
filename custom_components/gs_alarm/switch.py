@@ -19,7 +19,8 @@ from pyg90alarm import (
 )
 
 from .entity_base import (
-    G90NetConfigSwitchField, GsAlarmSwitchRestoreEntityBase
+    G90NetConfigSwitchField, GsAlarmSwitchRestoreEntityBase,
+    GSAlarmEntityBase,
 )
 from .mixin import (
     GSAlarmGenerateIDsDeviceMixin, GSAlarmGenerateIDsSensorMixin,
@@ -139,6 +140,7 @@ async def async_setup_entry(
             G90AlertConfigFlags.SMS_PUSH,
             'mdi:message-text',
         ),
+        G90RebootSwitch(entry.runtime_data),
         G90SmsAlertWhenArmed(entry.runtime_data),
         G90SimulateAlertsFromHistory(entry.runtime_data),
         # Add network config switches
@@ -462,6 +464,51 @@ class G90AlertConfigFlag(
             )
 
         await self.coordinator.async_request_refresh()
+
+
+class G90RebootSwitch(SwitchEntity, GSAlarmEntityBase):
+    """
+    Stateless switch to reboot the alarm panel.
+    """
+    # pylint: disable=too-many-ancestors
+    UNIQUE_ID_FMT = "{guid}_reboot"
+    ENTITY_ID_FMT = "{guid}_reboot"
+
+    def __init__(self, coordinator: GsAlarmCoordinator) -> None:
+        super().__init__(coordinator)
+        self._attr_has_entity_name = True
+        self._attr_entity_category = EntityCategory.CONFIG
+        self._attr_icon = 'mdi:restart'
+        self._attr_translation_key = 'reboot'
+        self._attr_is_on = False
+
+    async def async_turn_on(self, **_kwargs: Any) -> None:
+        """
+        Trigger panel reboot and immediately reset to OFF.
+        """
+        try:
+            _LOGGER.debug(
+                "Rebooting panel %s via reboot switch",
+                self.coordinator.data.host_info.host_guid,
+            )
+            await self.coordinator.client.reboot()
+        except (G90Error, G90TimeoutError) as exc:
+            _LOGGER.error(
+                "Error rebooting panel '%s': %s",
+                self.coordinator.data.host_info.host_guid,
+                repr(exc),
+            )
+
+        # Ensure the switch remains stateless (always OFF)
+        self._attr_is_on = False
+        self.async_write_ha_state()
+
+    async def async_turn_off(self, **_kwargs: Any) -> None:
+        """
+        No-op turn off, keeps the switch OFF.
+        """
+        self._attr_is_on = False
+        self.async_write_ha_state()
 
 
 class G90SimulateAlertsFromHistory(GsAlarmSwitchRestoreEntityBase):

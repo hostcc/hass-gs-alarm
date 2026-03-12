@@ -134,6 +134,10 @@ async def test_setup_unload_and_reload_entry_afresh(
                 'entity_id': 'switch.dummy_guid_alert_config_flag_sms_push',
                 'name': 'Alert: SMS push',
             }, {
+                'unique_id': 'dummy_guid_reboot',
+                'entity_id': 'switch.dummy_guid_reboot',
+                'name': 'Reboot panel',
+            }, {
                 'unique_id': 'dummy_guid_sensor_wifi_signal',
                 'entity_id': 'sensor.dummy_guid_wifi_signal',
                 'name': 'WiFi signal',

@@ -131,6 +131,9 @@
             "relay": {
                 "name": "{relay}"
             },
+            "reboot": {
+                "name": "Genstart panel"
+            },
             "sensor_flag_arm_delay": {
                 "name": "Aktiveringsforsinkelse"
             },

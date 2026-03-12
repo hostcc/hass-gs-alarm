@@ -5,7 +5,7 @@ Pytest configuration and fixtures
 """
 from __future__ import annotations
 from typing import Iterator, TypeVar, Any, AsyncGenerator, Dict, List
-from unittest.mock import patch, AsyncMock, PropertyMock
+from unittest.mock import patch, AsyncMock, PropertyMock, DEFAULT
 import pytest
 
 from homeassistant.core import HomeAssistant, State
@@ -263,10 +263,6 @@ def mock_g90alarm(request: pytest.FixtureRequest) -> Iterator[AlarmMockT]:
                 return_value=G90AlertConfigFlags(~0)
             ),
         ),
-        patch(
-            'pyg90alarm.local.config.G90AlertConfig.set_flag',
-            autospec=True,
-        ),
 
         # Patching dataclass `save()` method should come before `load()`,
         # since load returns instance of the dataclass. Otherwise, `save()`
@@ -375,10 +371,6 @@ def mock_g90alarm(request: pytest.FixtureRequest) -> Iterator[AlarmMockT]:
             )
         ),
         patch(
-            'pyg90alarm.G90Alarm.listen_notifications',
-            autospec=True
-        ),
-        patch(
             'pyg90alarm.G90Alarm.register_sensor',
             autospec=True,
             return_value=G90Sensor(
@@ -421,8 +413,16 @@ def mock_g90alarm(request: pytest.FixtureRequest) -> Iterator[AlarmMockT]:
             )
         ),
         patch(
-            'pyg90alarm.G90Alarm.set_cloud_server_address',
-            autospec=True,
+            'pyg90alarm.local.config.G90AlertConfig.set_flag',
+            autospec=True
+        ),
+        # Using `patch.multiple()` to prevent `SyntaxError: too many statically
+        # nested blocks` error.
+        patch.multiple(
+            'pyg90alarm.G90Alarm',
+            listen_notifications=DEFAULT,
+            set_cloud_server_address=DEFAULT,
+            reboot=DEFAULT,
         ),
     ):
         yield mock

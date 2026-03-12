@@ -754,3 +754,53 @@ async def test_net_config_switch_exception(
 
     # Verify save was called despite exception
     (await mock_g90alarm.return_value.net_config()).save.assert_called()
+
+
+async def test_reboot_switch(
+    hass: HomeAssistant, mock_g90alarm: AlarmMockT
+) -> None:
+    """
+    Tests that reboot switch calls reboot() and stays stateless (OFF).
+    """
+    config_entry = MockConfigEntry(
+        domain=DOMAIN,
+        data={'ip_addr': 'dummy-ip'},
+        options={},
+        entry_id="test_reboot_switch",
+    )
+    config_entry.add_to_hass(hass)
+    await hass.config_entries.async_setup(config_entry.entry_id)
+    await hass.async_block_till_done()
+
+    entity_id = hass_get_entity_id_by_unique_id(
+        hass, 'switch', 'dummy_guid_reboot'
+    )
+
+    # Initial state should be OFF
+    state = hass.states.get(entity_id)
+    assert state is not None
+    assert state.state == STATE_OFF
+
+    # Turning ON should call reboot() but keep state OFF
+    await hass.services.async_call(
+        SWITCH_DOMAIN,
+        SERVICE_TURN_ON,
+        {ATTR_ENTITY_ID: entity_id},
+        blocking=True,
+    )
+
+    mock_g90alarm.return_value.reboot.assert_called_once()
+
+    state = hass.states.get(entity_id)
+    assert state is not None
+    assert state.state == STATE_OFF
+
+    # Turning OFF should be a no-op and not call reboot again
+    await hass.services.async_call(
+        SWITCH_DOMAIN,
+        SERVICE_TURN_OFF,
+        {ATTR_ENTITY_ID: entity_id},
+        blocking=True,
+    )
+
+    mock_g90alarm.return_value.reboot.assert_called_once()
