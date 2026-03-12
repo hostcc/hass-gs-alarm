@@ -131,6 +131,9 @@
             "relay": {
                 "name": "{relay}"
             },
+            "reboot": {
+                "name": "Paneel opnieuw opstarten"
+            },
             "sensor_flag_arm_delay": {
                 "name": "Inschakelvertraging"
             },

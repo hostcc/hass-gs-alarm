@@ -131,6 +131,9 @@
             "relay": {
                 "name": "{relay}"
             },
+            "reboot": {
+                "name": "Reiniciar painel"
+            },
             "sensor_flag_arm_delay": {
                 "name": "Atraso ao armar"
             },

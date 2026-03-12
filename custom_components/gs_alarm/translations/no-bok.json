@@ -131,6 +131,9 @@
             "relay": {
                 "name": "{relay}"
             },
+            "reboot": {
+                "name": "Start panel på nytt"
+            },
             "sensor_flag_arm_delay": {
                 "name": "Aktiveringsforsinkelse"
             },
