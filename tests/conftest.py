@@ -257,6 +257,7 @@ def mock_g90alarm(request: pytest.FixtureRequest) -> Iterator[AlarmMockT]:
                 prefix='test_prefix',
                 aes_key='1234567890',
                 event_flags='1234567890',
+                heartbeat_interval=90,
             )
         )
     else:
