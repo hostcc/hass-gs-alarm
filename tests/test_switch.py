@@ -804,3 +804,105 @@ async def test_reboot_switch(
     )
 
     mock_g90alarm.return_value.reboot.assert_called_once()
+
+
+@pytest.mark.parametrize("unique_id,service,field,value", [
+    pytest.param(
+        "dummy_guid_sia_enabled", "turn_on", "enabled", True,
+        id="SIA enabled"
+    ),
+    pytest.param(
+        "dummy_guid_sia_enabled", "turn_off", "enabled", False,
+        id="SIA disabled"
+    ),
+    pytest.param(
+        "dummy_guid_sia_encryption", "turn_on", "encryption", True,
+        id="SIA encryption enabled"
+    ),
+    pytest.param(
+        "dummy_guid_sia_encryption", "turn_off", "encryption", False,
+        id="SIA encryption disabled"
+    ),
+])
+# pylint: disable=too-many-positional-arguments,too-many-arguments
+async def test_sia_config_switch_entities(
+    unique_id: str, service: str, field: str, value: bool,
+    hass: HomeAssistant, mock_g90alarm: AlarmMockT
+) -> None:
+    """
+    Tests SIA config switch entities can be toggled correctly.
+    """
+    config_entry = MockConfigEntry(
+        domain=DOMAIN,
+        data={'ip_addr': 'dummy-ip'},
+        options={},
+        entry_id="test_sia_config_switch_entities"
+    )
+    config_entry.add_to_hass(hass)
+    await hass.config_entries.async_setup(config_entry.entry_id)
+    await hass.async_block_till_done()
+
+    entity_id = hass_get_entity_id_by_unique_id(hass, 'switch', unique_id)
+
+    # Toggle the switch
+    await hass.services.async_call(
+        SWITCH_DOMAIN,
+        service,
+        {ATTR_ENTITY_ID: entity_id},
+        blocking=True,
+    )
+    await hass.async_block_till_done()
+
+    # Verify save was called
+    (await mock_g90alarm.return_value.sia_config()).save.assert_called()
+    # Verify the value was set correctly
+    assert getattr(
+        await mock_g90alarm.return_value.sia_config(), field
+    ) == value
+
+
+@pytest.mark.parametrize("unique_id,service,field,value", [
+    pytest.param(
+        "dummy_guid_cid_enabled", "turn_on", "enabled", True,
+        id="CID enabled"
+    ),
+    pytest.param(
+        "dummy_guid_cid_enabled", "turn_off", "enabled", False,
+        id="CID disabled"
+    ),
+])
+# pylint: disable=too-many-positional-arguments,too-many-arguments
+async def test_cid_config_switch_entities(
+    unique_id: str, service: str, field: str, value: bool,
+    hass: HomeAssistant, mock_g90alarm: AlarmMockT
+) -> None:
+    """
+    Tests CID config switch entities can be toggled correctly.
+    """
+    config_entry = MockConfigEntry(
+        domain=DOMAIN,
+        data={'ip_addr': 'dummy-ip'},
+        options={},
+        entry_id="test_cid_config_switch_entities"
+    )
+    config_entry.add_to_hass(hass)
+    await hass.config_entries.async_setup(config_entry.entry_id)
+    await hass.async_block_till_done()
+
+    entity_id = hass_get_entity_id_by_unique_id(hass, 'switch', unique_id)
+
+    # Toggle the switch
+    await hass.services.async_call(
+        SWITCH_DOMAIN,
+        service,
+        {ATTR_ENTITY_ID: entity_id},
+        blocking=True,
+    )
+    await hass.async_block_till_done()
+
+    # Verify save was called
+    (await mock_g90alarm.return_value.cid_config()).save.assert_called()
+    # Verify the value was set correctly
+    assert getattr(
+        await mock_g90alarm.return_value.cid_config(), field
+    ) == value

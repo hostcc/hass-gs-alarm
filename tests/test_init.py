@@ -24,6 +24,26 @@ from .conftest import (
 
 
 # pylint: disable=too-many-locals
+@pytest.mark.parametrize("sia_supported", [
+    pytest.param(
+        True, marks=pytest.mark.g90sia_supported(result=True),
+        id="SIA supported",
+    ),
+    pytest.param(
+        False, marks=pytest.mark.g90sia_supported(result=False),
+        id="SIA not supported",
+    ),
+])
+@pytest.mark.parametrize("cid_supported", [
+    pytest.param(
+        True, marks=pytest.mark.g90cid_supported(result=True),
+        id="CID supported",
+    ),
+    pytest.param(
+        False, marks=pytest.mark.g90cid_supported(result=False),
+        id="CID not supported",
+    ),
+])
 @pytest.mark.parametrize("options", [
     pytest.param(
         {
@@ -52,6 +72,8 @@ from .conftest import (
 ])
 async def test_setup_unload_and_reload_entry_afresh(
     hass: HomeAssistant, mock_g90alarm: AlarmMockT,
+    sia_supported: bool,
+    cid_supported: bool,
     options: dict[str, Any]
 ) -> None:
     """
@@ -324,7 +346,63 @@ async def test_setup_unload_and_reload_entry_afresh(
             }] if (
                 options.get('notifications_protocol') == 'cloud_upstream'
             ) else []
-            ))
+                # Test for CID sensors if CID is supported
+            ) + ([{
+                'unique_id': 'dummy_guid_cid_enabled',
+                'entity_id': 'switch.dummy_guid_cid_enabled',
+                'name': 'CID: Enabled',
+            }, {
+                'unique_id': 'dummy_guid_cid_user',
+                'entity_id': 'text.dummy_guid_cid_user',
+                'name': 'CID: User',
+            }, {
+                'unique_id': 'dummy_guid_cid_phone1',
+                'entity_id': 'text.dummy_guid_cid_phone1',
+                'name': 'CID: Phone 1',
+            }, {
+                'unique_id': 'dummy_guid_cid_phone2',
+                'entity_id': 'text.dummy_guid_cid_phone2',
+                'name': 'CID: Phone 2',
+            }] if cid_supported else []
+                # Test for SIA sensors if SIA is supported
+            ) + ([{
+                'unique_id': 'dummy_guid_sia_enabled',
+                'entity_id': 'switch.dummy_guid_sia_enabled',
+                'name': 'SIA: Enabled',
+            }, {
+                'unique_id': 'dummy_guid_sia_encryption',
+                'entity_id': 'switch.dummy_guid_sia_encryption',
+                'name': 'SIA: Encryption',
+            }, {
+                'unique_id': 'dummy_guid_sia_host',
+                'entity_id': 'text.dummy_guid_sia_host',
+                'name': 'SIA: Host',
+            }, {
+                'unique_id': 'dummy_guid_sia_port',
+                'entity_id': 'number.dummy_guid_sia_port',
+                'name': 'SIA: Port',
+            }, {
+                'unique_id': 'dummy_guid_sia_heartbeat_interval',
+                'entity_id': 'number.dummy_guid_sia_heartbeat_interval',
+                'name': 'SIA: Heartbeat interval',
+            }, {
+                'unique_id': 'dummy_guid_sia_account',
+                'entity_id': 'text.dummy_guid_sia_account',
+                'name': 'SIA: Account',
+            }, {
+                'unique_id': 'dummy_guid_sia_receiver',
+                'entity_id': 'text.dummy_guid_sia_receiver',
+                'name': 'SIA: Receiver',
+            }, {
+                'unique_id': 'dummy_guid_sia_prefix',
+                'entity_id': 'text.dummy_guid_sia_prefix',
+                'name': 'SIA: Prefix',
+            }, {
+                'unique_id': 'dummy_guid_sia_aes_key',
+                'entity_id': 'text.dummy_guid_sia_aes_key',
+                'name': 'SIA: AES key',
+            }] if sia_supported else [])
+            )
         },
         {
             'device': 'Dummy sensor',

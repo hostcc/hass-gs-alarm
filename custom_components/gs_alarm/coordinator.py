@@ -13,6 +13,7 @@ from pyg90alarm import (
     G90Alarm, G90Error, G90TimeoutError,
     G90Sensor, G90Device, G90HostInfo, G90HostStatus,
     G90AlertConfigFlags, G90HostConfig, G90NetConfig, G90AlarmPhones,
+    G90SiaConfig, G90CidConfig,
 )
 
 from homeassistant.core import HomeAssistant
@@ -41,6 +42,8 @@ class GsAlarmData:
     host_config: G90HostConfig
     net_config: G90NetConfig
     alarm_phones: G90AlarmPhones
+    sia_config: Optional[G90SiaConfig]
+    cid_config: Optional[G90CidConfig]
     last_device_packet_time: Optional[datetime]
     last_upstream_packet_time: Optional[datetime]
 
@@ -70,6 +73,26 @@ class GsAlarmCoordinator(DataUpdateCoordinator[GsAlarmData]):
         )
         self.client = g90_client
 
+    async def get_sia_config(self) -> Optional[G90SiaConfig]:
+        """
+        Get the SIA configuration.
+        """
+        try:
+            return await self.client.sia_config()
+        except ValueError:
+            _LOGGER.debug("Panel does not support SIA configuration")
+            return None
+
+    async def get_cid_config(self) -> Optional[G90CidConfig]:
+        """
+        Get the CID configuration.
+        """
+        try:
+            return await self.client.cid_config()
+        except ValueError:
+            _LOGGER.debug("Panel does not support CID configuration")
+            return None
+
     async def init_essential_data(self) -> None:
         """
         Initialize the coordinator by fetching the essential data.
@@ -90,6 +113,8 @@ class GsAlarmCoordinator(DataUpdateCoordinator[GsAlarmData]):
         host_config = await self.client.host_config()
         net_config = await self.client.net_config()
         alarm_phones = await self.client.alarm_phones()
+        sia_config = await self.get_sia_config()
+        cid_config = await self.get_cid_config()
         self.async_set_updated_data(
             GsAlarmData(
                 sensors=[],
@@ -100,6 +125,8 @@ class GsAlarmCoordinator(DataUpdateCoordinator[GsAlarmData]):
                 host_config=host_config,
                 net_config=net_config,
                 alarm_phones=alarm_phones,
+                sia_config=sia_config,
+                cid_config=cid_config,
                 last_device_packet_time=None,
                 last_upstream_packet_time=None,
             )
@@ -121,6 +148,8 @@ class GsAlarmCoordinator(DataUpdateCoordinator[GsAlarmData]):
                 host_config=await self.client.host_config(),
                 net_config=await self.client.net_config(),
                 alarm_phones=await self.client.alarm_phones(),
+                sia_config=await self.get_sia_config(),
+                cid_config=await self.get_cid_config(),
                 last_device_packet_time=self.client.last_device_packet_time,
                 last_upstream_packet_time=(
                     self.client.last_upstream_packet_time

@@ -190,6 +190,15 @@
             },
             "gprs_enabled": {
                 "name": "Mobilnet: GPRS/3G aktiveret"
+            },
+            "sia_enabled": {
+                "name": "SIA: Aktiveret"
+            },
+            "sia_encryption": {
+                "name": "SIA: Kryptering"
+            },
+            "cid_enabled": {
+                "name": "CID: Aktiveret"
             }
         },
         "sensor": {
@@ -355,6 +364,30 @@
             },
             "apn_password": {
                 "name": "Mobilnet: APN-adgangskode"
+            },
+            "sia_host": {
+                "name": "SIA: Vært"
+            },
+            "sia_account": {
+                "name": "SIA: Konto"
+            },
+            "sia_receiver": {
+                "name": "SIA: Modtager"
+            },
+            "sia_prefix": {
+                "name": "SIA: Præfiks"
+            },
+            "sia_aes_key": {
+                "name": "SIA: AES-nøgle"
+            },
+            "cid_phone1": {
+                "name": "CID: Telefon 1"
+            },
+            "cid_phone2": {
+                "name": "CID: Telefon 2"
+            },
+            "cid_user": {
+                "name": "CID: Bruger"
             }
         },
         "number": {
@@ -375,6 +408,12 @@
             },
             "timezone_offset_m": {
                 "name": "Tidszone-offset"
+            },
+            "sia_port": {
+                "name": "SIA: Port"
+            },
+            "sia_heartbeat_interval": {
+                "name": "SIA: Heartbeat-interval"
             }
         },
         "notifications": {

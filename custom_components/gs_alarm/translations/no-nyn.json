@@ -190,6 +190,15 @@
             },
             "gprs_enabled": {
                 "name": "Mobilnett: GPRS/3G aktivert"
+            },
+            "sia_enabled": {
+                "name": "SIA: Aktivert"
+            },
+            "sia_encryption": {
+                "name": "SIA: Kryptering"
+            },
+            "cid_enabled": {
+                "name": "CID: Aktivert"
             }
         },
         "sensor": {
@@ -349,12 +358,36 @@
             },
             "apn_password": {
                 "name": "Tilgangspunkt APN: passord"
-            },            
+            },
             "new_sensor_name": {
                 "name": "Nytt sensornavn"
             },
             "new_device_name": {
                 "name": "Nytt relaisnavn"
+            },
+            "sia_host": {
+                "name": "SIA: Vert"
+            },
+            "sia_account": {
+                "name": "SIA: Konto"
+            },
+            "sia_receiver": {
+                "name": "SIA: Mottakar"
+            },
+            "sia_prefix": {
+                "name": "SIA: Prefiks"
+            },
+            "sia_aes_key": {
+                "name": "SIA: AES-nøkkel"
+            },
+            "cid_phone1": {
+                "name": "CID: Telefon 1"
+            },
+            "cid_phone2": {
+                "name": "CID: Telefon 2"
+            },
+            "cid_user": {
+                "name": "CID: Brukar"
             }
         },        
         "number": {
@@ -375,8 +408,14 @@
             },
             "timezone_offset_m": {
                 "name": "Tidssoneavvik"
+            },
+            "sia_port": {
+                "name": "SIA: Port"
+            },
+            "sia_heartbeat_interval": {
+                "name": "SIA: Heartbeat-intervall"
             }
-        },        
+        },
         "notifications": {
             "register_device_starting": {
                 "name": "Registrering av ny eining av type \"{type}\", sjå til at ho er i læremodus"

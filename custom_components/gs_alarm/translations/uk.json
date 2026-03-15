@@ -190,6 +190,15 @@
             },
             "gprs_enabled": {
                 "name": "Стільниковий зв'язок: GPRS/3G увімкнено"
+            },
+            "sia_enabled": {
+                "name": "SIA: Увімкнено"
+            },
+            "sia_encryption": {
+                "name": "SIA: Шифрування"
+            },
+            "cid_enabled": {
+                "name": "CID: Увімкнено"
             }
         },
         "sensor": {
@@ -355,8 +364,32 @@
             },
             "new_device_name": {
                 "name": "Нове реле: ім'я"
+            },
+            "sia_host": {
+                "name": "SIA: Хост"
+            },
+            "sia_account": {
+                "name": "SIA: Обліковий запис"
+            },
+            "sia_receiver": {
+                "name": "SIA: Приймач"
+            },
+            "sia_prefix": {
+                "name": "SIA: Префікс"
+            },
+            "sia_aes_key": {
+                "name": "SIA: Ключ AES"
+            },
+            "cid_phone1": {
+                "name": "CID: Телефон 1"
+            },
+            "cid_phone2": {
+                "name": "CID: Телефон 2"
+            },
+            "cid_user": {
+                "name": "CID: Користувач"
             }
-        },        
+        },
         "number": {
             "alarm_siren_duration": {
                 "name": "Тривалість: сирена тривоги"
@@ -375,8 +408,14 @@
             },
             "timezone_offset_m": {
                 "name": "Зміщення часового поясу"
+            },
+            "sia_port": {
+                "name": "SIA: Порт"
+            },
+            "sia_heartbeat_interval": {
+                "name": "SIA: Інтервал перевірки"
             }
-        },        
+        },
         "notifications": {
             "register_device_starting": {
                 "name": "Реєстрація нового пристрою типу \"{type}\", переконайтеся, що він знаходиться в режимі навчання"

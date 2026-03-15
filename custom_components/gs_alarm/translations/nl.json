@@ -190,6 +190,15 @@
             },
             "gprs_enabled": {
                 "name": "Mobiel: GPRS/3G ingeschakeld"
+            },
+            "sia_enabled": {
+                "name": "SIA: Ingeschakeld"
+            },
+            "sia_encryption": {
+                "name": "SIA: Versleuteling"
+            },
+            "cid_enabled": {
+                "name": "CID: Ingeschakeld"
             }
         },
         "sensor": {
@@ -355,6 +364,30 @@
             },
             "apn_password": {
                 "name": "Mobiel: APN-wachtwoord"
+            },
+            "sia_host": {
+                "name": "SIA: Host"
+            },
+            "sia_account": {
+                "name": "SIA: Account"
+            },
+            "sia_receiver": {
+                "name": "SIA: Ontvanger"
+            },
+            "sia_prefix": {
+                "name": "SIA: Voorvoegsel"
+            },
+            "sia_aes_key": {
+                "name": "SIA: AES-sleutel"
+            },
+            "cid_phone1": {
+                "name": "CID: Telefoon 1"
+            },
+            "cid_phone2": {
+                "name": "CID: Telefoon 2"
+            },
+            "cid_user": {
+                "name": "CID: Gebruiker"
             }
         },
         "number": {
@@ -375,6 +408,12 @@
             },
             "timezone_offset_m": {
                 "name": "Tijdzone-offset"
+            },
+            "sia_port": {
+                "name": "SIA: Poort"
+            },
+            "sia_heartbeat_interval": {
+                "name": "SIA: Heartbeat-interval"
             }
         },
         "notifications": {

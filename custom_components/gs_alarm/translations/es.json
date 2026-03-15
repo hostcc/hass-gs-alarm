@@ -190,6 +190,15 @@
             },
             "gprs_enabled": {
                 "name": "Celular: GPRS/3G activado"
+            },
+            "sia_enabled": {
+                "name": "SIA: Activado"
+            },
+            "sia_encryption": {
+                "name": "SIA: Cifrado"
+            },
+            "cid_enabled": {
+                "name": "CID: Activado"
             }
         },
         "sensor": {
@@ -355,6 +364,30 @@
             },
             "apn_password": {
                 "name": "Celular: contraseña APN"
+            },
+            "sia_host": {
+                "name": "SIA: Host"
+            },
+            "sia_account": {
+                "name": "SIA: Cuenta"
+            },
+            "sia_receiver": {
+                "name": "SIA: Receptor"
+            },
+            "sia_prefix": {
+                "name": "SIA: Prefijo"
+            },
+            "sia_aes_key": {
+                "name": "SIA: Clave AES"
+            },
+            "cid_phone1": {
+                "name": "CID: Teléfono 1"
+            },
+            "cid_phone2": {
+                "name": "CID: Teléfono 2"
+            },
+            "cid_user": {
+                "name": "CID: Usuario"
             }
         },
         "number": {
@@ -375,6 +408,12 @@
             },
             "timezone_offset_m": {
                 "name": "Desplazamiento de zona horaria"
+            },
+            "sia_port": {
+                "name": "SIA: Puerto"
+            },
+            "sia_heartbeat_interval": {
+                "name": "SIA: Intervalo de latido"
             }
         },
         "notifications": {

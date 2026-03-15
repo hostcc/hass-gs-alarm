@@ -4,7 +4,7 @@
 Text entities for `gs_alarm` integration.
 """
 from __future__ import annotations
-from typing import TYPE_CHECKING
+from typing import TYPE_CHECKING, Any
 
 from homeassistant.core import HomeAssistant
 from homeassistant.const import EntityCategory
@@ -14,7 +14,8 @@ from homeassistant.core import Event
 
 from .const import DOMAIN
 from .entity_base import (
-    GSAlarmEntityBase, G90NetConfigTextField, G90AlarmPhonesTextField
+    GSAlarmEntityBase, G90NetConfigTextField, G90AlarmPhonesTextField,
+    G90SiaConfigTextField, G90CidConfigTextField,
 )
 from .coordinator import GsAlarmCoordinator
 if TYPE_CHECKING:
@@ -26,70 +27,102 @@ async def async_setup_entry(
     async_add_entities: AddEntitiesCallback
 ) -> None:
     """Set up a config entry."""
-
-    async_add_entities([
+    coordinator = entry.runtime_data
+    entities: list[Any] = [
         # Text entities for new sensor and relay names
-        G90NewSensorName(entry.runtime_data),
-        G90NewDeviceName(entry.runtime_data),
+        G90NewSensorName(coordinator),
+        G90NewDeviceName(coordinator),
         # Add phone number entities
         G90AlarmPhonesTextField(
-            entry.runtime_data,
+            coordinator,
             'panel_password', 'mdi:lock', True
         ),
         G90AlarmPhonesTextField(
-            entry.runtime_data,
+            coordinator,
             'panel_phone_number', 'mdi:phone-settings', False
         ),
         G90AlarmPhonesTextField(
-            entry.runtime_data,
+            coordinator,
             'phone_number_1', 'mdi:phone', False
         ),
         G90AlarmPhonesTextField(
-            entry.runtime_data,
+            coordinator,
             'phone_number_2', 'mdi:phone', False
         ),
         G90AlarmPhonesTextField(
-            entry.runtime_data,
+            coordinator,
             'phone_number_3', 'mdi:phone', False
         ),
         G90AlarmPhonesTextField(
-            entry.runtime_data,
+            coordinator,
             'phone_number_4', 'mdi:phone', False
         ),
         G90AlarmPhonesTextField(
-            entry.runtime_data,
+            coordinator,
             'phone_number_5', 'mdi:phone', False
         ),
         G90AlarmPhonesTextField(
-            entry.runtime_data,
+            coordinator,
             'phone_number_6', 'mdi:phone', False
         ),
         G90AlarmPhonesTextField(
-            entry.runtime_data,
+            coordinator,
             'sms_push_number_1', 'mdi:message-alert', False
         ),
         G90AlarmPhonesTextField(
-            entry.runtime_data,
+            coordinator,
             'sms_push_number_2', 'mdi:message-alert', False
         ),
         # Add network config entities
         G90NetConfigTextField(
-            entry.runtime_data,
+            coordinator,
             'ap_password', 'mdi:lock-check', True
         ),
         G90NetConfigTextField(
-            entry.runtime_data,
+            coordinator,
             'apn_name', 'mdi:sim', False
         ),
         G90NetConfigTextField(
-            entry.runtime_data,
+            coordinator,
             'apn_user', 'mdi:account', False
         ),
         G90NetConfigTextField(
-            entry.runtime_data,
+            coordinator,
             'apn_password', 'mdi:lock-check', True
         ),
-    ])
+    ]
+    if coordinator.data.sia_config is not None:
+        entities.extend([
+            G90SiaConfigTextField(
+                coordinator, 'host', 'mdi:ip-network', False, 'sia_host'
+            ),
+            G90SiaConfigTextField(
+                coordinator, 'account', 'mdi:identifier', False, 'sia_account'
+            ),
+            G90SiaConfigTextField(
+                coordinator, 'receiver', 'mdi:phone', False, 'sia_receiver'
+            ),
+            G90SiaConfigTextField(
+                coordinator, 'prefix', 'mdi:format-letter-case', False,
+                'sia_prefix'
+            ),
+            G90SiaConfigTextField(
+                coordinator, 'aes_key', 'mdi:key', True, 'sia_aes_key'
+            ),
+        ])
+    if coordinator.data.cid_config is not None:
+        entities.extend([
+            G90CidConfigTextField(
+                coordinator, 'phone1', 'mdi:phone', False, 'cid_phone1'
+            ),
+            G90CidConfigTextField(
+                coordinator, 'phone2', 'mdi:phone', False, 'cid_phone2'
+            ),
+            G90CidConfigTextField(
+                coordinator, 'user', 'mdi:account', False, 'cid_user'
+            ),
+        ])
+    async_add_entities(entities)
 
 
 class G90NewEntityTextBase(

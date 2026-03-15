@@ -4,7 +4,7 @@
 Base classes for common entities of `gs-alarm` integration.
 """
 from __future__ import annotations
-from typing import Any
+from typing import Any, Optional
 import logging
 
 from homeassistant.const import STATE_ON
@@ -18,7 +18,8 @@ from homeassistant.components.text import TextEntity, TextMode
 from homeassistant.const import EntityCategory
 
 from pyg90alarm import (
-    G90HostConfig, G90NetConfig, G90AlarmPhones, G90Error, G90TimeoutError,
+    G90HostConfig, G90NetConfig, G90AlarmPhones, G90SiaConfig, G90CidConfig,
+    G90Error, G90TimeoutError,
     get_field_validation_constraints,
 )
 
@@ -107,6 +108,8 @@ class G90ConfigFieldBase(
     :param coordinator: The coordinator to use.
     :param field_name: The field name within the configuration object.
     :param icon: The icon to use for the entity.
+    :param id_field_name: The field name to use for the entity ID.
+     If not provided, the entity ID will be generated using the field name.
     """
     # pylint: disable=abstract-method,too-many-instance-attributes
     # pylint: disable=too-many-ancestors
@@ -117,13 +120,18 @@ class G90ConfigFieldBase(
     # pylint: disable=too-many-arguments,too-many-positional-arguments
     def __init__(
         self, coordinator: GsAlarmCoordinator,
-        field_name: str, icon: str
+        field_name: str, icon: str, id_field_name: Optional[str] = None
     ) -> None:
         super().__init__(coordinator)
+
         self._attr_entity_category = EntityCategory.CONFIG
         self._attr_has_entity_name = True
         self._attr_icon = icon
-        self._attr_translation_key = field_name
+        # Use either the provided ID field name for translation/IDs or the
+        # field name itself
+        target_field_name = id_field_name or field_name
+        self._attr_translation_key = target_field_name
+        # Store the field name to get/set the field value
         self._field_name = field_name
 
         # The entity is bound to the HASS device for the alarm panel itself
@@ -132,12 +140,12 @@ class G90ConfigFieldBase(
         # Generate unique ID and entity ID using field name
         self._attr_unique_id = self.generate_unique_id_with_placeholders(
             coordinator, {
-                'field_name': field_name,
+                'field_name': target_field_name,
             }
         )
         self.entity_id = self.generate_entity_id_with_placeholders(
             coordinator, {
-                'field_name': field_name,
+                'field_name': target_field_name,
             }
         )
 
@@ -237,6 +245,40 @@ class G90AlarmPhonesMixin(CoordinatorEntity[GsAlarmCoordinator]):
         return self.coordinator.data.alarm_phones
 
 
+class G90SiaConfigMixin(CoordinatorEntity[GsAlarmCoordinator]):
+    """
+    Mixin to provide access to SIA configuration.
+    """
+    @property
+    def _config_object(self) -> G90SiaConfig:
+        """
+        Get the latest SIA configuration.
+
+        :return: The SIA configuration.
+        """
+        # Ensure the caller does not use the property if the SIA config is not
+        # available
+        assert self.coordinator.data.sia_config is not None
+        return self.coordinator.data.sia_config
+
+
+class G90CidConfigMixin(CoordinatorEntity[GsAlarmCoordinator]):
+    """
+    Mixin to provide access to CID configuration.
+    """
+    @property
+    def _config_object(self) -> G90CidConfig:
+        """
+        Get the latest CID configuration.
+
+        :return: The CID configuration.
+        """
+        # Ensure the caller does not use the property if the CID config is not
+        # available
+        assert self.coordinator.data.cid_config is not None
+        return self.coordinator.data.cid_config
+
+
 class G90ConfigSelectFieldBase(G90ConfigFieldBase, SelectEntity):
     """
     Base class for panel configuration select entities.
@@ -246,15 +288,18 @@ class G90ConfigSelectFieldBase(G90ConfigFieldBase, SelectEntity):
      entity and its string representations.
     :param field_name: The field name within the configuration object.
     :param icon: The icon to use for the entity.
+    :param id_field_name: The field name to use for the entity ID.
+     If not provided, the entity ID will be generated using the field name.
     """
     # pylint: disable=abstract-method,too-many-instance-attributes
     # pylint: disable=too-many-ancestors
     # pylint: disable=too-many-arguments,too-many-positional-arguments
     def __init__(
         self, coordinator: GsAlarmCoordinator,
-        field_name: str, states_map: dict[Any, str], icon: str
+        field_name: str, states_map: dict[Any, str], icon: str,
+        id_field_name: Optional[str] = None
     ) -> None:
-        super().__init__(coordinator, field_name, icon)
+        super().__init__(coordinator, field_name, icon, id_field_name)
         self._attr_current_option = None
         self.states_map = states_map
         self.reverse_states_map = dict(
@@ -304,14 +349,16 @@ class G90ConfigNumberFieldBase(G90ConfigFieldBase, NumberEntity):
     :param field_name: The field name within the configuration object.
     :param icon: The icon to use for the entity.
     :param unit: The unit of measurement for the number entity.
+    :param id_field_name: The field name to use for the entity ID.
+     If not provided, the entity ID will be generated using the field name.
     """
     # pylint:disable=too-many-ancestors,too-many-instance-attributes
     # pylint: disable=too-many-arguments,too-many-positional-arguments
     def __init__(
         self, coordinator: GsAlarmCoordinator, field_name: str,
-        icon: str, unit: str
+        icon: str, unit: str, id_field_name: Optional[str] = None
     ) -> None:
-        super().__init__(coordinator, field_name, icon)
+        super().__init__(coordinator, field_name, icon, id_field_name)
         self._attr_native_value = None
         self._attr_mode = NumberMode.BOX
         self._attr_native_unit_of_measurement = unit
@@ -364,15 +411,18 @@ class G90ConfigTextFieldBase(G90ConfigFieldBase, TextEntity):
     :param field_name: The field name within the configuration object.
     :param icon: The icon to use for the entity.
     :param is_password: Whether the text field is a password field.
+    :param id_field_name: The field name to use for the entity ID.
+     If not provided, the entity ID will be generated using the field name.
     """
     # pylint: disable=abstract-method,too-many-instance-attributes
     # pylint: disable=too-many-ancestors
     # pylint: disable=too-many-arguments,too-many-positional-arguments
     def __init__(
         self, coordinator: GsAlarmCoordinator,
-        field_name: str, icon: str, is_password: bool
+        field_name: str, icon: str, is_password: bool,
+        id_field_name: Optional[str] = None
     ) -> None:
-        super().__init__(coordinator, field_name, icon)
+        super().__init__(coordinator, field_name, icon, id_field_name)
         self._attr_native_value = None
         if is_password:
             self._attr_mode = TextMode.PASSWORD
@@ -432,6 +482,20 @@ class G90AlarmPhonesTextField(G90AlarmPhonesMixin, G90ConfigTextFieldBase):
     """
 
 
+class G90SiaConfigTextField(G90SiaConfigMixin, G90ConfigTextFieldBase):
+    # pylint: disable=too-many-ancestors
+    """
+    Panel configuration text entities bound to SIA config.
+    """
+
+
+class G90CidConfigTextField(G90CidConfigMixin, G90ConfigTextFieldBase):
+    # pylint: disable=too-many-ancestors
+    """
+    Panel configuration text entities bound to CID config.
+    """
+
+
 class G90ConfigSwitchFieldBase(G90ConfigFieldBase, SwitchEntity):
     """
     Base class for panel configuration switch entities.
@@ -439,15 +503,18 @@ class G90ConfigSwitchFieldBase(G90ConfigFieldBase, SwitchEntity):
     :param coordinator: The coordinator to use.
     :param field_name: The field name within the configuration object.
     :param icon: The icon to use for the entity.
+    :param id_field_name: The field name to use for the entity ID.
+     If not provided, the entity ID will be generated using the field name.
     """
     # pylint: disable=abstract-method,too-many-instance-attributes
     # pylint: disable=too-many-ancestors
     # pylint: disable=too-many-arguments,too-many-positional-arguments
     def __init__(
         self, coordinator: GsAlarmCoordinator,
-        field_name: str, icon: str
+        field_name: str, icon: str,
+        id_field_name: Optional[str] = None
     ) -> None:
-        super().__init__(coordinator, field_name, icon)
+        super().__init__(coordinator, field_name, icon, id_field_name)
         self._attr_is_on = None
 
     async def async_turn_on(self, **_kwargs: Any) -> None:
@@ -482,4 +549,25 @@ class G90NetConfigSwitchField(G90NetConfigMixin, G90ConfigSwitchFieldBase):
     # pylint: disable=too-many-ancestors
     """
     Panel configuration switch entities bound to network config.
+    """
+
+
+class G90SiaConfigSwitchField(G90SiaConfigMixin, G90ConfigSwitchFieldBase):
+    # pylint: disable=too-many-ancestors
+    """
+    Panel configuration switch entities bound to SIA config.
+    """
+
+
+class G90CidConfigSwitchField(G90CidConfigMixin, G90ConfigSwitchFieldBase):
+    # pylint: disable=too-many-ancestors
+    """
+    Panel configuration switch entities bound to CID config.
+    """
+
+
+class G90SiaConfigNumberField(G90SiaConfigMixin, G90ConfigNumberFieldBase):
+    # pylint: disable=too-many-ancestors
+    """
+    Panel configuration number entities bound to SIA config.
     """

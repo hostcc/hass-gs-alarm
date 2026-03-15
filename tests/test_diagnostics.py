@@ -21,9 +21,31 @@ from custom_components.gs_alarm.const import DOMAIN
 from .conftest import AlarmMockT
 
 
+@pytest.mark.parametrize("sia_supported", [
+    pytest.param(
+        True, marks=pytest.mark.g90sia_supported(result=True),
+        id="SIA supported",
+    ),
+    pytest.param(
+        False, marks=pytest.mark.g90sia_supported(result=False),
+        id="SIA not supported",
+    ),
+])
+@pytest.mark.parametrize("cid_supported", [
+    pytest.param(
+        True, marks=pytest.mark.g90cid_supported(result=True),
+        id="CID supported",
+    ),
+    pytest.param(
+        False, marks=pytest.mark.g90cid_supported(result=False),
+        id="CID not supported",
+    ),
+])
 @pytest.mark.usefixtures('mock_g90alarm')
 async def test_diagnostics(
-    hass: HomeAssistant, hass_client: ClientSessionGenerator
+    hass: HomeAssistant, hass_client: ClientSessionGenerator,
+    sia_supported: bool,
+    cid_supported: bool
 ) -> None:
     """
     Verifies diagnostics are successfully generated.
@@ -60,7 +82,9 @@ async def test_diagnostics(
         'host_config',
         'net_config',
         'alarm_phones',
-    ])
+    ] + (['sia_config'] if sia_supported else [])
+      + (['cid_config'] if cid_supported else [])
+    )
 
     # Simulate diagnostics download for the config entry
     client = await hass_client()
