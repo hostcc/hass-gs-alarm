@@ -27,7 +27,8 @@ SMS messages if you enabled those in mobile application) to be sent.
 The panel configuration options are available as Home Assistant entities and can
 be configured through the UI - navigate to "Settings -> Devices & Services ->
 Golden Security Alarm -> \<serial number\>", corresponding entities
-will be listed there.
+will be listed there. SIA and CID options are only shown when the panel
+supports them (some panels do not expose SIA/CID configuration).
 
 | Option | Description |
 |--------|-------------|
@@ -65,6 +66,19 @@ will be listed there.
 | Panel: Phone number | The panel's own phone number, SIM card number for panels with cellular support |
 | Simulate alerts from history | Enable/disable simulation of alerts from historical events |
 | SMS alerts only when armed | When enabled, SMS alerts are only sent when the panel is armed |
+| CID: Enabled | Enable/disable CID (Contact ID) protocol for alarm reporting |
+| CID: Phone 1 | First phone number for CID notifications |
+| CID: Phone 2 | Second phone number for CID notifications |
+| CID: User | User/account identifier for CID |
+| SIA: Account | SIA protocol account identifier |
+| SIA: AES key | AES encryption key for SIA (when encryption is enabled) |
+| SIA: Enabled | Enable/disable SIA protocol for alarm reporting |
+| SIA: Encryption | Enable/disable encryption for SIA protocol |
+| SIA: Heartbeat interval | Interval in seconds between SIA heartbeat messages |
+| SIA: Host | Host address for SIA protocol connection |
+| SIA: Port | Port number for SIA protocol connection |
+| SIA: Prefix | Prefix for SIA event messages |
+| SIA: Receiver | Receiver identifier for SIA protocol |
 | Speech: Language | Language and voice gender for panel speech announcements |
 | Timezone offset | Timezone offset from UTC for the panel's internal clock |
 | Volume: Alarm | Volume level for built-in alarm siren (Mute/Low/High) |
