@@ -492,7 +492,7 @@ class G90RebootSwitch(SwitchEntity, GSAlarmEntityBase):
     def __init__(self, coordinator: GsAlarmCoordinator) -> None:
         super().__init__(coordinator)
         self._attr_has_entity_name = True
-        self._attr_entity_category = EntityCategory.CONFIG
+        self._attr_entity_category = EntityCategory.DIAGNOSTIC
         self._attr_icon = 'mdi:restart'
         self._attr_translation_key = 'reboot'
         self._attr_is_on = False
