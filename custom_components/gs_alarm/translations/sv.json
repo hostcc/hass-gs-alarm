@@ -190,6 +190,15 @@
             },
             "gprs_enabled": {
                 "name": "Mobil: GPRS/3G aktiverad"
+            },
+            "sia_enabled": {
+                "name": "SIA: Aktiverad"
+            },
+            "sia_encryption": {
+                "name": "SIA: Kryptering"
+            },
+            "cid_enabled": {
+                "name": "CID: Aktiverad"
             }
         },
         "sensor": {
@@ -355,6 +364,30 @@
             },
             "new_device_name": {
                 "name": "Nytt relä-namn"
+            },
+            "sia_host": {
+                "name": "SIA: Värd"
+            },
+            "sia_account": {
+                "name": "SIA: Konto"
+            },
+            "sia_receiver": {
+                "name": "SIA: Mottagare"
+            },
+            "sia_prefix": {
+                "name": "SIA: Prefix"
+            },
+            "sia_aes_key": {
+                "name": "SIA: AES-nyckel"
+            },
+            "cid_phone1": {
+                "name": "CID: Telefon 1"
+            },
+            "cid_phone2": {
+                "name": "CID: Telefon 2"
+            },
+            "cid_user": {
+                "name": "CID: Användare"
             }
         },
         "number": {
@@ -375,6 +408,12 @@
             },
             "timezone_offset_m": {
                 "name": "Tidszonsförskjutning"
+            },
+            "sia_port": {
+                "name": "SIA: Port"
+            },
+            "sia_heartbeat_interval": {
+                "name": "SIA: Heartbeat-intervall"
             }
         },
         "notifications": {

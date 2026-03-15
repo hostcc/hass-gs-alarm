@@ -25,6 +25,7 @@ TO_REDACT = [
     'phone_number_3', 'phone_number_4', 'phone_number_5', 'phone_number_6',
     'sms_push_number_1', 'sms_push_number_2', 'ap_password', 'apn_user',
     'apn_name', 'apn_password', 'cloud_ip',
+    'account', 'aes_key', 'receiver', 'user', 'phone1', 'phone2',
 ]
 
 
@@ -67,34 +68,34 @@ async def async_get_device_diagnostics(
             'host_info': (await g90_client.get_host_info())._asdict(),
             'host_status': (await g90_client.get_host_status())._asdict(),
             'alert_config': repr(await g90_client.get_alert_config()),
+            'host_config': (await g90_client.host_config())._asdict(),
+            'net_config': (await g90_client.net_config())._asdict(),
+            'alarm_phones': (await g90_client.alarm_phones())._asdict(),
+
         }
 
-        # Add configuration data if available
         try:
-            host_config = await g90_client.host_config()
-            if host_config:
-                alarm_panel_data['host_config'] = host_config._asdict()
+            sia_config = await g90_client.sia_config()
+            if sia_config:
+                alarm_panel_data['sia_config'] = sia_config._asdict()
+        except ValueError:
+            _LOGGER.debug("Panel does not support SIA configuration")
         except (G90Error, G90TimeoutError) as exc:
             _LOGGER.warning(
-                "Unable to gather host_config for diagnostics: %s", repr(exc)
+                "Unable to gather sia_config in diagnostics: %s",
+                repr(exc)
             )
 
         try:
-            net_config = await g90_client.net_config()
-            if net_config:
-                alarm_panel_data['net_config'] = net_config._asdict()
+            cid_config = await g90_client.cid_config()
+            if cid_config:
+                alarm_panel_data['cid_config'] = cid_config._asdict()
+        except ValueError:
+            _LOGGER.debug("Panel does not support CID configuration")
         except (G90Error, G90TimeoutError) as exc:
             _LOGGER.warning(
-                "Unable to gather net_config for diagnostics: %s", repr(exc)
-            )
-
-        try:
-            alarm_phones = await g90_client.alarm_phones()
-            if alarm_phones:
-                alarm_panel_data['alarm_phones'] = alarm_phones._asdict()
-        except (G90Error, G90TimeoutError) as exc:
-            _LOGGER.warning(
-                "Unable to gather alarm_phones for diagnostics: %s", repr(exc)
+                "Unable to gather cid_config in diagnostics: %s",
+                repr(exc)
             )
 
         result = {

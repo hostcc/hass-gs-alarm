@@ -190,6 +190,15 @@
             },
             "gprs_enabled": {
                 "name": "Сотавая сувязь: GPRS/3G уключаны"
+            },
+            "sia_enabled": {
+                "name": "SIA: Уключана"
+            },
+            "sia_encryption": {
+                "name": "SIA: Шыфраванне"
+            },
+            "cid_enabled": {
+                "name": "CID: Уключана"
             }
         },
         "sensor": {
@@ -355,8 +364,32 @@
             },
             "new_device_name": {
                 "name": "Новае рэле: імя"
+            },
+            "sia_host": {
+                "name": "SIA: Хост"
+            },
+            "sia_account": {
+                "name": "SIA: Рахунак"
+            },
+            "sia_receiver": {
+                "name": "SIA: Прыёмнік"
+            },
+            "sia_prefix": {
+                "name": "SIA: Прэфікс"
+            },
+            "sia_aes_key": {
+                "name": "SIA: Ключ AES"
+            },
+            "cid_phone1": {
+                "name": "CID: Тэлефон 1"
+            },
+            "cid_phone2": {
+                "name": "CID: Тэлефон 2"
+            },
+            "cid_user": {
+                "name": "CID: Карыстальнік"
             }
-        },        
+        },
         "number": {
             "alarm_siren_duration": {
                 "name": "Тривалость: сірэна трывогі"
@@ -375,8 +408,14 @@
             },
             "timezone_offset_m": {
                 "name": "Зрух часавога поясу"
+            },
+            "sia_port": {
+                "name": "SIA: Порт"
+            },
+            "sia_heartbeat_interval": {
+                "name": "SIA: Інтэрвал праверкі"
             }
-        },        
+        },
         "notifications": {
             "register_device_starting": {
                 "name": "Рэгістрацыя новага прылады тыпу \"{type}\", пераканайцеся, што яна знаходзіцца ў рэжыме навучання"

@@ -190,6 +190,15 @@
             },
             "gprs_enabled": {
                 "name": "Cellular: GPRS/3G enabled"
+            },
+            "sia_enabled": {
+                "name": "SIA: Enabled"
+            },
+            "sia_encryption": {
+                "name": "SIA: Encryption"
+            },
+            "cid_enabled": {
+                "name": "CID: Enabled"
             }
         },
         "sensor": {
@@ -355,6 +364,30 @@
             },
             "apn_password": {
                 "name": "Cellular: APN Password"
+            },
+            "sia_host": {
+                "name": "SIA: Host"
+            },
+            "sia_account": {
+                "name": "SIA: Account"
+            },
+            "sia_receiver": {
+                "name": "SIA: Receiver"
+            },
+            "sia_prefix": {
+                "name": "SIA: Prefix"
+            },
+            "sia_aes_key": {
+                "name": "SIA: AES key"
+            },
+            "cid_phone1": {
+                "name": "CID: Phone 1"
+            },
+            "cid_phone2": {
+                "name": "CID: Phone 2"
+            },
+            "cid_user": {
+                "name": "CID: User"
             }
         },
         "number": {
@@ -375,6 +408,12 @@
             },
             "timezone_offset_m": {
                 "name": "Timezone offset"
+            },
+            "sia_port": {
+                "name": "SIA: Port"
+            },
+            "sia_heartbeat_interval": {
+                "name": "SIA: Heartbeat interval"
             }
         },
         "notifications": {

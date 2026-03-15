@@ -19,7 +19,8 @@ from pyg90alarm import (
 )
 
 from .entity_base import (
-    G90NetConfigSwitchField, GsAlarmSwitchRestoreEntityBase,
+    G90NetConfigSwitchField, G90SiaConfigSwitchField, G90CidConfigSwitchField,
+    GsAlarmSwitchRestoreEntityBase,
     GSAlarmEntityBase,
 )
 from .mixin import (
@@ -155,7 +156,21 @@ async def async_setup_entry(
             'mdi:signal-3g',
         ),
     ]
-
+    if entry.runtime_data.data.sia_config is not None:
+        config_switches.extend([
+            G90SiaConfigSwitchField(
+                entry.runtime_data, 'enabled', 'mdi:power', 'sia_enabled'
+            ),
+            G90SiaConfigSwitchField(
+                entry.runtime_data, 'encryption', 'mdi:lock', 'sia_encryption'
+            ),
+        ])
+    if entry.runtime_data.data.cid_config is not None:
+        config_switches.append(
+            G90CidConfigSwitchField(
+                entry.runtime_data, 'enabled', 'mdi:power', 'cid_enabled'
+            )
+        )
     async_add_entities(config_switches)
 
 

@@ -190,6 +190,15 @@
             },
             "gprs_enabled": {
                 "name": "Сотовая связь: GPRS/3G включен"
+            },
+            "sia_enabled": {
+                "name": "SIA: Включено"
+            },
+            "sia_encryption": {
+                "name": "SIA: Шифрование"
+            },
+            "cid_enabled": {
+                "name": "CID: Включено"
             }
         },
         "sensor": {
@@ -355,6 +364,30 @@
             },
             "new_device_name": {
                 "name": "Новое имя реле"
+            },
+            "sia_host": {
+                "name": "SIA: Хост"
+            },
+            "sia_account": {
+                "name": "SIA: Учётная запись"
+            },
+            "sia_receiver": {
+                "name": "SIA: Приёмник"
+            },
+            "sia_prefix": {
+                "name": "SIA: Префикс"
+            },
+            "sia_aes_key": {
+                "name": "SIA: Ключ AES"
+            },
+            "cid_phone1": {
+                "name": "CID: Телефон 1"
+            },
+            "cid_phone2": {
+                "name": "CID: Телефон 2"
+            },
+            "cid_user": {
+                "name": "CID: Пользователь"
             }
         },
         "number": {
@@ -375,6 +408,12 @@
             },
             "timezone_offset_m": {
                 "name": "Смещение часового пояса"
+            },
+            "sia_port": {
+                "name": "SIA: Порт"
+            },
+            "sia_heartbeat_interval": {
+                "name": "SIA: Интервал проверки"
             }
         },
         "notifications": {

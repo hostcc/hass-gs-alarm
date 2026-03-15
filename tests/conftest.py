@@ -25,6 +25,8 @@ from pyg90alarm import (
     G90NetConfig,
     G90AlarmPhones,
     G90HostConfig,
+    G90SiaConfig,
+    G90CidConfig,
 )
 
 AlarmMockT = TypeVar('AlarmMockT', bound=AsyncMock)
@@ -54,6 +56,12 @@ def pytest_configure(config: pytest.Config) -> None:
     # panel
     config.addinivalue_line("markers", "g90host_status")
 
+    # Register `g90sia_supported` mark allows to specify if SIA is supported
+    config.addinivalue_line("markers", "g90sia_supported")
+
+    # Register `g90cid_supported` mark allows to specify if CID is supported
+    config.addinivalue_line("markers", "g90cid_supported")
+
 
 @pytest.fixture
 def mock_g90alarm(request: pytest.FixtureRequest) -> Iterator[AlarmMockT]:
@@ -73,6 +81,16 @@ def mock_g90alarm(request: pytest.FixtureRequest) -> Iterator[AlarmMockT]:
         request.node.get_closest_marker('g90host_status'),
         'kwargs', {}
     ).get('result', G90ArmDisarmTypes.DISARM)
+
+    # Mocked SIA and CID support status from mark or default to True
+    sia_supported = getattr(
+        request.node.get_closest_marker('g90sia_supported'),
+        'kwargs', {}
+    ).get('result', True)
+    cid_supported = getattr(
+        request.node.get_closest_marker('g90cid_supported'),
+        'kwargs', {}
+    ).get('result', True)
 
     # Create host info return value
     host_info = G90HostInfo(
@@ -226,6 +244,38 @@ def mock_g90alarm(request: pytest.FixtureRequest) -> Iterator[AlarmMockT]:
 
             yield mock_device
 
+    sia_config_mock: AsyncMock | ValueError
+    if sia_supported:
+        sia_config_mock = AsyncMock(
+            return_value=G90SiaConfig(
+                _enabled=0,
+                _encryption=0,
+                host='192.168.1.1',
+                port=12345,
+                account='test_account',
+                receiver='1234567890',
+                prefix='test_prefix',
+                aes_key='1234567890',
+                event_flags='1234567890',
+            )
+        )
+    else:
+        sia_config_mock = ValueError("SIA is not supported")
+
+    cid_config_mock: AsyncMock | ValueError
+    if cid_supported:
+        cid_config_mock = AsyncMock(
+            return_value=G90CidConfig(
+                _enabled=0,
+                phone1='1234567890',
+                phone2='1234567890',
+                user='user1',
+                event_flags='1234',
+            )
+        )
+    else:
+        cid_config_mock = ValueError("CID is not supported")
+
     with (
         # Mock the discover class method for config flow
         patch(
@@ -268,65 +318,75 @@ def mock_g90alarm(request: pytest.FixtureRequest) -> Iterator[AlarmMockT]:
         # since load returns instance of the dataclass. Otherwise, `save()`
         # won't get mocked correctly. Also, `autospec=True` isn't used,
         # otherwise mock instance won't get created over `save()` method.
-        patch(
-            'pyg90alarm.local.host_config.G90HostConfig.save',
-        ),
-        patch(
-            'pyg90alarm.local.host_config.G90HostConfig.load',
-            autospec=True,
-            side_effect=AsyncMock(
-                return_value=G90HostConfig(
-                    _speech_language=1,
-                    _alarm_volume_level=2,
-                    alarm_siren_duration=120,
-                    arm_delay=30,
-                    alarm_delay=45,
-                    backlight_duration=60,
-                    ring_duration=10,
-                    timezone_offset_m=-300,
-                    _speech_volume_level=2,
-                    _key_tone_volume_level=0,
-                    _ring_volume_level=2,
-                )
-            )
-        ),
-        # See comment above about patching order
-        patch(
-            'pyg90alarm.local.net_config.G90NetConfig.save',
-        ),
-        patch(
-            'pyg90alarm.local.net_config.G90NetConfig.load',
-            autospec=True,
-            side_effect=AsyncMock(
-                return_value=G90NetConfig(
-                    _ap_enabled=0,
-                    ap_password='123456789',
-                    _wifi_enabled=1,
-                    _gprs_enabled=1,
-                    _apn_auth=2,
-                    apn_user='apn_user',
-                    apn_password='aps_pass',
-                    apn_name='an_apn',
-                    gsm_operator='12345',
+        patch.multiple(
+            'pyg90alarm.local.host_config.G90HostConfig',
+            save=AsyncMock(autospec=True),
+            load=AsyncMock(
+                side_effect=AsyncMock(
+                    return_value=G90HostConfig(
+                        _speech_language=1,
+                        _alarm_volume_level=2,
+                        alarm_siren_duration=120,
+                        arm_delay=30,
+                        alarm_delay=45,
+                        backlight_duration=60,
+                        ring_duration=10,
+                        timezone_offset_m=-300,
+                        _speech_volume_level=2,
+                        _key_tone_volume_level=0,
+                        _ring_volume_level=2,
+                    )
                 )
             ),
         ),
         # See comment above about patching order
-        patch(
-            'pyg90alarm.local.alarm_phones.G90AlarmPhones.save',
-        ),
-        patch(
-            'pyg90alarm.local.alarm_phones.G90AlarmPhones.load',
-            autospec=True,
-            side_effect=AsyncMock(
-                return_value=G90AlarmPhones(
-                    panel_password='1234',
-                    panel_phone_number='8877665544',
-                    phone_number_1='', phone_number_2='', phone_number_3='',
-                    phone_number_4='', phone_number_5='', phone_number_6='',
-                    sms_push_number_1='00987654321', sms_push_number_2='',
+        patch.multiple(
+            'pyg90alarm.local.net_config.G90NetConfig',
+            save=AsyncMock(autospec=True),
+            load=AsyncMock(
+                side_effect=AsyncMock(
+                    return_value=G90NetConfig(
+                        _ap_enabled=0,
+                        ap_password='123456789',
+                        _wifi_enabled=1,
+                        _gprs_enabled=1,
+                        _apn_auth=2,
+                        apn_user='apn_user',
+                        apn_password='aps_pass',
+                        apn_name='an_apn',
+                        gsm_operator='12345',
+                    )
                 )
             ),
+        ),
+        # See comment above about patching order
+        patch.multiple(
+            'pyg90alarm.local.alarm_phones.G90AlarmPhones',
+            save=AsyncMock(autospec=True),
+            load=AsyncMock(
+                side_effect=AsyncMock(
+                    return_value=G90AlarmPhones(
+                        panel_password='1234',
+                        panel_phone_number='8877665544',
+                        phone_number_1='', phone_number_2='',
+                        phone_number_3='', phone_number_4='',
+                        phone_number_5='', phone_number_6='',
+                        sms_push_number_1='00987654321', sms_push_number_2='',
+                    )
+                )
+            ),
+        ),
+        # See comment above about patching order
+        patch.multiple(
+            'pyg90alarm.local.sia_config.G90SiaConfig',
+            save=AsyncMock(autospec=True),
+            load=AsyncMock(side_effect=sia_config_mock),
+        ),
+        # See comment above about patching order
+        patch.multiple(
+            'pyg90alarm.local.cid_config.G90CidConfig',
+            save=AsyncMock(autospec=True),
+            load=AsyncMock(side_effect=cid_config_mock),
         ),
         patch(
             'pyg90alarm.G90Alarm.history',

@@ -190,6 +190,15 @@
             },
             "gprs_enabled": {
                 "name": "Celular: GPRS/3G ativado"
+            },
+            "sia_enabled": {
+                "name": "SIA: Ativado"
+            },
+            "sia_encryption": {
+                "name": "SIA: Criptografia"
+            },
+            "cid_enabled": {
+                "name": "CID: Ativado"
             }
         },
         "sensor": {
@@ -349,12 +358,36 @@
             },
             "apn_password": {
                 "name": "Ponto de acesso APN: senha"
-            },            
+            },
             "new_sensor_name": {
                 "name": "Novo sensor: nome"
             },
             "new_device_name": {
                 "name": "Novo relé: nome"
+            },
+            "sia_host": {
+                "name": "SIA: Host"
+            },
+            "sia_account": {
+                "name": "SIA: Conta"
+            },
+            "sia_receiver": {
+                "name": "SIA: Receptor"
+            },
+            "sia_prefix": {
+                "name": "SIA: Prefixo"
+            },
+            "sia_aes_key": {
+                "name": "SIA: Chave AES"
+            },
+            "cid_phone1": {
+                "name": "CID: Telefone 1"
+            },
+            "cid_phone2": {
+                "name": "CID: Telefone 2"
+            },
+            "cid_user": {
+                "name": "CID: Utilizador"
             }
         },       
         "number": {
@@ -375,8 +408,14 @@
             },
             "timezone_offset_m": {
                 "name": "Deslocamento de fuso horário"
+            },
+            "sia_port": {
+                "name": "SIA: Porta"
+            },
+            "sia_heartbeat_interval": {
+                "name": "SIA: Intervalo de heartbeat"
             }
-        },        
+        },
         "notifications": {
             "register_device_starting": {
                 "name": "Registrando um novo dispositivo do tipo \"{type}\", certifique-se de que está no modo de aprendizagem"
