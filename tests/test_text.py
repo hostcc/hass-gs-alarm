@@ -251,3 +251,109 @@ async def test_alarm_phones_text_exception(
 
     # Verify save was called despite exception
     (await mock_g90alarm.return_value.alarm_phones()).save.assert_called()
+
+
+@pytest.mark.parametrize("unique_id,field,value", [
+    pytest.param(
+        "dummy_guid_sia_host", "host", "192.168.1.1",
+        id="SIA host"
+    ),
+    pytest.param(
+        "dummy_guid_sia_account", "account", "test_account",
+        id="SIA account"
+    ),
+    pytest.param(
+        "dummy_guid_sia_receiver", "receiver", "1234567890",
+        id="SIA receiver"
+    ),
+    pytest.param(
+        "dummy_guid_sia_prefix", "prefix", "test_prefix",
+        id="SIA prefix"
+    ),
+    pytest.param(
+        "dummy_guid_sia_aes_key", "aes_key", "1234567890",
+        id="SIA AES key"
+    ),
+])
+async def test_sia_config_text_entities(
+    unique_id: str, field: str, value: str,
+    hass: HomeAssistant, mock_g90alarm: AlarmMockT
+) -> None:
+    """
+    Tests SIA config text entities can be set correctly.
+    """
+    config_entry = MockConfigEntry(
+        domain=DOMAIN,
+        data={'ip_addr': 'dummy-ip'},
+        options={},
+        entry_id="test_sia_config_text_entities"
+    )
+    config_entry.add_to_hass(hass)
+    await hass.config_entries.async_setup(config_entry.entry_id)
+    await hass.async_block_till_done()
+
+    entity_id = hass_get_entity_id_by_unique_id(hass, 'text', unique_id)
+    # Set the value
+    await hass.services.async_call(
+        TEXT_DOMAIN,
+        SERVICE_SET_VALUE,
+        {ATTR_ENTITY_ID: entity_id, ATTR_VALUE: value},
+        blocking=True,
+    )
+    await hass.async_block_till_done()
+
+    # Verify save was called
+    (await mock_g90alarm.return_value.sia_config()).save.assert_called()
+    # Verify the value was set correctly
+    assert getattr(
+        await mock_g90alarm.return_value.sia_config(), field
+    ) == value
+
+
+@pytest.mark.parametrize("unique_id,field,value", [
+    pytest.param(
+        "dummy_guid_cid_phone1", "phone1", "1234567890",
+        id="CID phone 1"
+    ),
+    pytest.param(
+        "dummy_guid_cid_phone2", "phone2", "1234567890",
+        id="CID phone 2"
+    ),
+    pytest.param(
+        "dummy_guid_cid_user", "user", "t_user",
+        id="CID user"
+    ),
+])
+async def test_cid_config_text_entities(
+    unique_id: str, field: str, value: str,
+    hass: HomeAssistant, mock_g90alarm: AlarmMockT
+) -> None:
+    """
+    Tests CID config text entities can be set correctly.
+    """
+    config_entry = MockConfigEntry(
+        domain=DOMAIN,
+        data={'ip_addr': 'dummy-ip'},
+        options={},
+        entry_id="test_cid_config_text_entities"
+    )
+    config_entry.add_to_hass(hass)
+    await hass.config_entries.async_setup(config_entry.entry_id)
+    await hass.async_block_till_done()
+
+    entity_id = hass_get_entity_id_by_unique_id(hass, 'text', unique_id)
+    # Set the value
+    await hass.services.async_call(
+        TEXT_DOMAIN,
+        SERVICE_SET_VALUE,
+        {ATTR_ENTITY_ID: entity_id, ATTR_VALUE: value},
+        blocking=True,
+    )
+    await hass.async_block_till_done()
+
+    # Verify save was called
+    (await mock_g90alarm.return_value.cid_config()).save.assert_called()
+    # Verify the value was set correctly
+    assert getattr(
+        await mock_g90alarm.return_value.cid_config(), field
+    ) == value

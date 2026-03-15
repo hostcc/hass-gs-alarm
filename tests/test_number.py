@@ -177,3 +177,44 @@ async def test_host_config_number_exception(
 
     # Verify save was called despite exception
     (await mock_g90alarm.return_value.host_config()).save.assert_called()
+
+
+@pytest.mark.parametrize("unique_id,field,value", [
+    ("dummy_guid_sia_port", "port", 12345),
+    ("dummy_guid_sia_heartbeat_interval", "heartbeat_interval", 12),
+])
+async def test_sia_config_number_entities(
+    unique_id: str, field: str, value: int,
+    hass: HomeAssistant, mock_g90alarm: AlarmMockT
+) -> None:
+    """
+    Tests SIA config number entities can be set correctly.
+    """
+    config_entry = MockConfigEntry(
+        domain=DOMAIN,
+        data={'ip_addr': 'dummy-ip'},
+        options={},
+        entry_id="test_sia_config_number_entities"
+    )
+    config_entry.add_to_hass(hass)
+    await hass.config_entries.async_setup(config_entry.entry_id)
+    await hass.async_block_till_done()
+
+    entity_id = hass_get_entity_id_by_unique_id(hass, 'number', unique_id)
+    assert entity_id is not None
+    assert hass.states.get(entity_id) is not None
+
+    await hass.services.async_call(
+        NUMBER_DOMAIN,
+        SERVICE_SET_VALUE,
+        {ATTR_ENTITY_ID: entity_id, ATTR_VALUE: value},
+        blocking=True,
+    )
+    await hass.async_block_till_done()
+
+    # Verify save was called
+    (await mock_g90alarm.return_value.sia_config()).save.assert_called()
+    # Verify the value was set correctly
+    assert getattr(
+        await mock_g90alarm.return_value.sia_config(), field
+    ) == value
