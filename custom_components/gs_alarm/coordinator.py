@@ -159,7 +159,10 @@ class GsAlarmCoordinator(DataUpdateCoordinator[GsAlarmData]):
             return data
         except G90TimeoutError as exc:
             raise UpdateFailed(
-                f"Timeout updating panel '{self.data.host_info.host_guid}'"
+                f"Timeout updating panel '{self.data.host_info.host_guid}'",
+                # Instruct coordinator to retry after the scan interval upon
+                # timeout
+                retry_after=SCAN_INTERVAL.total_seconds()
             ) from exc
         except G90Error as exc:
             raise UpdateFailed(f"Error: {repr(exc)}") from exc
