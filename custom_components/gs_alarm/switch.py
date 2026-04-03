@@ -21,7 +21,6 @@ from pyg90alarm import (
 from .entity_base import (
     G90NetConfigSwitchField, G90SiaConfigSwitchField, G90CidConfigSwitchField,
     GsAlarmSwitchRestoreEntityBase,
-    GSAlarmEntityBase,
 )
 from .mixin import (
     GSAlarmGenerateIDsDeviceMixin, GSAlarmGenerateIDsSensorMixin,
@@ -481,16 +480,25 @@ class G90AlertConfigFlag(
         await self.coordinator.async_request_refresh()
 
 
-class G90RebootSwitch(SwitchEntity, GSAlarmEntityBase):
+class G90RebootSwitch(SwitchEntity, GSAlarmGenerateIDsCommonMixin):
     """
     Stateless switch to reboot the alarm panel.
+
+    The entity is intentionally not using coordinator, to avoid becoming
+    unavailable when data updates from panel would fail - primarily to survive
+    coordinator timeouts.
     """
-    # pylint: disable=too-many-ancestors
+    # pylint: disable=too-many-ancestors,too-many-instance-attributes
     UNIQUE_ID_FMT = "{guid}_reboot"
     ENTITY_ID_FMT = "{guid}_reboot"
 
     def __init__(self, coordinator: GsAlarmCoordinator) -> None:
-        super().__init__(coordinator)
+        self._client = coordinator.client
+        # Generate unique ID and entity ID
+        self._attr_unique_id = self.generate_unique_id(coordinator)
+        self.entity_id = self.generate_entity_id(coordinator)
+        # The entity is bound to the HASS device for the alarm panel itself
+        self._attr_device_info = self.generate_parent_device_info(coordinator)
         self._attr_has_entity_name = True
         self._attr_entity_category = EntityCategory.DIAGNOSTIC
         self._attr_icon = 'mdi:restart'
@@ -502,17 +510,10 @@ class G90RebootSwitch(SwitchEntity, GSAlarmEntityBase):
         Trigger panel reboot and immediately reset to OFF.
         """
         try:
-            _LOGGER.debug(
-                "Rebooting panel %s via reboot switch",
-                self.coordinator.data.host_info.host_guid,
-            )
-            await self.coordinator.client.reboot()
+            _LOGGER.debug("Rebooting panel via reboot switch")
+            await self._client.reboot()
         except (G90Error, G90TimeoutError) as exc:
-            _LOGGER.error(
-                "Error rebooting panel '%s': %s",
-                self.coordinator.data.host_info.host_guid,
-                repr(exc),
-            )
+            _LOGGER.error("Error rebooting panel: %s", repr(exc))
 
         # Ensure the switch remains stateless (always OFF)
         self._attr_is_on = False

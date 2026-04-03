@@ -28,7 +28,9 @@ from homeassistant.components.switch.const import (
     DOMAIN as SWITCH_DOMAIN
 )
 
-from pyg90alarm import G90SensorUserFlags, G90AlertConfigFlags, G90Error
+from pyg90alarm import (
+    G90SensorUserFlags, G90AlertConfigFlags, G90Error, G90TimeoutError
+)
 
 from custom_components.gs_alarm.const import DOMAIN
 from .conftest import AlarmMockT, hass_get_entity_id_by_unique_id
@@ -906,3 +908,41 @@ async def test_cid_config_switch_entities(
     assert getattr(
         await mock_g90alarm.return_value.cid_config(), field
     ) == value
+
+
+async def test_reboot_switch_not_affected_by_coordinator_timeout(
+    hass: HomeAssistant, mock_g90alarm: AlarmMockT
+) -> None:
+    """
+    Tests that reboot switch is not affected by timeout.
+    """
+    config_entry = MockConfigEntry(
+        domain=DOMAIN,
+        data={'ip_addr': 'dummy-ip'},
+        options={},
+        entry_id="test_reboot_switch_not_affected_by_timeout"
+    )
+    config_entry.add_to_hass(hass)
+    await hass.config_entries.async_setup(config_entry.entry_id)
+    await hass.async_block_till_done()
+
+    entity_id = hass_get_entity_id_by_unique_id(
+        hass, 'switch', 'dummy_guid_reboot'
+    )
+
+    # Initial state should be OFF
+    state = hass.states.get(entity_id)
+    assert state is not None
+    assert state.state == STATE_OFF
+
+    # Simulate timeout on the next update.
+    mock_g90alarm.return_value.get_sensors.side_effect = G90TimeoutError(
+        "simulated timeout"
+    )
+    async_fire_time_changed(hass, dt.utcnow() + timedelta(hours=1))
+    await hass.async_block_till_done()
+
+    # Verify the entity is still available and is OFF
+    state = hass.states.get(entity_id)
+    assert state is not None
+    assert state.state == STATE_OFF
