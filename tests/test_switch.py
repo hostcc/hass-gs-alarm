@@ -432,12 +432,13 @@ async def test_config_flags_exception(
         blocking=True,
     )
 
-    # Simulate an exception when setting the config flag.
     # `attrgetter` is used to handle nested attribute names (dot notation) -
     # `getattr` only works for single level attributes
-    attrgetter(expected_call)(
+    meth = attrgetter(expected_call)(
         mock_g90alarm.return_value
-    ).side_effect = simulated_exception
+    )
+    # Simulate an exception when setting the config flag.
+    meth.side_effect = simulated_exception
 
     # Attempt to set the switch for the config flag to the desired state
     await hass.services.async_call(
@@ -446,6 +447,10 @@ async def test_config_flags_exception(
         {ATTR_ENTITY_ID: entity_id},
         blocking=True,
     )
+
+    # Remove simulated exception so that component unloading can stop the
+    # simulation task
+    meth.side_effect = None
 
     # Verify the switch for the config flag is in the expected state (i.e. did
     # not change due to the exception)

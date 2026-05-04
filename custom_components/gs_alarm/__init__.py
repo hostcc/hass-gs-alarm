@@ -203,6 +203,9 @@ async def async_unload_entry(
         'Platforms unloaded %ssuccessfully', '' if unload_ok else 'un'
     )
     if unload_ok:
+        # Ensure task simulating alerts from history is stopped
+        await entry.runtime_data.client.stop_simulating_alerts_from_history()
+        # Stop listening for notifications
         await entry.runtime_data.client.close_notifications()
         _LOGGER.debug('Custom component unloaded')
 
