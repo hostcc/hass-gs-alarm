@@ -176,9 +176,9 @@ async def test_setup_unload_and_reload_entry_afresh(
                 'entity_id': 'binary_sensor.dummy_guid_gsm_status',
                 'name': 'GSM status',
             }, {
-                'unique_id': 'dummy_guid_sensor_last_device_packet',
-                'entity_id': 'sensor.dummy_guid_last_device_packet',
-                'name': 'Last device packet',
+                'unique_id': 'dummy_guid_sensor_notifications_protocol',
+                'entity_id': 'binary_sensor.dummy_guid_notifications_protocol',
+                'name': 'Notifications protocol',
             }, {
                 'unique_id': 'dummy_guid_new_sensor_type',
                 'entity_id': 'select.dummy_guid_new_sensor_type',
@@ -337,17 +337,8 @@ async def test_setup_unload_and_reload_entry_afresh(
                 'entity_id': 'sensor.dummy_guid_battery_voltage',
                 'name': 'Battery voltage',
             },
-                # Test for last upstream packet sensor if notification
-                # protocol is set to cloud upstream
-            ] + ([{
-                'unique_id': 'dummy_guid_sensor_last_upstream_packet',
-                'entity_id': 'sensor.dummy_guid_last_upstream_packet',
-                'name': 'Last upstream packet',
-            }] if (
-                options.get('notifications_protocol') == 'cloud_upstream'
-            ) else []
                 # Test for CID sensors if CID is supported
-            ) + ([{
+            ] + ([{
                 'unique_id': 'dummy_guid_cid_enabled',
                 'entity_id': 'switch.dummy_guid_cid_enabled',
                 'name': 'CID: Enabled',

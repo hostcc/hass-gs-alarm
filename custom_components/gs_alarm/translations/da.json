@@ -96,9 +96,15 @@
                             "false": "Nej"
                         }
                     },
-                    "panel_sensor_number": {"name": "Panelsensornummer"},
-                    "protocol": {"name": "Protokol"},
-                    "flags": {"name": "Flag"},
+                    "panel_sensor_number": {
+                        "name": "Panelsensornummer"
+                    },
+                    "protocol": {
+                        "name": "Protokol"
+                    },
+                    "flags": {
+                        "name": "Flag"
+                    },
                     "wireless": {
                         "name": "Trådløs",
                         "state": {
@@ -125,6 +131,17 @@
             },
             "gprs_3g_active": {
                 "name": "GPRS/3G aktiv"
+            },
+            "notifications_protocol": {
+                "name": "Notifikationsprotokol",
+                "state_attributes": {
+                    "Last device packet timestamp": {
+                        "name": "Tidsstempel for seneste enhedspakke"
+                    },
+                    "Last upstream packet timestamp": {
+                        "name": "Tidsstempel for seneste pakke fra skyen"
+                    }
+                }
             }
         },
         "switch": {
@@ -207,12 +224,6 @@
             },
             "gsm_signal": {
                 "name": "GSM-signal"
-            },
-            "last_device_packet": {
-                "name": "Sidste enhedspakke"
-            },
-            "last_upstream_packet": {
-                "name": "Sidste upstream-pakke"
             },
             "cellular_operator": {
                 "name": "Mobilnetoperatør"

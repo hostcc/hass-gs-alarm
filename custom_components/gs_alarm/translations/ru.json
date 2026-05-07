@@ -74,7 +74,7 @@
         "binary_sensor": {
             "sensor": {
                 "name": "{sensor}",
-                 "state_attributes": {
+                "state_attributes": {
                     "low_battery": {
                         "name": "Низкий заряд батареи",
                         "state": {
@@ -96,9 +96,15 @@
                             "false": "Нет"
                         }
                     },
-                    "panel_sensor_number": {"name": "Номер сенсора в панели"},
-                    "protocol": {"name": "Протокол"},
-                    "flags": {"name": "Флаги"},
+                    "panel_sensor_number": {
+                        "name": "Номер сенсора в панели"
+                    },
+                    "protocol": {
+                        "name": "Протокол"
+                    },
+                    "flags": {
+                        "name": "Флаги"
+                    },
                     "wireless": {
                         "name": "Беспроводной",
                         "state": {
@@ -125,6 +131,17 @@
             },
             "gprs_3g_active": {
                 "name": "GPRS/3G активен"
+            },
+            "notifications_protocol": {
+                "name": "Протокол уведомлений",
+                "state_attributes": {
+                    "Last device packet timestamp": {
+                        "name": "Метка времени последнего пакета устройства"
+                    },
+                    "Last upstream packet timestamp": {
+                        "name": "Метка времени последнего пакета из облака"
+                    }
+                }
             }
         },
         "switch": {
@@ -202,17 +219,11 @@
             }
         },
         "sensor": {
-           "wifi_signal": {
+            "wifi_signal": {
                 "name": "WiFi сигнал"
             },
             "gsm_signal": {
                 "name": "GSM сигнал"
-            },
-            "last_device_packet": {
-                "name": "Последний пакет от устройства"
-            },
-            "last_upstream_packet": {
-                "name": "Время последнего полученного пакета из облака"
             },
             "cellular_operator": {
                 "name": "Оператор сотовой связи"
@@ -221,7 +232,7 @@
                 "name": "Напряжение батареи"
             }
         },
-        "select": {            
+        "select": {
             "alarm_volume_level": {
                 "name": "Громкость: Сигнал тревоги",
                 "state": {
@@ -286,7 +297,7 @@
                     "chap": "CHAP",
                     "pap_or_chap": "PAP, CHAP"
                 }
-            },            
+            },
             "sensor_alert_mode": {
                 "name": "Режим тревоги",
                 "state": {

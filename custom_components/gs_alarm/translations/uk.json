@@ -96,9 +96,15 @@
                             "false": "Ні"
                         }
                     },
-                    "panel_sensor_number": {"name": "Номер датчика панелі"},
-                    "protocol": {"name": "Протокол"},
-                    "flags": {"name": "Прапорці"},
+                    "panel_sensor_number": {
+                        "name": "Номер датчика панелі"
+                    },
+                    "protocol": {
+                        "name": "Протокол"
+                    },
+                    "flags": {
+                        "name": "Прапорці"
+                    },
                     "wireless": {
                         "name": "Бездротовий",
                         "state": {
@@ -125,6 +131,17 @@
             },
             "gprs_3g_active": {
                 "name": "GPRS/3G активний"
+            },
+            "notifications_protocol": {
+                "name": "Протокол сповіщень",
+                "state_attributes": {
+                    "Last device packet timestamp": {
+                        "name": "Позначка часу останнього пакета пристрою"
+                    },
+                    "Last upstream packet timestamp": {
+                        "name": "Позначка часу останнього пакета з хмари"
+                    }
+                }
             }
         },
         "switch": {
@@ -202,17 +219,11 @@
             }
         },
         "sensor": {
-           "wifi_signal": {
+            "wifi_signal": {
                 "name": "Сигнал WiFi"
             },
             "gsm_signal": {
                 "name": "Сигнал GSM"
-            },
-            "last_device_packet": {
-                "name": "Останній пакет пристрою"
-            },
-            "last_upstream_packet": {
-                "name": "Час останнього отриманого пакета з хмари"
             },
             "cellular_operator": {
                 "name": "Оператор стільникового зв'язку"
@@ -221,7 +232,7 @@
                 "name": "Напруга батареї"
             }
         },
-        "select": {            
+        "select": {
             "alarm_volume_level": {
                 "name": "Гучність: Сигнал тривоги",
                 "state": {
@@ -286,7 +297,7 @@
                     "chap": "CHAP",
                     "pap_or_chap": "PAP, CHAP"
                 }
-            },            
+            },
             "sensor_alert_mode": {
                 "name": "Режим тривоги",
                 "state": {
@@ -316,7 +327,7 @@
                 "name": "Видалити"
             }
         },
-        "text": {            
+        "text": {
             "panel_password": {
                 "name": "Панель: пароль"
             },
@@ -358,7 +369,7 @@
             },
             "apn_password": {
                 "name": "Точка доступу APN: пароль"
-            },            
+            },
             "new_sensor_name": {
                 "name": "Новий датчик: ім'я"
             },

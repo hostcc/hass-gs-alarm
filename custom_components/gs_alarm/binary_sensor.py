@@ -9,6 +9,7 @@ import logging
 
 from homeassistant.core import HomeAssistant, callback
 from homeassistant.const import EntityCategory
+from homeassistant.util import dt as dt_util
 from homeassistant.helpers.update_coordinator import CoordinatorEntity
 from homeassistant.components.binary_sensor import (
     BinarySensorEntity,
@@ -23,6 +24,12 @@ from pyg90alarm import (
 from .coordinator import GsAlarmCoordinator
 from .mixin import GSAlarmGenerateIDsSensorMixin
 from .entity_base import GSAlarmEntityBase
+from .const import (
+    NOTIFICATIONS_PROTOCOL_SENSOR_LAST_DEVICE_TIMESTAMP_ATTR,
+    NOTIFICATIONS_PROTOCOL_SENSOR_LAST_UPSTREAM_TIMESTAMP_ATTR,
+    NOTIFICATIONS_PROTOCOL_SENSOR_TTL,
+    NOTIFICATIONS_PROTOCOL_SENSOR_UNRECORDED_ATTRIBUTES,
+)
 if TYPE_CHECKING:
     from . import GsAlarmConfigEntry
 
@@ -94,6 +101,7 @@ async def async_setup_entry(
         G90WifiStatusSensor(entry.runtime_data),
         G90GsmStatusSensor(entry.runtime_data),
         G90Gprs3GActiveSensor(entry.runtime_data),
+        G90NotificationsProtocol(entry.runtime_data),
     ])
 
 
@@ -480,4 +488,71 @@ class G90Gprs3GActiveSensor(
         """
         host_info = self.coordinator.data.host_info
         self._attr_is_on = host_info.gprs_3g_active
+        self.async_write_ha_state()
+
+
+class G90NotificationsProtocol(GSAlarmEntityBase, BinarySensorEntity):
+    """
+    Binary sensor for notifications protocol connectivity.
+    """
+    # pylint: disable=too-many-ancestors
+    UNIQUE_ID_FMT = "{guid}_sensor_notifications_protocol"
+    ENTITY_ID_FMT = "{guid}_notifications_protocol"
+    _unrecorded_attributes = (
+        NOTIFICATIONS_PROTOCOL_SENSOR_UNRECORDED_ATTRIBUTES
+    )
+
+    def __init__(self, coordinator: GsAlarmCoordinator) -> None:
+        super().__init__(coordinator)
+        self._attr_has_entity_name = True
+        self._attr_translation_key = 'notifications_protocol'
+        self._attr_device_class = BinarySensorDeviceClass.CONNECTIVITY
+        self._attr_entity_category = EntityCategory.DIAGNOSTIC
+        self._attr_icon = 'mdi:lan-connect'
+
+    @property
+    def is_on(self) -> bool:
+        """
+        Indicates if the notifications protocol appears connected.
+
+        The sensor is considered connected if the last device packet timestamp
+        is within the TTL window.
+        """
+        packet_timestamp = self.coordinator.data.last_device_packet_time
+
+        if packet_timestamp is None:
+            _LOGGER.debug(
+                '%s: Last device packet timestamp absent, returning False',
+                self.unique_id
+            )
+            return False
+
+        now = dt_util.utcnow()
+        result = (now - packet_timestamp) <= NOTIFICATIONS_PROTOCOL_SENSOR_TTL
+        _LOGGER.debug(
+            '%s: Last device packet timestamp is %s (now: %s), TTL is %s, '
+            'notifications protocol is %s',
+            self.unique_id, packet_timestamp, now,
+            NOTIFICATIONS_PROTOCOL_SENSOR_TTL,
+            "connected" if result else "disconnected"
+        )
+        return result
+
+    @property
+    def extra_state_attributes(self) -> Mapping[str, Any]:
+        """
+        Provides packet timestamps for diagnostics.
+        """
+        return {
+            NOTIFICATIONS_PROTOCOL_SENSOR_LAST_DEVICE_TIMESTAMP_ATTR:
+                self.coordinator.data.last_device_packet_time,
+            NOTIFICATIONS_PROTOCOL_SENSOR_LAST_UPSTREAM_TIMESTAMP_ATTR:
+                self.coordinator.data.last_upstream_packet_time,
+        }
+
+    @callback
+    def _handle_coordinator_update(self) -> None:
+        """
+        Invoked when HomeAssistant needs to update the sensor state.
+        """
         self.async_write_ha_state()

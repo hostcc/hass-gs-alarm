@@ -96,9 +96,15 @@
                             "false": "Não"
                         }
                     },
-                    "panel_sensor_number": {"name": "Número do sensor no painel"},
-                    "protocol": {"name": "Protocolo"},
-                    "flags": {"name": "Flags"},
+                    "panel_sensor_number": {
+                        "name": "Número do sensor no painel"
+                    },
+                    "protocol": {
+                        "name": "Protocolo"
+                    },
+                    "flags": {
+                        "name": "Flags"
+                    },
                     "wireless": {
                         "name": "Sem fio",
                         "state": {
@@ -125,6 +131,17 @@
             },
             "gprs_3g_active": {
                 "name": "GPRS/3G ativo"
+            },
+            "notifications_protocol": {
+                "name": "Protocolo de notificações",
+                "state_attributes": {
+                    "Last device packet timestamp": {
+                        "name": "Carimbo de data/hora do último pacote do dispositivo"
+                    },
+                    "Last upstream packet timestamp": {
+                        "name": "Carimbo de data/hora do último pacote da nuvem"
+                    }
+                }
             }
         },
         "switch": {
@@ -207,12 +224,6 @@
             },
             "gsm_signal": {
                 "name": "Sinal GSM"
-            },
-            "last_device_packet": {
-                "name": "Último pacote de dispositivo"
-            },
-            "last_upstream_packet": {
-                "name": "Último pacote de upstream"
             },
             "cellular_operator": {
                 "name": "Operadora celular"
@@ -316,7 +327,7 @@
                 "name": "Excluir"
             }
         },
-        "text": {            
+        "text": {
             "panel_password": {
                 "name": "Painel: senha"
             },
@@ -389,7 +400,7 @@
             "cid_user": {
                 "name": "CID: Utilizador"
             }
-        },       
+        },
         "number": {
             "alarm_siren_duration": {
                 "name": "Duração: sirene de alarme"

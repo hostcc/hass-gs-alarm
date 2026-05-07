@@ -486,6 +486,12 @@ def mock_g90alarm(request: pytest.FixtureRequest) -> Iterator[AlarmMockT]:
             reboot=DEFAULT,
         ),
     ):
+        # The integration compares the properties with `datetime` or None,
+        # make them so - assignment here is easier than mocks with comparison
+        # methods implemented.
+        mock.return_value.last_device_packet_time = None
+        mock.return_value.last_upstream_packet_time = None
+
         yield mock
 
 

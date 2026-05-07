@@ -19,11 +19,6 @@ from homeassistant.helpers.entity_platform import AddEntitiesCallback
 
 from .entity_base import GSAlarmEntityBase
 from .coordinator import GsAlarmCoordinator
-from .const import (
-    CONF_OPT_NOTIFICATIONS_CLOUD_UPSTREAM,
-    CONF_NOTIFICATIONS_PROTOCOL,
-    CONF_OPT_NOTIFICATIONS_LOCAL,
-)
 if TYPE_CHECKING:
     from . import GsAlarmConfigEntry
 
@@ -36,17 +31,9 @@ async def async_setup_entry(_hass: HomeAssistant, entry: GsAlarmConfigEntry,
     g90sensors = [
         G90WifiSignal(entry.runtime_data),
         G90GsmSignal(entry.runtime_data),
-        G90LastDevicePacket(entry.runtime_data),
         G90CellularOperator(entry.runtime_data),
         G90BatteryVoltage(entry.runtime_data),
     ]
-
-    # Add last upstream packet sensor only if notification protocol is set to
-    # cloud upstream, since it doesn't make sense for other protocols
-    if entry.options.get(
-        CONF_NOTIFICATIONS_PROTOCOL, CONF_OPT_NOTIFICATIONS_LOCAL
-    ) == CONF_OPT_NOTIFICATIONS_CLOUD_UPSTREAM:
-        g90sensors.append(G90LastUpstreamPacket(entry.runtime_data))
 
     async_add_entities(g90sensors)
 
@@ -125,62 +112,6 @@ class G90GsmSignal(G90BaseSensor):
         """
         host_info = self.coordinator.data.host_info
         self._attr_native_value = host_info.gsm_signal_level
-        self.async_write_ha_state()
-
-
-class G90LastDevicePacket(G90BaseSensor):
-    """
-    Sensor for last device packet.
-
-    :param coordinator: The coordinator to use.
-    """
-    # pylint: disable=too-many-ancestors
-
-    UNIQUE_ID_FMT = "{guid}_sensor_last_device_packet"
-    ENTITY_ID_FMT = "{guid}_last_device_packet"
-
-    def __init__(self, coordinator: GsAlarmCoordinator) -> None:
-        super().__init__(coordinator)
-        self._attr_translation_key = 'last_device_packet'
-        self._attr_icon = 'mdi:clock-check'
-        self._attr_device_class = SensorDeviceClass.TIMESTAMP
-        self._attr_entity_category = EntityCategory.DIAGNOSTIC
-
-    @callback
-    def _handle_coordinator_update(self) -> None:
-        """
-        Invoked when HomeAssistant needs to update the sensor state.
-        """
-        self._attr_native_value = self.coordinator.data.last_device_packet_time
-        self.async_write_ha_state()
-
-
-class G90LastUpstreamPacket(G90BaseSensor):
-    """
-    Sensor for last upstream packet.
-
-    :param coordinator: The coordinator to use.
-    """
-    # pylint: disable=too-many-ancestors
-
-    UNIQUE_ID_FMT = "{guid}_sensor_last_upstream_packet"
-    ENTITY_ID_FMT = "{guid}_last_upstream_packet"
-
-    def __init__(self, coordinator: GsAlarmCoordinator) -> None:
-        super().__init__(coordinator)
-        self._attr_translation_key = 'last_upstream_packet'
-        self._attr_icon = 'mdi:cloud-clock'
-        self._attr_device_class = SensorDeviceClass.TIMESTAMP
-        self._attr_entity_category = EntityCategory.DIAGNOSTIC
-
-    @callback
-    def _handle_coordinator_update(self) -> None:
-        """
-        Invoked when HomeAssistant needs to update the sensor state.
-        """
-        self._attr_native_value = (
-            self.coordinator.data.last_upstream_packet_time
-        )
         self.async_write_ha_state()
 
 
