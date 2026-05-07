@@ -25,10 +25,10 @@ SCAN_INTERVAL = timedelta(seconds=30)
 
 # Notifications protocol binary sensor
 NOTIFICATIONS_PROTOCOL_SENSOR_LAST_DEVICE_TIMESTAMP_ATTR = (
-    'Last device packet timestamp'
+    'last_device_packet_timestamp'
 )
 NOTIFICATIONS_PROTOCOL_SENSOR_LAST_UPSTREAM_TIMESTAMP_ATTR = (
-    'Last upstream packet timestamp'
+    'last_upstream_packet_timestamp'
 )
 NOTIFICATIONS_PROTOCOL_SENSOR_TTL = timedelta(minutes=2)
 NOTIFICATIONS_PROTOCOL_SENSOR_UNRECORDED_ATTRIBUTES = frozenset({

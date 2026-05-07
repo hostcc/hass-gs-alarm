@@ -135,10 +135,10 @@
             "notifications_protocol": {
                 "name": "Протокол сповіщень",
                 "state_attributes": {
-                    "Last device packet timestamp": {
+                    "last_device_packet_timestamp": {
                         "name": "Позначка часу останнього пакета пристрою"
                     },
-                    "Last upstream packet timestamp": {
+                    "last_upstream_packet_timestamp": {
                         "name": "Позначка часу останнього пакета з хмари"
                     }
                 }
