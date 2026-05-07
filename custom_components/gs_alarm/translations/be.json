@@ -96,9 +96,15 @@
                             "false": "Не"
                         }
                     },
-                    "panel_sensor_number": {"name": "Нумар датчыка панэлі"},
-                    "protocol": {"name": "Пратакол"},
-                    "flags": {"name": "Сцяжкі"},
+                    "panel_sensor_number": {
+                        "name": "Нумар датчыка панэлі"
+                    },
+                    "protocol": {
+                        "name": "Пратакол"
+                    },
+                    "flags": {
+                        "name": "Сцяжкі"
+                    },
                     "wireless": {
                         "name": "Бесправадны",
                         "state": {
@@ -125,6 +131,17 @@
             },
             "gprs_3g_active": {
                 "name": "GPRS/3G актыўны"
+            },
+            "notifications_protocol": {
+                "name": "Пратакол апавяшчэнняў",
+                "state_attributes": {
+                    "last_device_packet_timestamp": {
+                        "name": "Пазнака часу апошняга пакета прылады"
+                    },
+                    "last_upstream_packet_timestamp": {
+                        "name": "Пазнака часу апошняга пакета з воблака"
+                    }
+                }
             }
         },
         "switch": {
@@ -202,17 +219,11 @@
             }
         },
         "sensor": {
-           "wifi_signal": {
+            "wifi_signal": {
                 "name": "Сігнал WiFi"
             },
             "gsm_signal": {
                 "name": "Сігнал GSM"
-            },
-            "last_device_packet": {
-                "name": "Апошні пакет прылады"
-            },
-            "last_upstream_packet": {
-                "name": "Час апошняга атрыманага пакета з воблака"
             },
             "cellular_operator": {
                 "name": "Аператар сотавай сувязі"
@@ -221,7 +232,7 @@
                 "name": "Напружанне батарэі"
             }
         },
-        "select": {           
+        "select": {
             "alarm_volume_level": {
                 "name": "Гучнасць: Сігнал трывогі",
                 "state": {
@@ -286,7 +297,7 @@
                     "chap": "CHAP",
                     "pap_or_chap": "PAP, CHAP"
                 }
-            },            
+            },
             "sensor_alert_mode": {
                 "name": "Рэжым трывогі",
                 "state": {
@@ -316,7 +327,7 @@
                 "name": "Выдаліць"
             }
         },
-        "text": {            
+        "text": {
             "panel_password": {
                 "name": "Панель: пароль"
             },
@@ -358,7 +369,7 @@
             },
             "apn_password": {
                 "name": "Пункт доступу APN: пароль"
-            },            
+            },
             "new_sensor_name": {
                 "name": "Новы датчык: імя"
             },

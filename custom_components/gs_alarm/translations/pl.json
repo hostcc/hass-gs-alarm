@@ -96,9 +96,15 @@
                             "false": "Nie"
                         }
                     },
-                    "panel_sensor_number": {"name": "Numer czujnika panelu"},
-                    "protocol": {"name": "Protokół"},
-                    "flags": {"name": "Flagi"},
+                    "panel_sensor_number": {
+                        "name": "Numer czujnika panelu"
+                    },
+                    "protocol": {
+                        "name": "Protokół"
+                    },
+                    "flags": {
+                        "name": "Flagi"
+                    },
                     "wireless": {
                         "name": "Bezprzewodowy",
                         "state": {
@@ -125,6 +131,17 @@
             },
             "gprs_3g_active": {
                 "name": "GPRS/3G aktywny"
+            },
+            "notifications_protocol": {
+                "name": "Protokół powiadomień",
+                "state_attributes": {
+                    "last_device_packet_timestamp": {
+                        "name": "Znacznik czasu ostatniego pakietu urządzenia"
+                    },
+                    "last_upstream_packet_timestamp": {
+                        "name": "Znacznik czasu ostatniego pakietu z chmury"
+                    }
+                }
             }
         },
         "switch": {
@@ -202,17 +219,11 @@
             }
         },
         "sensor": {
-           "wifi_signal": {
+            "wifi_signal": {
                 "name": "Sygnał WiFi"
             },
             "gsm_signal": {
                 "name": "Sygnał GSM"
-            },
-            "last_device_packet": {
-                "name": "Ostatni pakiet urządzenia"
-            },
-            "last_upstream_packet": {
-                "name": "Czas ostatniego odebranego pakietu z chmury"
             },
             "cellular_operator": {
                 "name": "Operator komórkowy"

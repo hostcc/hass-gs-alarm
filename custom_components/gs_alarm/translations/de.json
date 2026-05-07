@@ -96,9 +96,15 @@
                             "false": "Nein"
                         }
                     },
-                    "panel_sensor_number": {"name": "Panel-Sensornummer"},
-                    "protocol": {"name": "Protokoll"},
-                    "flags": {"name": "Flags"},
+                    "panel_sensor_number": {
+                        "name": "Panel-Sensornummer"
+                    },
+                    "protocol": {
+                        "name": "Protokoll"
+                    },
+                    "flags": {
+                        "name": "Flags"
+                    },
                     "wireless": {
                         "name": "Kabellos",
                         "state": {
@@ -125,6 +131,17 @@
             },
             "gprs_3g_active": {
                 "name": "GPRS/3G aktiv"
+            },
+            "notifications_protocol": {
+                "name": "Benachrichtigungsprotokoll",
+                "state_attributes": {
+                    "last_device_packet_timestamp": {
+                        "name": "Zeitstempel des letzten Gerätepakets"
+                    },
+                    "last_upstream_packet_timestamp": {
+                        "name": "Zeitstempel des letzten Pakets aus der Cloud"
+                    }
+                }
             }
         },
         "switch": {
@@ -207,12 +224,6 @@
             },
             "gsm_signal": {
                 "name": "GSM-Signal"
-            },
-            "last_device_packet": {
-                "name": "Letztes Gerätepaket"
-            },
-            "last_upstream_packet": {
-                "name": "Letztes Upstream-Paket"
             },
             "cellular_operator": {
                 "name": "Mobilfunkanbieter"

@@ -96,9 +96,15 @@
                             "false": "Nei"
                         }
                     },
-                    "panel_sensor_number": {"name": "Panelsensornummer"},
-                    "protocol": {"name": "Protokoll"},
-                    "flags": {"name": "Flagg"},
+                    "panel_sensor_number": {
+                        "name": "Panelsensornummer"
+                    },
+                    "protocol": {
+                        "name": "Protokoll"
+                    },
+                    "flags": {
+                        "name": "Flagg"
+                    },
                     "wireless": {
                         "name": "Trådløs",
                         "state": {
@@ -125,6 +131,17 @@
             },
             "gprs_3g_active": {
                 "name": "GPRS/3G aktiv"
+            },
+            "notifications_protocol": {
+                "name": "Varslingsprotokoll",
+                "state_attributes": {
+                    "last_device_packet_timestamp": {
+                        "name": "Tidsstempel for siste enhetspakke"
+                    },
+                    "last_upstream_packet_timestamp": {
+                        "name": "Tidsstempel for siste pakke fra skyen"
+                    }
+                }
             }
         },
         "switch": {
@@ -208,12 +225,6 @@
             "gsm_signal": {
                 "name": "GSM-signal"
             },
-            "last_device_packet": {
-                "name": "Siste enhetspakke"
-            },
-            "last_upstream_packet": {
-                "name": "Siste oppstrøms-pakke"
-            },
             "cellular_operator": {
                 "name": "Mobiloperatør"
             },
@@ -221,7 +232,7 @@
                 "name": "Batterispenning"
             }
         },
-        "select": {            
+        "select": {
             "alarm_volume_level": {
                 "name": "Volum: Alarm",
                 "state": {
@@ -286,7 +297,7 @@
                     "chap": "CHAP",
                     "pap_or_chap": "PAP, CHAP"
                 }
-            },            
+            },
             "sensor_alert_mode": {
                 "name": "Varslingsmodus",
                 "state": {
@@ -316,7 +327,7 @@
                 "name": "Slett"
             }
         },
-        "text": {            
+        "text": {
             "panel_password": {
                 "name": "Panel: passord"
             },
@@ -358,7 +369,7 @@
             },
             "apn_password": {
                 "name": "Tilgangspunkt APN: passord"
-            },            
+            },
             "new_sensor_name": {
                 "name": "Nytt sensornavn"
             },

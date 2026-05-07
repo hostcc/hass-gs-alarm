@@ -96,9 +96,15 @@
                             "false": "No"
                         }
                     },
-                    "panel_sensor_number": {"name": "Número de sensor del panel"},
-                    "protocol": {"name": "Protocolo"},
-                    "flags": {"name": "Indicadores"},
+                    "panel_sensor_number": {
+                        "name": "Número de sensor del panel"
+                    },
+                    "protocol": {
+                        "name": "Protocolo"
+                    },
+                    "flags": {
+                        "name": "Indicadores"
+                    },
                     "wireless": {
                         "name": "Inalámbrico",
                         "state": {
@@ -125,6 +131,17 @@
             },
             "gprs_3g_active": {
                 "name": "GPRS/3G activo"
+            },
+            "notifications_protocol": {
+                "name": "Protocolo de notificaciones",
+                "state_attributes": {
+                    "last_device_packet_timestamp": {
+                        "name": "Marca temporal del último paquete del dispositivo"
+                    },
+                    "last_upstream_packet_timestamp": {
+                        "name": "Marca temporal del último paquete desde la nube"
+                    }
+                }
             }
         },
         "switch": {
@@ -207,12 +224,6 @@
             },
             "gsm_signal": {
                 "name": "Señal GSM"
-            },
-            "last_device_packet": {
-                "name": "Último paquete de dispositivo"
-            },
-            "last_upstream_packet": {
-                "name": "Último paquete de subida"
             },
             "cellular_operator": {
                 "name": "Operador celular"
