@@ -30,6 +30,7 @@ class GSAlarmGenerateIDsMixinBase(ABC):
     """
     UNIQUE_ID_FMT: Optional[str] = None
     ENTITY_ID_FMT: Optional[str] = None
+    ENTITY_DOMAIN: Optional[str] = None
 
     @classmethod
     @abstractmethod
@@ -97,11 +98,13 @@ class GSAlarmGenerateIDsMixinBase(ABC):
         if not cls.ENTITY_ID_FMT:
             raise NotImplementedError("ENTITY_ID_FMT is not defined")
 
-        # Formally, the entity ID should have first component being the
-        # platform name (e.g. `swoitch.`, `sensor.` etc), but practically any
-        # content there works, HASS seems properly parsing it out and replacing
-        # it with platform name as needed.
-        return f'{DOMAIN}.{slugify(
+        if not cls.ENTITY_DOMAIN:
+            raise NotImplementedError("ENTITY_DOMAIN is not defined")
+
+        # Entity ID must use the Home Assistant entity platform domain
+        # (e.g. switch, binary_sensor) as the first segment, not the
+        # integration domain.
+        return f'{cls.ENTITY_DOMAIN}.{slugify(
             cls.ENTITY_ID_FMT.format(
                 guid=coordinator.data.host_info.host_guid, **placeholders
             )

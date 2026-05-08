@@ -11,10 +11,14 @@ from homeassistant.const import STATE_ON
 from homeassistant.core import callback
 from homeassistant.helpers.update_coordinator import CoordinatorEntity
 from homeassistant.components.switch import SwitchEntity
+from homeassistant.components.switch.const import DOMAIN as SWITCH_DOMAIN
 from homeassistant.helpers.restore_state import RestoreEntity
 from homeassistant.components.select import SelectEntity
+from homeassistant.components.select.const import DOMAIN as SELECT_DOMAIN
 from homeassistant.components.number import NumberEntity, NumberMode
+from homeassistant.components.number.const import DOMAIN as NUMBER_DOMAIN
 from homeassistant.components.text import TextEntity, TextMode
+from homeassistant.components.text.const import DOMAIN as TEXT_DOMAIN
 from homeassistant.const import EntityCategory
 
 from pyg90alarm import (
@@ -66,6 +70,8 @@ class GsAlarmSwitchRestoreEntityBase(
     :param coordinator: The coordinator to use.
     """
     # pylint: disable=too-many-ancestors
+    ENTITY_DOMAIN = SWITCH_DOMAIN
+
     def __init__(
         self, coordinator: GsAlarmCoordinator,
     ) -> None:
@@ -294,6 +300,8 @@ class G90ConfigSelectFieldBase(G90ConfigFieldBase, SelectEntity):
     # pylint: disable=abstract-method,too-many-instance-attributes
     # pylint: disable=too-many-ancestors
     # pylint: disable=too-many-arguments,too-many-positional-arguments
+    ENTITY_DOMAIN = SELECT_DOMAIN
+
     def __init__(
         self, coordinator: GsAlarmCoordinator,
         field_name: str, states_map: dict[Any, str], icon: str,
@@ -354,6 +362,8 @@ class G90ConfigNumberFieldBase(G90ConfigFieldBase, NumberEntity):
     """
     # pylint:disable=too-many-ancestors,too-many-instance-attributes
     # pylint: disable=too-many-arguments,too-many-positional-arguments
+    ENTITY_DOMAIN = NUMBER_DOMAIN
+
     def __init__(
         self, coordinator: GsAlarmCoordinator, field_name: str,
         icon: str, unit: str, id_field_name: Optional[str] = None
@@ -417,6 +427,8 @@ class G90ConfigTextFieldBase(G90ConfigFieldBase, TextEntity):
     # pylint: disable=abstract-method,too-many-instance-attributes
     # pylint: disable=too-many-ancestors
     # pylint: disable=too-many-arguments,too-many-positional-arguments
+    ENTITY_DOMAIN = TEXT_DOMAIN
+
     def __init__(
         self, coordinator: GsAlarmCoordinator,
         field_name: str, icon: str, is_password: bool,
@@ -509,6 +521,8 @@ class G90ConfigSwitchFieldBase(G90ConfigFieldBase, SwitchEntity):
     # pylint: disable=abstract-method,too-many-instance-attributes
     # pylint: disable=too-many-ancestors
     # pylint: disable=too-many-arguments,too-many-positional-arguments
+    ENTITY_DOMAIN = SWITCH_DOMAIN
+
     def __init__(
         self, coordinator: GsAlarmCoordinator,
         field_name: str, icon: str,

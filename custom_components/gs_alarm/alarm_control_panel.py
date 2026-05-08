@@ -11,6 +11,9 @@ from homeassistant.core import HomeAssistant, callback
 from homeassistant.components.alarm_control_panel import (
     AlarmControlPanelEntity,
 )
+from homeassistant.components.alarm_control_panel.const import (
+    DOMAIN as ALARM_CONTROL_PANEL_DOMAIN,
+)
 from homeassistant.helpers.entity_platform import AddEntitiesCallback
 from homeassistant.components.alarm_control_panel.const import (
     AlarmControlPanelEntityFeature, AlarmControlPanelState,
@@ -55,6 +58,7 @@ class G90AlarmPanel(
     # pylint: disable=too-many-ancestors
     UNIQUE_ID_FMT = "{guid}"
     ENTITY_ID_FMT = "{guid}"
+    ENTITY_DOMAIN = ALARM_CONTROL_PANEL_DOMAIN
 
     def __init__(self, coordinator: GsAlarmCoordinator) -> None:
         super().__init__(coordinator)
