@@ -14,6 +14,7 @@ from homeassistant.helpers.update_coordinator import CoordinatorEntity
 from homeassistant.components.binary_sensor import (
     BinarySensorEntity,
     BinarySensorDeviceClass,
+    DOMAIN as BINARY_SENSOR_DOMAIN,
 )
 from homeassistant.helpers.entity_platform import AddEntitiesCallback
 
@@ -105,6 +106,16 @@ async def async_setup_entry(
     ])
 
 
+class G90PanelBinarySensorEntity(BinarySensorEntity, GSAlarmEntityBase):
+    """
+    Binary sensor linked to the alarm panel device using coordinator data.
+
+    Uses the binary_sensor platform domain for generated entity IDs.
+    """
+    # pylint: disable=too-few-public-methods,too-many-ancestors
+    ENTITY_DOMAIN = BINARY_SENSOR_DOMAIN
+
+
 class G90BinarySensor(
     BinarySensorEntity, CoordinatorEntity[GsAlarmCoordinator],
     GSAlarmGenerateIDsSensorMixin
@@ -119,6 +130,7 @@ class G90BinarySensor(
 
     UNIQUE_ID_FMT = "{guid}_sensor_{sensor.index}"
     ENTITY_ID_FMT = "{guid}_{sensor.name}"
+    ENTITY_DOMAIN = BINARY_SENSOR_DOMAIN
 
     def __init__(
         self, g90_sensor: G90Sensor, coordinator: GsAlarmCoordinator
@@ -278,6 +290,8 @@ class G90SensorAttributeBase(
     """
     # pylint: disable=too-many-instance-attributes,too-many-arguments
     # pylint: disable=too-many-positional-arguments
+    ENTITY_DOMAIN = BINARY_SENSOR_DOMAIN
+
     def __init__(
         self, g90_sensor: G90Sensor, coordinator: GsAlarmCoordinator,
         sensor_attr: str,
@@ -393,9 +407,7 @@ class G90SensorAttributeDoorOpenWhenArming(G90SensorAttributeBase):
         self._attr_icon = 'mdi:door-open'
 
 
-class G90WifiStatusSensor(
-    BinarySensorEntity, GSAlarmEntityBase,
-):
+class G90WifiStatusSensor(G90PanelBinarySensorEntity):
     """
     WiFi status sensor.
 
@@ -426,9 +438,7 @@ class G90WifiStatusSensor(
         self.async_write_ha_state()
 
 
-class G90GsmStatusSensor(
-    BinarySensorEntity, GSAlarmEntityBase,
-):
+class G90GsmStatusSensor(G90PanelBinarySensorEntity):
     """
     GSM status sensor.
 
@@ -460,9 +470,7 @@ class G90GsmStatusSensor(
         self.async_write_ha_state()
 
 
-class G90Gprs3GActiveSensor(
-    GSAlarmEntityBase, BinarySensorEntity
-):
+class G90Gprs3GActiveSensor(G90PanelBinarySensorEntity):
     """
     GPRS/3G status sensor.
 
@@ -491,7 +499,7 @@ class G90Gprs3GActiveSensor(
         self.async_write_ha_state()
 
 
-class G90NotificationsProtocol(GSAlarmEntityBase, BinarySensorEntity):
+class G90NotificationsProtocol(G90PanelBinarySensorEntity):
     """
     Binary sensor for notifications protocol connectivity.
     """

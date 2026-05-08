@@ -9,6 +9,7 @@ from typing import TYPE_CHECKING, Any
 from homeassistant.core import HomeAssistant
 from homeassistant.const import EntityCategory
 from homeassistant.components.text import TextEntity
+from homeassistant.components.text.const import DOMAIN as TEXT_DOMAIN
 from homeassistant.helpers.entity_platform import AddEntitiesCallback
 from homeassistant.core import Event
 
@@ -135,6 +136,8 @@ class G90NewEntityTextBase(
     """
     # pylint: disable=abstract-method,too-many-instance-attributes
     # pylint: disable=too-many-ancestors
+    ENTITY_DOMAIN = TEXT_DOMAIN
+
     def __init__(
         self, coordinator: GsAlarmCoordinator
     ) -> None:

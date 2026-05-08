@@ -12,6 +12,7 @@ from homeassistant.components.sensor import (
     SensorStateClass,
     SensorDeviceClass,
 )
+from homeassistant.components.sensor.const import DOMAIN as SENSOR_DOMAIN
 from homeassistant.const import (
     EntityCategory, PERCENTAGE, UnitOfElectricPotential,
 )
@@ -48,6 +49,8 @@ class G90BaseSensor(
     """
     # pylint:disable=too-few-public-methods
     # pylint: disable=too-many-ancestors
+    ENTITY_DOMAIN = SENSOR_DOMAIN
+
     def __init__(self, coordinator: GsAlarmCoordinator) -> None:
         super().__init__(coordinator)
 

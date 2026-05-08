@@ -10,7 +10,9 @@ import logging
 from homeassistant.core import HomeAssistant
 from homeassistant.const import EntityCategory
 from homeassistant.helpers.update_coordinator import CoordinatorEntity
-from homeassistant.components.select import SelectEntity
+from homeassistant.components.select import (
+    SelectEntity, DOMAIN as SELECT_DOMAIN,
+)
 from homeassistant.helpers.entity_platform import AddEntitiesCallback
 from homeassistant.core import Event
 
@@ -31,6 +33,16 @@ if TYPE_CHECKING:
     from . import GsAlarmConfigEntry
 
 _LOGGER = logging.getLogger(__name__)
+
+
+class G90SelectSensorEntityBase(
+    SelectEntity,
+    CoordinatorEntity[GsAlarmCoordinator],
+    GSAlarmGenerateIDsSensorMixin,
+):
+    # pylint: disable=too-many-ancestors
+    """Select entity tied to a panel sensor; platform domain for entity IDs."""
+    ENTITY_DOMAIN = SELECT_DOMAIN
 
 
 async def async_setup_entry(
@@ -131,16 +143,14 @@ async def async_setup_entry(
     async_add_entities(entities)
 
 
-class G90SensorAlertMode(
-    SelectEntity, CoordinatorEntity[GsAlarmCoordinator],
-    GSAlarmGenerateIDsSensorMixin
-):
+class G90SensorAlertMode(G90SelectSensorEntityBase):
     """
     Select entity for alert mode of the sensor.
 
     :param sensor: The sensor to create the entity for.
     :param coordinator: The coordinator to use.
     """
+    # pylint: disable=too-many-ancestors
     # pylint: disable=abstract-method,too-many-instance-attributes
     states_map = {
         G90SensorAlertModes.ALERT_ALWAYS:
@@ -216,6 +226,8 @@ class G90NewEntitySelectBase(
     """
     # pylint: disable=abstract-method,too-many-instance-attributes
     # pylint: disable=too-many-ancestors
+    ENTITY_DOMAIN = SELECT_DOMAIN
+
     def __init__(
         self, coordinator: GsAlarmCoordinator
     ) -> None:

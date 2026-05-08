@@ -10,6 +10,7 @@ import logging
 from homeassistant.core import HomeAssistant, callback
 from homeassistant.const import EntityCategory
 from homeassistant.components.switch import SwitchEntity
+from homeassistant.components.switch.const import DOMAIN as SWITCH_DOMAIN
 from homeassistant.helpers.entity_platform import AddEntitiesCallback
 from homeassistant.helpers.update_coordinator import CoordinatorEntity
 
@@ -173,10 +174,49 @@ async def async_setup_entry(
     async_add_entities(config_switches)
 
 
-class G90Switch(
-    SwitchEntity, CoordinatorEntity[GsAlarmCoordinator],
-    GSAlarmGenerateIDsDeviceMixin
+class GsAlarmSwitchDeviceEntity(
+    SwitchEntity,
+    CoordinatorEntity[GsAlarmCoordinator],
+    GSAlarmGenerateIDsDeviceMixin,
 ):
+    # pylint: disable=too-many-ancestors
+    """Relay switch; ENTITY_DOMAIN for entity ID generation."""
+    ENTITY_DOMAIN = SWITCH_DOMAIN
+
+
+class GsAlarmSwitchSensorConfigEntity(
+    SwitchEntity,
+    CoordinatorEntity[GsAlarmCoordinator],
+    GSAlarmGenerateIDsSensorMixin,
+):
+    # pylint: disable=too-many-ancestors
+    """Sensor config switch; ENTITY_DOMAIN for entity IDs."""
+    ENTITY_DOMAIN = SWITCH_DOMAIN
+
+
+class GsAlarmSwitchPanelConfigEntity(
+    SwitchEntity,
+    CoordinatorEntity[GsAlarmCoordinator],
+    GSAlarmGenerateIDsCommonMixin,
+):
+    # pylint: disable=too-many-ancestors
+    """Panel-level switch; ENTITY_DOMAIN for entity IDs."""
+    ENTITY_DOMAIN = SWITCH_DOMAIN
+
+
+class GsAlarmSwitchStandaloneEntity(
+    SwitchEntity,
+    GSAlarmGenerateIDsCommonMixin,
+):
+    # pylint: disable=too-many-ancestors
+    """
+    Switch without coordinator participation (e.g. reboot); supplies platform
+    domain for entity ID generation.
+    """
+    ENTITY_DOMAIN = SWITCH_DOMAIN
+
+
+class G90Switch(GsAlarmSwitchDeviceEntity):
     """
     Switch for the alarm panel's relay.
 
@@ -279,10 +319,7 @@ class G90Switch(
             self.async_write_ha_state()
 
 
-class G90SensorFlag(
-    SwitchEntity, CoordinatorEntity[GsAlarmCoordinator],
-    GSAlarmGenerateIDsSensorMixin
-):
+class G90SensorFlag(GsAlarmSwitchSensorConfigEntity):
     """
     Switch entity for configuration option of the sensor.
 
@@ -380,10 +417,7 @@ class G90SensorFlag(
         await self.coordinator.async_request_refresh()
 
 
-class G90AlertConfigFlag(
-    SwitchEntity, CoordinatorEntity[GsAlarmCoordinator],
-    GSAlarmGenerateIDsCommonMixin
-):
+class G90AlertConfigFlag(GsAlarmSwitchPanelConfigEntity):
     """
     Switch entity for alert configuration option of the panel.
 
@@ -480,7 +514,7 @@ class G90AlertConfigFlag(
         await self.coordinator.async_request_refresh()
 
 
-class G90RebootSwitch(SwitchEntity, GSAlarmGenerateIDsCommonMixin):
+class G90RebootSwitch(GsAlarmSwitchStandaloneEntity):
     """
     Stateless switch to reboot the alarm panel.
 

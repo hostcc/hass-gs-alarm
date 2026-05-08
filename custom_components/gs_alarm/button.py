@@ -13,6 +13,7 @@ from homeassistant.helpers import entity_registry as er
 from homeassistant.helpers import device_registry as dr
 from homeassistant.const import EntityCategory, STATE_UNKNOWN
 from homeassistant.components.button import ButtonEntity
+from homeassistant.components.button.const import DOMAIN as BUTTON_DOMAIN
 from homeassistant.components.persistent_notification import (
     DOMAIN as NOTIFICATION_DOMAIN, ATTR_MESSAGE, ATTR_TITLE
 )
@@ -129,9 +130,25 @@ class G90EntityDeleteButtonBase(
             )
 
 
-class G90SwitchDelete(
-    G90EntityDeleteButtonBase, GSAlarmGenerateIDsDeviceMixin
+class G90SwitchDeleteButtonEntity(
+    G90EntityDeleteButtonBase,
+    GSAlarmGenerateIDsDeviceMixin,
 ):
+    # pylint: disable=too-many-ancestors
+    """Delete relay button base; ENTITY_DOMAIN for generated entity IDs."""
+    ENTITY_DOMAIN = BUTTON_DOMAIN
+
+
+class G90SensorDeleteButtonEntity(
+    G90EntityDeleteButtonBase,
+    GSAlarmGenerateIDsSensorMixin,
+):
+    # pylint: disable=too-many-ancestors
+    """Delete sensor button base; ENTITY_DOMAIN for generated entity IDs."""
+    ENTITY_DOMAIN = BUTTON_DOMAIN
+
+
+class G90SwitchDelete(G90SwitchDeleteButtonEntity):
     """
     Button to delete the relay from the alarm panel.
 
@@ -166,10 +183,7 @@ class G90SwitchDelete(
         return 'device'
 
 
-class G90SensorDelete(
-    G90EntityDeleteButtonBase,
-    GSAlarmGenerateIDsSensorMixin
-):
+class G90SensorDelete(G90SensorDeleteButtonEntity):
     """
     Button to delete the sensor from the alarm panel.
 
@@ -215,6 +229,8 @@ class G90NewEntityRegisterButtonBase(
     """
     # pylint:disable=abstract-method
     # pylint: disable=too-many-ancestors
+    ENTITY_DOMAIN = BUTTON_DOMAIN
+
     def __init__(self, coordinator: GsAlarmCoordinator) -> None:
         super().__init__(coordinator)
 
