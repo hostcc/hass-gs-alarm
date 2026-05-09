@@ -92,6 +92,7 @@ def mock_g90alarm(request: pytest.FixtureRequest) -> Iterator[AlarmMockT]:
         'kwargs', {}
     ).get('result', True)
 
+    # Mocked sensor and device names, to support simulating renaming those
     sensor_names = {
         0: 'Dummy sensor'
     }
@@ -152,6 +153,7 @@ def mock_g90alarm(request: pytest.FixtureRequest) -> Iterator[AlarmMockT]:
             async def set_sensor_name(
                 name: str, sensor: G90Sensor = mock_sensor
             ) -> None:
+                """ Simulates setting the sensor name on the panel. """
                 sensor_names[sensor.index] = name
                 sensor.protocol_data.parent_name = name
 
@@ -258,6 +260,7 @@ def mock_g90alarm(request: pytest.FixtureRequest) -> Iterator[AlarmMockT]:
             async def set_device_name(
                 name: str, device: G90Device = mock_device
             ) -> None:
+                """ Simulates setting the device name on the panel. """
                 device_names[device.index] = name
                 device.protocol_data.parent_name = name
 
