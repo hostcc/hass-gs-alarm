@@ -444,6 +444,10 @@ async def test_setup_unload_and_reload_entry_afresh(
                 'unique_id': 'dummy_guid_sensor_0_delete',
                 'entity_id': 'button.dummy_guid_dummy_sensor_delete',
                 'name': 'Delete',
+            }, {
+                'unique_id': 'dummy_guid_sensor_0_panel_name',
+                'entity_id': 'text.dummy_guid_dummy_sensor_panel_name',
+                'name': 'Panel name',
             }, ])
         },
         {
@@ -457,6 +461,10 @@ async def test_setup_unload_and_reload_entry_afresh(
                 'unique_id': 'dummy_guid_switch_0_delete',
                 'entity_id': 'button.dummy_guid_dummy_switch_1_delete',
                 'name': 'Delete',
+            }, {
+                'unique_id': 'dummy_guid_switch_0_panel_name',
+                'entity_id': 'text.dummy_guid_dummy_switch_1_panel_name',
+                'name': 'Panel name',
             }, ])
         },
         {
@@ -475,6 +483,11 @@ async def test_setup_unload_and_reload_entry_afresh(
                 'entity_id':
                     'button.dummy_guid_dummy_switch_2_multi_node_1_delete',
                 'name': 'Delete',
+            }, {
+                'unique_id': 'dummy_guid_switch_1_panel_name',
+                'entity_id':
+                    'text.dummy_guid_dummy_switch_2_multi_node_1_panel_name',
+                'name': 'Panel name',
             }, ])
         },
         {
@@ -496,6 +509,12 @@ async def test_setup_unload_and_reload_entry_afresh(
                     'entity_id':
                         'button.dummy_guid_dummy_switch_3_multi_node_1_delete',
                     'name': 'Delete',
+                }, {
+                    'unique_id': 'dummy_guid_switch_2_panel_name',
+                    'entity_id':
+                        'text'
+                        '.dummy_guid_dummy_switch_3_multi_node_1_panel_name',
+                    'name': 'Panel name',
                 },
             ])
         },

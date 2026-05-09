@@ -376,6 +376,12 @@
             "new_device_name": {
                 "name": "Nowa nazwa przekaźnika"
             },
+            "sensor_panel_name": {
+                "name": "Nazwa w panelu"
+            },
+            "device_panel_name": {
+                "name": "Nazwa w panelu"
+            },
             "sia_host": {
                 "name": "SIA: Host"
             },

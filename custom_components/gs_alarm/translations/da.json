@@ -376,6 +376,12 @@
             "apn_password": {
                 "name": "Mobilnet: APN-adgangskode"
             },
+            "sensor_panel_name": {
+                "name": "Panelnavn"
+            },
+            "device_panel_name": {
+                "name": "Panelnavn"
+            },
             "sia_host": {
                 "name": "SIA: Vært"
             },

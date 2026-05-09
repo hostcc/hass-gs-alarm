@@ -25,7 +25,11 @@ from homeassistant.components.text.const import (
 from pyg90alarm import G90Error
 
 from custom_components.gs_alarm.const import DOMAIN
-from .conftest import AlarmMockT, hass_get_entity_id_by_unique_id
+from .conftest import (
+    AlarmMockT,
+    hass_get_entity_id_by_unique_id,
+    entry_ids_for_integration_devices,
+)
 
 
 @pytest.mark.parametrize(
@@ -357,3 +361,111 @@ async def test_cid_config_text_entities(
     assert getattr(
         await mock_g90alarm.return_value.cid_config(), field
     ) == value
+
+
+@pytest.mark.parametrize(
+    "unique_id,old_name,new_name,all_entities_call,"
+    "expect_name_change,simulated_exception",
+    [
+        pytest.param(
+            "dummy_guid_sensor_0_panel_name",
+            "Dummy sensor", "Renamed sensor",
+            "get_sensors",
+            True, None,
+            id="Rename sensor"
+        ),
+        pytest.param(
+            "dummy_guid_switch_0_panel_name",
+            "Dummy switch 1", "Renamed relay",
+            "get_devices",
+            True, None,
+            id="Rename device"
+        ),
+        pytest.param(
+            "dummy_guid_sensor_0_panel_name",
+            "Dummy sensor", "  ",
+            "get_sensors",
+            False, None,
+            id="Empty sensor name"
+        ),
+        pytest.param(
+            "dummy_guid_switch_0_panel_name",
+            "Dummy switch 1", "  ",
+            "get_devices",
+            False, None,
+            id="Empty device name"
+        ),
+        pytest.param(
+            "dummy_guid_sensor_0_panel_name",
+            "Dummy sensor", "Dummy sensor",
+            "get_sensors",
+            False, G90Error('dummy exception'),
+            id="Exception when renaming sensor"
+        ),
+        pytest.param(
+            "dummy_guid_switch_0_panel_name",
+            "Dummy switch 1", "Dummy switch 1",
+            "get_devices",
+            False, G90Error('dummy exception'),
+            id="Exception when renaming device"
+        ),
+    ],
+)
+async def test_rename_text_entities(
+    unique_id: str, old_name: str, new_name: str,
+    all_entities_call: str, expect_name_change: bool,
+    simulated_exception: G90Error,
+    hass: HomeAssistant, mock_g90alarm: AlarmMockT
+) -> None:
+    # pylint: disable=too-many-arguments,too-many-positional-arguments
+    """
+    Tests text entities for renaming sensors and devices.
+    """
+    config_entry = MockConfigEntry(
+        domain=DOMAIN,
+        data={'ip_addr': 'dummy-ip'},
+        options={},
+        entry_id="test_rename_text_entities"
+    )
+    config_entry.add_to_hass(hass)
+    await hass.config_entries.async_setup(config_entry.entry_id)
+    await hass.async_block_till_done()
+
+    # Find the alarm entity (sensor or device) to rename
+    alarm_entity = next(
+        iter(
+            x for x in await getattr(mock_g90alarm, all_entities_call)()
+            if x.name == old_name
+        )
+    )
+    # Simulate an exception when renaming the entity if requested
+    alarm_entity.set_name.side_effect = simulated_exception
+
+    # Attempt to rename the entity
+    entity_id = hass_get_entity_id_by_unique_id(
+        hass, 'text', unique_id
+    )
+    await hass.services.async_call(
+        TEXT_DOMAIN,
+        SERVICE_SET_VALUE,
+        {ATTR_ENTITY_ID: entity_id, ATTR_VALUE: new_name},
+        blocking=True,
+    )
+    await hass.async_block_till_done()
+
+    # Verify the entity name has been changed if requested
+    new_entity_name = new_name if expect_name_change else old_name
+    assert any(
+        x['device'] == new_entity_name
+        for x in entry_ids_for_integration_devices(
+            hass, config_entry.entry_id
+        )
+    )
+
+    if not expect_name_change and not simulated_exception:
+        # Verify the corresponding call has not been made
+        alarm_entity.set_name.assert_not_called()
+    else:
+        # Verify the corresponding call has been made (either successfully
+        # or with an exception)
+        alarm_entity.set_name.assert_called_once_with(new_name)

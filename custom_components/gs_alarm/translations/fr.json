@@ -376,6 +376,12 @@
             "apn_password": {
                 "name": "Cellulaire: mot de passe APN"
             },
+            "sensor_panel_name": {
+                "name": "Nom du panneau"
+            },
+            "device_panel_name": {
+                "name": "Nom du panneau"
+            },
             "sia_host": {
                 "name": "SIA: Hôte"
             },

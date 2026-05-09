@@ -334,6 +334,12 @@
             "new_device_name": {
                 "name": "New relay: name"
             },
+            "sensor_panel_name": {
+                "name": "Panel name"
+            },
+            "device_panel_name": {
+                "name": "Panel name"
+            },
             "panel_password": {
                 "name": "Panel: Password"
             },

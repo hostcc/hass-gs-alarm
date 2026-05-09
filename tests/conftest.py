@@ -92,6 +92,15 @@ def mock_g90alarm(request: pytest.FixtureRequest) -> Iterator[AlarmMockT]:
         'kwargs', {}
     ).get('result', True)
 
+    sensor_names = {
+        0: 'Dummy sensor'
+    }
+    device_names = {
+        0: 'Dummy switch 1',
+        1: 'Dummy switch 2 multi-node',
+        2: 'Dummy switch 3 multi-node',
+    }
+
     # Create host info return value
     host_info = G90HostInfo(
         host_guid='Dummy GUID',
@@ -120,7 +129,7 @@ def mock_g90alarm(request: pytest.FixtureRequest) -> Iterator[AlarmMockT]:
                 # Has to point to `G90Alarm()` instance
                 parent=mock.return_value,
                 subindex=0, proto_idx=0,
-                parent_name='Dummy sensor',
+                parent_name=sensor_names[0],
                 index=0,
                 room_id=0,
                 type_id=1,
@@ -140,12 +149,20 @@ def mock_g90alarm(request: pytest.FixtureRequest) -> Iterator[AlarmMockT]:
             )
         ]
         for mock_sensor in mock_sensors:
+            async def set_sensor_name(
+                name: str, sensor: G90Sensor = mock_sensor
+            ) -> None:
+                sensor_names[sensor.index] = name
+                sensor.protocol_data.parent_name = name
+
             mock_sensor.set_alert_mode = (  # type: ignore[method-assign]
                 AsyncMock()
             )
             mock_sensor.set_flag = AsyncMock()  # type: ignore[method-assign]
+            mock_sensor.set_name = AsyncMock(  # type: ignore[method-assign]
+                side_effect=set_sensor_name
+            )
             mock_sensor.delete = AsyncMock()  # type: ignore[method-assign]
-
             yield mock_sensor
 
     async def device_list_fetch(
@@ -157,7 +174,7 @@ def mock_g90alarm(request: pytest.FixtureRequest) -> Iterator[AlarmMockT]:
         mock_devices = [
             G90Device(
                 parent=mock.return_value, subindex=0, proto_idx=1,
-                parent_name='Dummy switch 1',
+                parent_name=device_names[0],
                 index=0,
                 room_id=0,
                 type_id=128,
@@ -173,7 +190,7 @@ def mock_g90alarm(request: pytest.FixtureRequest) -> Iterator[AlarmMockT]:
             ),
             G90Device(
                 parent=mock.return_value, subindex=0, proto_idx=2,
-                parent_name='Dummy switch 2 multi-node',
+                parent_name=device_names[1],
                 index=1,
                 room_id=0,
                 type_id=128,
@@ -189,7 +206,7 @@ def mock_g90alarm(request: pytest.FixtureRequest) -> Iterator[AlarmMockT]:
             ),
             G90Device(
                 parent=mock.return_value, subindex=1, proto_idx=2,
-                parent_name='Dummy switch 2 multi-node',
+                parent_name=device_names[1],
                 index=1,
                 room_id=0,
                 type_id=128,
@@ -205,7 +222,7 @@ def mock_g90alarm(request: pytest.FixtureRequest) -> Iterator[AlarmMockT]:
             ),
             G90Device(
                 parent=mock.return_value, subindex=0, proto_idx=3,
-                parent_name='Dummy switch 3 multi-node',
+                parent_name=device_names[2],
                 index=2,
                 room_id=0,
                 type_id=128,
@@ -221,7 +238,7 @@ def mock_g90alarm(request: pytest.FixtureRequest) -> Iterator[AlarmMockT]:
             ),
             G90Device(
                 parent=mock.return_value, subindex=1, proto_idx=3,
-                parent_name='Dummy switch 3 multi-node',
+                parent_name=device_names[2],
                 index=2,
                 room_id=0,
                 type_id=128,
@@ -238,8 +255,17 @@ def mock_g90alarm(request: pytest.FixtureRequest) -> Iterator[AlarmMockT]:
         ]
 
         for mock_device in mock_devices:
+            async def set_device_name(
+                name: str, device: G90Device = mock_device
+            ) -> None:
+                device_names[device.index] = name
+                device.protocol_data.parent_name = name
+
             mock_device.turn_on = AsyncMock()  # type: ignore[method-assign]
             mock_device.turn_off = AsyncMock()  # type: ignore[method-assign]
+            mock_device.set_name = AsyncMock(  # type: ignore[method-assign]
+                side_effect=set_device_name
+            )
             mock_device.delete = AsyncMock()  # type: ignore[method-assign]
 
             yield mock_device
