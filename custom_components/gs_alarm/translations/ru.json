@@ -376,6 +376,12 @@
             "new_device_name": {
                 "name": "Новое имя реле"
             },
+            "sensor_panel_name": {
+                "name": "Имя в панели"
+            },
+            "device_panel_name": {
+                "name": "Имя в панели"
+            },
             "sia_host": {
                 "name": "SIA: Хост"
             },

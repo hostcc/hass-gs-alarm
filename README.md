@@ -86,6 +86,18 @@ supports them (some panels do not expose SIA/CID configuration).
 | Volume: Ring | Volume level for incoming call (Mute/Low/High), only available on panels with cellular support |
 | Volume: Speech | Volume level for speech announcements (Mute/Low/High) |
 
+## Renaming Sensors and Relays
+
+The integration allows you to rename sensors and relays directly from Home Assistant. Each sensor and relay device has a corresponding "Panel name" text entity that can be used to update the name on the alarm panel.
+
+**Important:** When you rename a sensor or relay, the integration automatically reloads to ensure the new name is properly reflected throughout Home Assistant entities causing a brief unavailability of all those.
+
+To rename a sensor or relay:
+1. Navigate to the device in Home Assistant (Settings -> Devices & Services -> Golden Security Alarm -> \<serial number\>)
+2. Find the corresponding "Panel name" text entity
+3. Enter the new name and navigate away from the entity to save the changes
+4. The integration will update the panel and reload automatically
+
 ## Notifications
 
 Notifications from the alarm panel are essential for the integration -

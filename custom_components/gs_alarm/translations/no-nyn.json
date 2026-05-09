@@ -376,6 +376,12 @@
             "new_device_name": {
                 "name": "Nytt relaisnavn"
             },
+            "sensor_panel_name": {
+                "name": "Panelnamn"
+            },
+            "device_panel_name": {
+                "name": "Panelnamn"
+            },
             "sia_host": {
                 "name": "SIA: Vert"
             },

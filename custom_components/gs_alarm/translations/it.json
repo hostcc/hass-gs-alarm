@@ -376,6 +376,12 @@
             "apn_password": {
                 "name": "Cellulare: password APN"
             },
+            "sensor_panel_name": {
+                "name": "Nome del pannello"
+            },
+            "device_panel_name": {
+                "name": "Nome del pannello"
+            },
             "sia_host": {
                 "name": "SIA: Host"
             },

@@ -376,6 +376,12 @@
             "apn_password": {
                 "name": "Mobilfunk: APN-Passwort"
             },
+            "sensor_panel_name": {
+                "name": "Panel-Name"
+            },
+            "device_panel_name": {
+                "name": "Panel-Name"
+            },
             "sia_host": {
                 "name": "SIA: Host"
             },

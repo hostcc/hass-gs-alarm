@@ -376,6 +376,12 @@
             "new_device_name": {
                 "name": "Novo relé: nome"
             },
+            "sensor_panel_name": {
+                "name": "Nome do painel"
+            },
+            "device_panel_name": {
+                "name": "Nome do painel"
+            },
             "sia_host": {
                 "name": "SIA: Host"
             },
