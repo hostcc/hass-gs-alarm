@@ -136,10 +136,10 @@
                 "name": "Notifications protocol",
                 "state_attributes": {
                     "last_device_packet_timestamp": {
-                        "name": "last_device_packet_timestamp"
+                        "name": "Last device packet timestamp"
                     },
                     "last_upstream_packet_timestamp": {
-                        "name": "last_upstream_packet_timestamp"
+                        "name": "Last upstream packet timestamp"
                     }
                 }
             }
