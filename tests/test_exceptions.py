@@ -33,7 +33,8 @@ from homeassistant.components.switch.const import (
 from pyg90alarm import G90TimeoutError, G90Error
 from custom_components.gs_alarm.const import DOMAIN
 from .conftest import (
-    AlarmMockT, hass_get_entity_id_by_unique_id, hass_get_state_by_unique_id
+    AlarmMockT, hass_get_entity_id_by_unique_id, hass_get_state_by_unique_id,
+    allow_callbacks_to_complete,
 )
 
 
@@ -81,7 +82,7 @@ async def test_setup_entry_exception(
     )
     config_entry.add_to_hass(hass)
     await hass.config_entries.async_setup(config_entry.entry_id)
-    await hass.async_block_till_done()
+    await allow_callbacks_to_complete(hass)
 
     # Verify the entity is in expected state
     assert config_entry.state == expected_entry_state
@@ -111,7 +112,7 @@ async def test_alarm_panel_state_update_exception(
     # Simulate some time has passed for HomeAssistant to invoke
     # update for components
     async_fire_time_changed(hass, dt.utcnow() + timedelta(hours=1))
-    await hass.async_block_till_done()
+    await allow_callbacks_to_complete(hass)
 
     # Verify the panel's state is unknown
     panel_state = hass_get_state_by_unique_id(
@@ -151,7 +152,7 @@ async def test_alarm_panel_service_exception(
     )
     config_entry.add_to_hass(hass)
     await hass.config_entries.async_setup(config_entry.entry_id)
-    await hass.async_block_till_done()
+    await allow_callbacks_to_complete(hass)
 
     entity_id = hass_get_entity_id_by_unique_id(
         hass, 'alarm_control_panel', 'dummy_guid'
@@ -202,7 +203,7 @@ async def test_switch_service_exception(
 
     config_entry.add_to_hass(hass)
     await hass.config_entries.async_setup(config_entry.entry_id)
-    await hass.async_block_till_done()
+    await allow_callbacks_to_complete(hass)
 
     # Has to come after entries setup, otherwise `get_devices()` below
     # will trigger callbacks too early

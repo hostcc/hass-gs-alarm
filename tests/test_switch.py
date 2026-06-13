@@ -33,7 +33,9 @@ from pyg90alarm import (
 )
 
 from custom_components.gs_alarm.const import DOMAIN
-from .conftest import AlarmMockT, hass_get_entity_id_by_unique_id
+from .conftest import (
+    AlarmMockT, hass_get_entity_id_by_unique_id, allow_callbacks_to_complete,
+)
 
 
 @pytest.mark.parametrize(
@@ -108,7 +110,7 @@ async def test_sensor_flags(
     )
     config_entry.add_to_hass(hass)
     await hass.config_entries.async_setup(config_entry.entry_id)
-    await hass.async_block_till_done()
+    await allow_callbacks_to_complete(hass)
 
     entity_id = hass_get_entity_id_by_unique_id(
         hass, 'switch', unique_id
@@ -144,7 +146,7 @@ async def test_sensor_flags_exception(
     # Simulate some time has passed for HomeAssistant to invoke
     # update for components
     async_fire_time_changed(hass, dt.utcnow() + timedelta(hours=1))
-    await hass.async_block_till_done()
+    await allow_callbacks_to_complete(hass)
 
     # Simulate an exception when setting the sensor flag
     sensor = (await mock_g90alarm.return_value.get_sensors())[0]
@@ -329,7 +331,7 @@ async def test_config_flags(
     )
     config_entry.add_to_hass(hass)
     await hass.config_entries.async_setup(config_entry.entry_id)
-    await hass.async_block_till_done()
+    await allow_callbacks_to_complete(hass)
 
     entity_id = hass_get_entity_id_by_unique_id(
         hass, 'switch', unique_id
@@ -414,7 +416,7 @@ async def test_config_flags_exception(
     # Simulate some time has passed for HomeAssistant to invoke
     # update for components
     async_fire_time_changed(hass, dt.utcnow() + timedelta(hours=1))
-    await hass.async_block_till_done()
+    await allow_callbacks_to_complete(hass)
 
     entity_id = hass_get_entity_id_by_unique_id(
         hass, 'switch', unique_id
@@ -506,7 +508,7 @@ async def test_device(
     # Simulate some time has passed for HomeAssistant to invoke
     # update for components
     async_fire_time_changed(hass, dt.utcnow() + timedelta(hours=1))
-    await hass.async_block_till_done()
+    await allow_callbacks_to_complete(hass)
 
     entity_id = hass_get_entity_id_by_unique_id(
         hass, 'switch', unique_id
@@ -670,7 +672,7 @@ class TestNetConfigSwitchEntities:
         )
         config_entry.add_to_hass(hass)
         await hass.config_entries.async_setup(config_entry.entry_id)
-        await hass.async_block_till_done()
+        await allow_callbacks_to_complete(hass)
 
         entity_id = hass_get_entity_id_by_unique_id(hass, 'switch', unique_id)
 
@@ -681,7 +683,7 @@ class TestNetConfigSwitchEntities:
             {ATTR_ENTITY_ID: entity_id},
             blocking=True,
         )
-        await hass.async_block_till_done()
+        await allow_callbacks_to_complete(hass)
 
         # Verify save was called
         (await mock_g90alarm.return_value.net_config()).save.assert_called()
@@ -709,7 +711,7 @@ class TestNetConfigSwitchEntities:
         )
         config_entry.add_to_hass(hass)
         await hass.config_entries.async_setup(config_entry.entry_id)
-        await hass.async_block_till_done()
+        await allow_callbacks_to_complete(hass)
 
         # Simulate data update
         setattr(await mock_g90alarm.return_value.net_config(), field, value)
@@ -717,7 +719,7 @@ class TestNetConfigSwitchEntities:
         # Simulate some time has passed for HomeAssistant to invoke
         # update for coordinators and entities
         async_fire_time_changed(hass, dt.utcnow() + timedelta(hours=1))
-        await hass.async_block_till_done()
+        await allow_callbacks_to_complete(hass)
 
         # Verify the entity state was updated correctly
         entity_id = hass_get_entity_id_by_unique_id(hass, 'switch', unique_id)
@@ -744,7 +746,7 @@ async def test_net_config_switch_exception(
     )
     config_entry.add_to_hass(hass)
     await hass.config_entries.async_setup(config_entry.entry_id)
-    await hass.async_block_till_done()
+    await allow_callbacks_to_complete(hass)
 
     entity_id = hass_get_entity_id_by_unique_id(
         hass, 'switch', 'dummy_guid_ap_enabled'
@@ -757,7 +759,7 @@ async def test_net_config_switch_exception(
         {ATTR_ENTITY_ID: entity_id},
         blocking=True,
     )
-    await hass.async_block_till_done()
+    await allow_callbacks_to_complete(hass)
 
     # Verify save was called despite exception
     (await mock_g90alarm.return_value.net_config()).save.assert_called()
@@ -777,7 +779,7 @@ async def test_reboot_switch(
     )
     config_entry.add_to_hass(hass)
     await hass.config_entries.async_setup(config_entry.entry_id)
-    await hass.async_block_till_done()
+    await allow_callbacks_to_complete(hass)
 
     entity_id = hass_get_entity_id_by_unique_id(
         hass, 'switch', 'dummy_guid_reboot'
@@ -847,7 +849,7 @@ async def test_sia_config_switch_entities(
     )
     config_entry.add_to_hass(hass)
     await hass.config_entries.async_setup(config_entry.entry_id)
-    await hass.async_block_till_done()
+    await allow_callbacks_to_complete(hass)
 
     entity_id = hass_get_entity_id_by_unique_id(hass, 'switch', unique_id)
 
@@ -858,7 +860,7 @@ async def test_sia_config_switch_entities(
         {ATTR_ENTITY_ID: entity_id},
         blocking=True,
     )
-    await hass.async_block_till_done()
+    await allow_callbacks_to_complete(hass)
 
     # Verify save was called
     (await mock_g90alarm.return_value.sia_config()).save.assert_called()
@@ -894,7 +896,7 @@ async def test_cid_config_switch_entities(
     )
     config_entry.add_to_hass(hass)
     await hass.config_entries.async_setup(config_entry.entry_id)
-    await hass.async_block_till_done()
+    await allow_callbacks_to_complete(hass)
 
     entity_id = hass_get_entity_id_by_unique_id(hass, 'switch', unique_id)
 
@@ -905,7 +907,7 @@ async def test_cid_config_switch_entities(
         {ATTR_ENTITY_ID: entity_id},
         blocking=True,
     )
-    await hass.async_block_till_done()
+    await allow_callbacks_to_complete(hass)
 
     # Verify save was called
     (await mock_g90alarm.return_value.cid_config()).save.assert_called()
@@ -929,7 +931,7 @@ async def test_reboot_switch_not_affected_by_coordinator_timeout(
     )
     config_entry.add_to_hass(hass)
     await hass.config_entries.async_setup(config_entry.entry_id)
-    await hass.async_block_till_done()
+    await allow_callbacks_to_complete(hass)
 
     entity_id = hass_get_entity_id_by_unique_id(
         hass, 'switch', 'dummy_guid_reboot'
@@ -945,7 +947,7 @@ async def test_reboot_switch_not_affected_by_coordinator_timeout(
         "simulated timeout"
     )
     async_fire_time_changed(hass, dt.utcnow() + timedelta(hours=1))
-    await hass.async_block_till_done()
+    await allow_callbacks_to_complete(hass)
 
     # Verify the entity is still available and is OFF
     state = hass.states.get(entity_id)

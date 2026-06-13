@@ -19,7 +19,8 @@ from homeassistant.util import dt
 
 from custom_components.gs_alarm.const import DOMAIN
 from .conftest import (
-    AlarmMockT, hass_get_state_by_unique_id, entry_ids_for_integration_devices
+    AlarmMockT, hass_get_state_by_unique_id, entry_ids_for_integration_devices,
+    allow_callbacks_to_complete,
 )
 
 
@@ -93,7 +94,7 @@ async def test_setup_unload_and_reload_entry_afresh(
     # Simulate some time has passed for HomeAssistant to invoke
     # update for components
     async_fire_time_changed(hass, dt.utcnow() + timedelta(hours=1))
-    await hass.async_block_till_done()
+    await allow_callbacks_to_complete(hass)
 
     assert config_entry.title == 'Dummy GUID'
 
@@ -553,7 +554,7 @@ async def test_setup_unload_and_reload_entry_afresh(
 
     # Unload the integration
     await hass.config_entries.async_unload(config_entry.entry_id)
-    await hass.async_block_till_done()
+    await allow_callbacks_to_complete(hass)
 
 
 async def test_setup_set_cloud_server_address_not_called(
@@ -577,6 +578,6 @@ async def test_setup_set_cloud_server_address_not_called(
     )
     config_entry.add_to_hass(hass)
     await hass.config_entries.async_setup(config_entry.entry_id)
-    await hass.async_block_till_done()
+    await allow_callbacks_to_complete(hass)
 
     mock_g90alarm.return_value.set_cloud_server_address.assert_not_called()

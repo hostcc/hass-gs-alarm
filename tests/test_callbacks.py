@@ -3,7 +3,6 @@
 """
 Tests callbacks for the custom component.
 """
-import asyncio
 import pytest
 from pytest_homeassistant_custom_component.common import (
     MockConfigEntry,
@@ -16,7 +15,9 @@ from homeassistant.components.alarm_control_panel.const import (
 from pyg90alarm import G90ArmDisarmTypes
 
 from custom_components.gs_alarm.const import DOMAIN
-from .conftest import AlarmMockT, hass_get_state_by_unique_id
+from .conftest import (
+    AlarmMockT, hass_get_state_by_unique_id, allow_callbacks_to_complete,
+)
 
 
 @pytest.mark.g90host_status(
@@ -36,13 +37,13 @@ async def test_alarm_callback(
     )
     config_entry.add_to_hass(hass)
     await hass.config_entries.async_setup(config_entry.entry_id)
-    await hass.async_block_till_done()
+    await allow_callbacks_to_complete(hass)
 
     # Simulate the alarm callback is triggered
     await mock_g90alarm.return_value.on_alarm(
         0, 'Dummy sensor', is_tampered=False
     )
-    await hass.async_block_till_done()
+    await allow_callbacks_to_complete(hass)
 
     # Verify panel state and attributes reflect that
     panel_state = hass_get_state_by_unique_id(
@@ -59,7 +60,7 @@ async def test_alarm_callback(
     await mock_g90alarm.return_value.on_armdisarm(
         G90ArmDisarmTypes.ARM_AWAY
     )
-    await hass.async_block_till_done()
+    await allow_callbacks_to_complete(hass)
 
     # Verify `changed_by` attribute has been reset
     panel_state = hass_get_state_by_unique_id(
@@ -88,13 +89,13 @@ async def test_arm_callback(
     )
     config_entry.add_to_hass(hass)
     await hass.config_entries.async_setup(config_entry.entry_id)
-    await hass.async_block_till_done()
+    await allow_callbacks_to_complete(hass)
 
     # Simulate the arm callback is triggered
     await mock_g90alarm.return_value.on_armdisarm(
         G90ArmDisarmTypes.ARM_AWAY
     )
-    await hass.async_block_till_done()
+    await allow_callbacks_to_complete(hass)
 
     # Verify panel state reflects that
     panel_state = hass_get_state_by_unique_id(
@@ -123,13 +124,13 @@ async def test_disarm_callback(
 
     config_entry.add_to_hass(hass)
     await hass.config_entries.async_setup(config_entry.entry_id)
-    await hass.async_block_till_done()
+    await allow_callbacks_to_complete(hass)
 
     # Simulate the disarm callback is triggered
     await mock_g90alarm.return_value.on_armdisarm(
         G90ArmDisarmTypes.DISARM
     )
-    await hass.async_block_till_done()
+    await allow_callbacks_to_complete(hass)
 
     # Verify panel state reflects that
     panel_state = hass_get_state_by_unique_id(
@@ -156,13 +157,12 @@ async def test_low_battery_callback(
     config_entry.add_to_hass(hass)
     await hass.config_entries.async_setup(config_entry.entry_id)
     # Allow Home Assistant to process the setup
-    await hass.async_block_till_done()
+    await allow_callbacks_to_complete(hass)
 
     await mock_g90alarm.return_value.on_low_battery(
         0, 'Dummy sensor'
     )
-    await hass.async_block_till_done()
-    await asyncio.sleep(0)  # Allow state update to propagate
+    await allow_callbacks_to_complete(hass)
 
     # Verify sensor state reflects the low battery status
     sensor_state = hass_get_state_by_unique_id(
@@ -190,13 +190,12 @@ async def test_tamper_callback(
     config_entry.add_to_hass(hass)
     await hass.config_entries.async_setup(config_entry.entry_id)
     # Allow Home Assistant to process the setup
-    await hass.async_block_till_done()
+    await allow_callbacks_to_complete(hass)
 
     await mock_g90alarm.return_value.on_alarm(
         0, 'Dummy sensor', is_tampered=True
     )
-    await hass.async_block_till_done()
-    await asyncio.sleep(0)  # Allow state update to propagate
+    await allow_callbacks_to_complete(hass)
 
     # Verify sensor state reflects the low battery status
     sensor_state = hass_get_state_by_unique_id(
@@ -224,13 +223,12 @@ async def test_door_open_when_arming_callback(
     config_entry.add_to_hass(hass)
     await hass.config_entries.async_setup(config_entry.entry_id)
     # Allow Home Assistant to process the setup
-    await hass.async_block_till_done()
+    await allow_callbacks_to_complete(hass)
 
     await mock_g90alarm.return_value.on_door_open_when_arming(
         0, 'Dummy sensor'
     )
-    await hass.async_block_till_done()
-    await asyncio.sleep(0)  # Allow state update to propagate
+    await allow_callbacks_to_complete(hass)
 
     # Verify sensor state reflects the low battery status
     sensor_state = hass_get_state_by_unique_id(

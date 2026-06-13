@@ -17,7 +17,9 @@ from custom_components.gs_alarm.const import (
     NOTIFICATIONS_PROTOCOL_SENSOR_LAST_DEVICE_TIMESTAMP_ATTR,
     NOTIFICATIONS_PROTOCOL_SENSOR_LAST_UPSTREAM_TIMESTAMP_ATTR,
 )
-from .conftest import AlarmMockT, hass_get_state_by_unique_id
+from .conftest import (
+    AlarmMockT, hass_get_state_by_unique_id, allow_callbacks_to_complete,
+)
 
 
 async def test_notifications_protocol_binary_sensor(
@@ -34,7 +36,7 @@ async def test_notifications_protocol_binary_sensor(
     )
     config_entry.add_to_hass(hass)
     await hass.config_entries.async_setup(config_entry.entry_id)
-    await hass.async_block_till_done()
+    await allow_callbacks_to_complete(hass)
 
     # Verify the sensor is initially off, has extra attributes with no
     # timestamps
@@ -73,7 +75,7 @@ async def test_notifications_protocol_binary_sensor(
     )
     # Simulate a time change event, which should trigger the sensor update
     async_fire_time_changed(hass, dt.utcnow() + timedelta(seconds=31))
-    await hass.async_block_till_done()
+    await allow_callbacks_to_complete(hass)
 
     # Verify the sensor is now on, with the correct timestamps
     sensor_state = hass_get_state_by_unique_id(
@@ -99,7 +101,7 @@ async def test_notifications_protocol_binary_sensor(
     mock_g90alarm.return_value.last_upstream_packet_time = dt.utcnow()
     # Simulate a time change event, which should trigger the sensor update
     async_fire_time_changed(hass, dt.utcnow() + timedelta(seconds=31))
-    await hass.async_block_till_done()
+    await allow_callbacks_to_complete(hass)
 
     # Verify the sensor went off
     sensor_state = hass_get_state_by_unique_id(
