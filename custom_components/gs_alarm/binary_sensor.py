@@ -23,7 +23,9 @@ from pyg90alarm import (
 )
 
 from .coordinator import GsAlarmCoordinator
-from .mixin import GSAlarmGenerateIDsSensorMixin
+from .mixin import (
+    GSAlarmGenerateIDsSensorMixin, GsAlarmRestoreBoolGatedMixin
+)
 from .entity_base import GSAlarmEntityBase
 from .const import (
     NOTIFICATIONS_PROTOCOL_SENSOR_LAST_DEVICE_TIMESTAMP_ATTR,
@@ -118,7 +120,7 @@ class G90PanelBinarySensorEntity(BinarySensorEntity, GSAlarmEntityBase):
 
 class G90BinarySensor(
     BinarySensorEntity, CoordinatorEntity[GsAlarmCoordinator],
-    GSAlarmGenerateIDsSensorMixin
+    GSAlarmGenerateIDsSensorMixin, GsAlarmRestoreBoolGatedMixin
 ):
     """
     Binary sensor for alarm panel's sensor.
@@ -126,7 +128,7 @@ class G90BinarySensor(
     :param g90_sensor: Instance of `G90Sensor` representing the sensor.
     :param coordinator: Instance of `GsAlarmCoordinator` to coordinate updates.
     """
-    # pylint:disable=too-many-instance-attributes
+    # pylint:disable=too-many-instance-attributes,too-many-ancestors
 
     UNIQUE_ID_FMT = "{guid}_sensor_{sensor.index}"
     ENTITY_ID_FMT = "{guid}_{sensor.name}"
@@ -194,6 +196,7 @@ class G90BinarySensor(
             self._g90_sensor.name, self._g90_sensor.index, self.entity_id
         )
         self._g90_sensor.extra_data = self.entity_id
+        await self.restore_state(self.coordinator.config_entry)
 
     def state_callback(self, value: bool) -> None:
         """
@@ -202,6 +205,7 @@ class G90BinarySensor(
         :param value: New state value.
         """
         _LOGGER.debug('%s: Received state callback: %s', self.unique_id, value)
+        self.clear_restored_state()
         # Signal HASS to update the sensor's state, which will trigger the
         # `is_on()` method
         self.schedule_update_ha_state()
@@ -267,11 +271,12 @@ class G90BinarySensor(
         """
         Indicates if sensor is active.
         """
-        val = (
+        live = (
             # None translates to unknown state in HASS for disabled sensor
             None if not self._g90_sensor.enabled
             else self._g90_sensor.occupancy
         )
+        val = self.state_with_restore(live)
 
         _LOGGER.debug('%s: Providing state %s', self.unique_id, val)
         return val
@@ -279,7 +284,7 @@ class G90BinarySensor(
 
 class G90SensorAttributeBase(
     BinarySensorEntity, CoordinatorEntity[GsAlarmCoordinator],
-    GSAlarmGenerateIDsSensorMixin
+    GSAlarmGenerateIDsSensorMixin, GsAlarmRestoreBoolGatedMixin
 ):
     """
     Binary sensor representing a specific sensor attribute.
@@ -289,6 +294,7 @@ class G90SensorAttributeBase(
     :param sensor_attr: Name of the attribute on `G90Sensor` to monitor.
     """
     # pylint: disable=too-many-instance-attributes,too-many-arguments
+    # pylint: disable=too-many-ancestors
     # pylint: disable=too-many-positional-arguments
     ENTITY_DOMAIN = BINARY_SENSOR_DOMAIN
 
@@ -318,6 +324,13 @@ class G90SensorAttributeBase(
         g90_sensor.low_battery_callback.add(self.attr_callback)
         g90_sensor.door_open_when_arming_callback.add(self.attr_callback)
 
+    async def async_added_to_hass(self) -> None:
+        """
+        Invoked by HASS when entity is added.
+        """
+        await super().async_added_to_hass()
+        await self.restore_state(self.coordinator.config_entry)
+
     def attr_callback(self) -> None:
         """
         Callback invoked when a sensor attribute (e.g., tamper, low battery,
@@ -328,6 +341,7 @@ class G90SensorAttributeBase(
         _LOGGER.debug(
             '%s: Received attr callback', self.unique_id
         )
+        self.clear_restored_state()
         # Signal HASS to update the sensor's attributes, which will trigger the
         # `extra_state_attributes()` method
         self.schedule_update_ha_state()
@@ -337,11 +351,12 @@ class G90SensorAttributeBase(
         """
         Indicates if sensor is active.
         """
-        val = (
+        live = (
             # None translates to unknown state in HASS for disabled sensor
             None if not self._g90_sensor.enabled
             else getattr(self._g90_sensor, self._sensor_attr)
         )
+        val = self.state_with_restore(live)
 
         _LOGGER.debug('%s: Providing state %s', self.unique_id, val)
         return val

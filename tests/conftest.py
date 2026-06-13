@@ -5,7 +5,7 @@ Pytest configuration and fixtures
 """
 from __future__ import annotations
 from typing import Iterator, TypeVar, Any, AsyncGenerator, Dict, List
-from unittest.mock import patch, AsyncMock, PropertyMock, DEFAULT
+from unittest.mock import patch, AsyncMock, PropertyMock, DEFAULT, MagicMock
 import pytest
 
 from homeassistant.core import HomeAssistant, State
@@ -312,12 +312,10 @@ def mock_g90alarm(request: pytest.FixtureRequest) -> Iterator[AlarmMockT]:
             'custom_components.gs_alarm.config_flow.G90Alarm.discover',
             return_value=discovery_results
         ),
-        # Main G90Alarm mock with wrapping of the real implementation
+        # Main G90Alarm mock — fresh client per constructor call
         patch(
             'custom_components.gs_alarm.G90Alarm',
             spec=G90Alarm,
-            # Create a real instance to wrap
-            wraps=G90Alarm('dummy-mocked-host')
         ) as mock,
         patch(
             'pyg90alarm.entities.sensor_list.G90SensorList._fetch',
@@ -515,11 +513,27 @@ def mock_g90alarm(request: pytest.FixtureRequest) -> Iterator[AlarmMockT]:
             reboot=DEFAULT,
         ),
     ):
-        # The integration compares the properties with `datetime` or None,
-        # make them so - assignment here is easier than mocks with comparison
-        # methods implemented.
-        mock.return_value.last_device_packet_time = None
-        mock.return_value.last_upstream_packet_time = None
+        def _make_g90alarm_client(
+            host: str, *_args: Any, **_kwargs: Any
+        ) -> MagicMock:
+            """
+            Return a fresh G90Alarm client for each constructor call.
+
+            Each client is a MagicMock wrapping a new real G90Alarm instance so
+            sensor/device lists start empty (added=True on reload) while tests
+            can still use mock_g90alarm.return_value for call assertions.
+            """
+            client = MagicMock(
+                wraps=G90Alarm(host), spec=G90Alarm
+            )
+            client.configure_mock(
+                last_device_packet_time=None,
+                last_upstream_packet_time=None,
+            )
+            mock.return_value = client
+            return client
+
+        mock.side_effect = _make_g90alarm_client
 
         yield mock
 

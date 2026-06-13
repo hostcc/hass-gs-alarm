@@ -25,7 +25,8 @@
         "step": {
             "init": {
                 "data": {
-                    "notifications_protocol": "Aviseringsprotokoll"
+                    "notifications_protocol": "Aviseringsprotokoll",
+                    "restore_state_at_startup": "Återställ sensorstatus vid start"
                 },
                 "data_description": {
                     "notifications_protocol": "* **Moln**: Home Assistant tar emot molntrafik från panelen utan faktiska molnservrar inblandade\n* **Lokalt**: Panelen har IP-adressen `10.10.10.250`\n* **Kedjat moln**: Samma som **Moln**, men trafik skickas också till molnservrar\nför att mobilapplikationen ska fungera"

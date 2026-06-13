@@ -10,7 +10,14 @@ from homeassistant.core import HomeAssistant
 from homeassistant.data_entry_flow import FlowResultType
 from homeassistant.config_entries import ConfigEntry
 
-from custom_components.gs_alarm.const import DOMAIN
+from pytest_homeassistant_custom_component.common import MockConfigEntry
+
+from custom_components.gs_alarm.const import (
+    DOMAIN,
+    CONF_NOTIFICATIONS_PROTOCOL,
+    CONF_OPT_NOTIFICATIONS_LOCAL,
+    CONF_RESTORE_STATE_AT_STARTUP,
+)
 from .conftest import AlarmMockT
 
 
@@ -123,3 +130,36 @@ async def test_config_flow_manual_device_no_ip_addr(
     # Verify it results in form mentioning the error
     assert result['type'] == FlowResultType.FORM
     assert result['errors']
+
+
+@pytest.mark.usefixtures('mock_g90alarm')
+async def test_options_flow_restore_state_at_startup(
+    hass: HomeAssistant,
+) -> None:
+    """
+    Verifies restore_state_at_startup option is saved from options flow.
+    """
+    config_entry = MockConfigEntry(
+        domain=DOMAIN,
+        data={'ip_addr': 'dummy-ip'},
+        options={},
+        entry_id='test_options_restore_state',
+    )
+    config_entry.add_to_hass(hass)
+    await hass.config_entries.async_setup(config_entry.entry_id)
+
+    result = await hass.config_entries.options.async_init(
+        config_entry.entry_id
+    )
+    assert result['type'] == FlowResultType.FORM
+    assert result['step_id'] == 'init'
+
+    result = await hass.config_entries.options.async_configure(
+        result['flow_id'],
+        user_input={
+            CONF_NOTIFICATIONS_PROTOCOL: CONF_OPT_NOTIFICATIONS_LOCAL,
+            CONF_RESTORE_STATE_AT_STARTUP: False,
+        },
+    )
+    assert result['type'] == FlowResultType.CREATE_ENTRY
+    assert result['data'][CONF_RESTORE_STATE_AT_STARTUP] is False

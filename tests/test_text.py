@@ -434,17 +434,21 @@ async def test_rename_text_entities(
     # Find the alarm entity (sensor or device) to rename
     alarm_entity = next(
         iter(
-            x for x in await getattr(mock_g90alarm, all_entities_call)()
+            x for x in await getattr(
+                mock_g90alarm.return_value, all_entities_call
+            )()
             if x.name == old_name
         )
     )
     # Simulate an exception when renaming the entity if requested
-    alarm_entity.set_name.side_effect = simulated_exception
+    if simulated_exception is not None:
+        alarm_entity.set_name.side_effect = simulated_exception
 
     # Attempt to rename the entity
     entity_id = hass_get_entity_id_by_unique_id(
         hass, 'text', unique_id
     )
+
     await hass.services.async_call(
         TEXT_DOMAIN,
         SERVICE_SET_VALUE,
@@ -455,11 +459,10 @@ async def test_rename_text_entities(
 
     # Verify the entity name has been changed if requested
     new_entity_name = new_name if expect_name_change else old_name
+    devices = entry_ids_for_integration_devices(hass, config_entry.entry_id)
     assert any(
         x['device'] == new_entity_name
-        for x in entry_ids_for_integration_devices(
-            hass, config_entry.entry_id
-        )
+        for x in devices
     )
 
     if not expect_name_change and not simulated_exception:

@@ -25,7 +25,8 @@
         "step": {
             "init": {
                 "data": {
-                    "notifications_protocol": "Benachrichtigungsprotokoll"
+                    "notifications_protocol": "Benachrichtigungsprotokoll",
+                    "restore_state_at_startup": "Sensorzustand beim Start wiederherstellen"
                 },
                 "data_description": {
                     "notifications_protocol": "* **Cloud**: Home Assistant empfängt Cloud-Verkehr vom Panel ohne tatsächliche Cloud-Server\n* **Lokal**: Das Panel hat die IP-Adresse `10.10.10.250`\n* **Verkettete Cloud**: Wie **Cloud**, aber der Datenverkehr wird auch an Cloud-Server gesendet,\ndamit die mobile Anwendung funktioniert"

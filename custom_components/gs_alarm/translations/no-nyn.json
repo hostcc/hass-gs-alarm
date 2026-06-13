@@ -25,7 +25,8 @@
         "step": {
             "init": {
                 "data": {
-                    "notifications_protocol": "Varslingsprotokoll"
+                    "notifications_protocol": "Varslingsprotokoll",
+                    "restore_state_at_startup": "Gjenopprett sensortilstand ved oppstart"
                 },
                 "data_description": {
                     "notifications_protocol": "* **Sky**: Home Assistant mottek skytrafikk frå panelet utan faktiske skyserverar involvert\n* **Lokalt**: Panelet har IP-adresse `10.10.10.250`\n* **Kjeda sky**: Det same som **Sky**, men trafikk blir og sendt til skyserverar\nfor mobilapplikasjonen til å fungera"
