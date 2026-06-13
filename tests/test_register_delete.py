@@ -40,6 +40,7 @@ from .conftest import (
     hass_get_state_by_unique_id,
     entry_ids_for_integration_devices,
     AlarmMockT,
+    allow_callbacks_to_complete,
 )
 
 
@@ -93,7 +94,7 @@ async def test_delete(
     )
     config_entry.add_to_hass(hass)
     await hass.config_entries.async_setup(config_entry.entry_id)
-    await hass.async_block_till_done()
+    await allow_callbacks_to_complete(hass)
 
     entity_id = hass_get_entity_id_by_unique_id(
         hass, 'button', unique_id
@@ -179,7 +180,7 @@ async def test_register(
     )
     config_entry.add_to_hass(hass)
     await hass.config_entries.async_setup(config_entry.entry_id)
-    await hass.async_block_till_done()
+    await allow_callbacks_to_complete(hass)
 
     entity_id = hass_get_entity_id_by_unique_id(
         hass, 'button', register_unique_id
@@ -214,7 +215,7 @@ async def test_register(
         {ATTR_ENTITY_ID: entity_id},
         blocking=True,
     )
-    await hass.async_block_till_done()
+    await allow_callbacks_to_complete(hass)
 
     getattr(mock_g90alarm.return_value, expected_call).assert_called_once_with(
         new_type, new_name

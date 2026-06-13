@@ -18,7 +18,9 @@ from homeassistant.const import (
 from pyg90alarm import G90ArmDisarmTypes
 
 from custom_components.gs_alarm.const import DOMAIN
-from .conftest import AlarmMockT, hass_get_state_by_unique_id
+from .conftest import (
+    AlarmMockT, hass_get_state_by_unique_id, allow_callbacks_to_complete,
+)
 
 
 @pytest.mark.g90host_status(
@@ -38,7 +40,7 @@ async def test_alarm_panel_requests_refresh_on_service_calls(
     )
     config_entry.add_to_hass(hass)
     await hass.config_entries.async_setup(config_entry.entry_id)
-    await hass.async_block_till_done()
+    await allow_callbacks_to_complete(hass)
 
     # Replace coordinator refresh method with a mock so we can assert calls
     coordinator = config_entry.runtime_data

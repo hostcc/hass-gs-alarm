@@ -25,7 +25,9 @@ from homeassistant.components.number.const import (
 from pyg90alarm import G90Error
 
 from custom_components.gs_alarm.const import DOMAIN
-from .conftest import AlarmMockT, hass_get_entity_id_by_unique_id
+from .conftest import (
+    AlarmMockT, hass_get_entity_id_by_unique_id, allow_callbacks_to_complete,
+)
 
 
 @pytest.mark.parametrize(
@@ -84,7 +86,7 @@ class TestHostConfigNumberEntities:
         )
         config_entry.add_to_hass(hass)
         await hass.config_entries.async_setup(config_entry.entry_id)
-        await hass.async_block_till_done()
+        await allow_callbacks_to_complete(hass)
 
         entity_id = hass_get_entity_id_by_unique_id(hass, 'number', unique_id)
 
@@ -99,7 +101,7 @@ class TestHostConfigNumberEntities:
             {ATTR_ENTITY_ID: entity_id, ATTR_VALUE: value},
             blocking=True,
         )
-        await hass.async_block_till_done()
+        await allow_callbacks_to_complete(hass)
 
         # Verify save was called
         (await mock_g90alarm.return_value.host_config()).save.assert_called()
@@ -125,7 +127,7 @@ class TestHostConfigNumberEntities:
         )
         config_entry.add_to_hass(hass)
         await hass.config_entries.async_setup(config_entry.entry_id)
-        await hass.async_block_till_done()
+        await allow_callbacks_to_complete(hass)
 
         # Simulate data update
         setattr(await mock_g90alarm.return_value.host_config(), field, value)
@@ -133,7 +135,7 @@ class TestHostConfigNumberEntities:
         # Simulate some time has passed for HomeAssistant to invoke
         # update for coordinators and entities
         async_fire_time_changed(hass, dt.utcnow() + timedelta(hours=1))
-        await hass.async_block_till_done()
+        await allow_callbacks_to_complete(hass)
 
         # Verify the entity state was updated correctly
         entity_id = hass_get_entity_id_by_unique_id(hass, 'number', unique_id)
@@ -160,7 +162,7 @@ async def test_host_config_number_exception(
     )
     config_entry.add_to_hass(hass)
     await hass.config_entries.async_setup(config_entry.entry_id)
-    await hass.async_block_till_done()
+    await allow_callbacks_to_complete(hass)
 
     entity_id = hass_get_entity_id_by_unique_id(
         hass, 'number', 'dummy_guid_alarm_siren_duration'
@@ -173,7 +175,7 @@ async def test_host_config_number_exception(
         {ATTR_ENTITY_ID: entity_id, ATTR_VALUE: 120},
         blocking=True,
     )
-    await hass.async_block_till_done()
+    await allow_callbacks_to_complete(hass)
 
     # Verify save was called despite exception
     (await mock_g90alarm.return_value.host_config()).save.assert_called()
@@ -198,7 +200,7 @@ async def test_sia_config_number_entities(
     )
     config_entry.add_to_hass(hass)
     await hass.config_entries.async_setup(config_entry.entry_id)
-    await hass.async_block_till_done()
+    await allow_callbacks_to_complete(hass)
 
     entity_id = hass_get_entity_id_by_unique_id(hass, 'number', unique_id)
     assert entity_id is not None
@@ -210,7 +212,7 @@ async def test_sia_config_number_entities(
         {ATTR_ENTITY_ID: entity_id, ATTR_VALUE: value},
         blocking=True,
     )
-    await hass.async_block_till_done()
+    await allow_callbacks_to_complete(hass)
 
     # Verify save was called
     (await mock_g90alarm.return_value.sia_config()).save.assert_called()

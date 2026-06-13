@@ -18,7 +18,7 @@ import homeassistant.helpers.device_registry as dr
 from pyg90alarm import G90Error
 
 from custom_components.gs_alarm.const import DOMAIN
-from .conftest import AlarmMockT
+from .conftest import AlarmMockT, allow_callbacks_to_complete
 
 
 @pytest.mark.parametrize("sia_supported", [
@@ -60,7 +60,7 @@ async def test_diagnostics(
     await hass.config_entries.async_setup(config_entry.entry_id)
     # Add `diagnostics` integration
     await async_setup_component(hass, "diagnostics", {})
-    await hass.async_block_till_done()
+    await allow_callbacks_to_complete(hass)
 
     integration_devices = dr.async_entries_for_config_entry(
         dr.async_get(hass), config_entry.entry_id
@@ -126,7 +126,7 @@ async def test_diagnostics_exception(
     config_entry.add_to_hass(hass)
     await hass.config_entries.async_setup(config_entry.entry_id)
     await async_setup_component(hass, "diagnostics", {})
-    await hass.async_block_till_done()
+    await allow_callbacks_to_complete(hass)
 
     # Simulate exception raised from `G90Alarm.history()`
     mock_g90alarm.return_value.history.side_effect = G90Error()
