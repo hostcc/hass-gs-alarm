@@ -29,6 +29,7 @@ from .conftest import (
     AlarmMockT,
     hass_get_entity_id_by_unique_id,
     entry_ids_for_integration_devices,
+    allow_callbacks_to_complete,
 )
 
 
@@ -69,7 +70,7 @@ async def test_net_config_text_entities(
     )
     config_entry.add_to_hass(hass)
     await hass.config_entries.async_setup(config_entry.entry_id)
-    await hass.async_block_till_done()
+    await allow_callbacks_to_complete(hass)
 
     entity_id = hass_get_entity_id_by_unique_id(hass, 'text', unique_id)
 
@@ -80,7 +81,7 @@ async def test_net_config_text_entities(
         {ATTR_ENTITY_ID: entity_id, ATTR_VALUE: value},
         blocking=True,
     )
-    await hass.async_block_till_done()
+    await allow_callbacks_to_complete(hass)
 
     # Verify save was called
     (await mock_g90alarm.return_value.net_config()).save.assert_called()
@@ -166,7 +167,7 @@ class TestAlarmPhonesTextEntities:
         )
         config_entry.add_to_hass(hass)
         await hass.config_entries.async_setup(config_entry.entry_id)
-        await hass.async_block_till_done()
+        await allow_callbacks_to_complete(hass)
 
         entity_id = hass_get_entity_id_by_unique_id(hass, 'text', unique_id)
 
@@ -177,7 +178,7 @@ class TestAlarmPhonesTextEntities:
             {ATTR_ENTITY_ID: entity_id, ATTR_VALUE: value},
             blocking=True,
         )
-        await hass.async_block_till_done()
+        await allow_callbacks_to_complete(hass)
 
         # Verify save was called
         (await mock_g90alarm.return_value.alarm_phones()).save.assert_called()
@@ -203,7 +204,7 @@ class TestAlarmPhonesTextEntities:
         )
         config_entry.add_to_hass(hass)
         await hass.config_entries.async_setup(config_entry.entry_id)
-        await hass.async_block_till_done()
+        await allow_callbacks_to_complete(hass)
 
         # Simulate data update
         setattr(await mock_g90alarm.return_value.alarm_phones(), field, value)
@@ -211,7 +212,7 @@ class TestAlarmPhonesTextEntities:
         # Simulate some time has passed for HomeAssistant to invoke
         # update for coordinators and entities
         async_fire_time_changed(hass, dt.utcnow() + timedelta(hours=1))
-        await hass.async_block_till_done()
+        await allow_callbacks_to_complete(hass)
 
         # Verify the entity state was updated correctly
         entity_id = hass_get_entity_id_by_unique_id(hass, 'text', unique_id)
@@ -238,7 +239,7 @@ async def test_alarm_phones_text_exception(
     )
     config_entry.add_to_hass(hass)
     await hass.config_entries.async_setup(config_entry.entry_id)
-    await hass.async_block_till_done()
+    await allow_callbacks_to_complete(hass)
 
     entity_id = hass_get_entity_id_by_unique_id(
         hass, 'text', 'dummy_guid_panel_password'
@@ -251,7 +252,7 @@ async def test_alarm_phones_text_exception(
         {ATTR_ENTITY_ID: entity_id, ATTR_VALUE: "test"},
         blocking=True,
     )
-    await hass.async_block_till_done()
+    await allow_callbacks_to_complete(hass)
 
     # Verify save was called despite exception
     (await mock_g90alarm.return_value.alarm_phones()).save.assert_called()
@@ -294,7 +295,7 @@ async def test_sia_config_text_entities(
     )
     config_entry.add_to_hass(hass)
     await hass.config_entries.async_setup(config_entry.entry_id)
-    await hass.async_block_till_done()
+    await allow_callbacks_to_complete(hass)
 
     entity_id = hass_get_entity_id_by_unique_id(hass, 'text', unique_id)
     # Set the value
@@ -304,7 +305,7 @@ async def test_sia_config_text_entities(
         {ATTR_ENTITY_ID: entity_id, ATTR_VALUE: value},
         blocking=True,
     )
-    await hass.async_block_till_done()
+    await allow_callbacks_to_complete(hass)
 
     # Verify save was called
     (await mock_g90alarm.return_value.sia_config()).save.assert_called()
@@ -343,7 +344,7 @@ async def test_cid_config_text_entities(
     )
     config_entry.add_to_hass(hass)
     await hass.config_entries.async_setup(config_entry.entry_id)
-    await hass.async_block_till_done()
+    await allow_callbacks_to_complete(hass)
 
     entity_id = hass_get_entity_id_by_unique_id(hass, 'text', unique_id)
     # Set the value
@@ -353,7 +354,7 @@ async def test_cid_config_text_entities(
         {ATTR_ENTITY_ID: entity_id, ATTR_VALUE: value},
         blocking=True,
     )
-    await hass.async_block_till_done()
+    await allow_callbacks_to_complete(hass)
 
     # Verify save was called
     (await mock_g90alarm.return_value.cid_config()).save.assert_called()
@@ -429,7 +430,7 @@ async def test_rename_text_entities(
     )
     config_entry.add_to_hass(hass)
     await hass.config_entries.async_setup(config_entry.entry_id)
-    await hass.async_block_till_done()
+    await allow_callbacks_to_complete(hass)
 
     # Find the alarm entity (sensor or device) to rename
     alarm_entity = next(
@@ -451,7 +452,7 @@ async def test_rename_text_entities(
         {ATTR_ENTITY_ID: entity_id, ATTR_VALUE: new_name},
         blocking=True,
     )
-    await hass.async_block_till_done()
+    await allow_callbacks_to_complete(hass)
 
     # Verify the entity name has been changed if requested
     new_entity_name = new_name if expect_name_change else old_name

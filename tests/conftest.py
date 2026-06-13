@@ -6,6 +6,7 @@ Pytest configuration and fixtures
 from __future__ import annotations
 from typing import Iterator, TypeVar, Any, AsyncGenerator, Dict, List
 from unittest.mock import patch, AsyncMock, PropertyMock, DEFAULT
+import asyncio
 import pytest
 
 from homeassistant.core import HomeAssistant, State
@@ -587,3 +588,12 @@ def entry_ids_for_integration_devices(
             dr.async_get(hass), entry_id
         )
     ]
+
+
+async def allow_callbacks_to_complete(hass: HomeAssistant) -> None:
+    """
+    Allows callbacks to complete.
+    """
+    await hass.async_block_till_done()
+    # Allow callbacks to complete
+    await asyncio.sleep(0)

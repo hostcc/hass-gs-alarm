@@ -29,7 +29,9 @@ from pyg90alarm import (
 )
 
 from custom_components.gs_alarm.const import DOMAIN
-from .conftest import AlarmMockT, hass_get_entity_id_by_unique_id
+from .conftest import (
+    AlarmMockT, hass_get_entity_id_by_unique_id, allow_callbacks_to_complete,
+)
 
 
 @pytest.mark.parametrize(
@@ -73,7 +75,7 @@ async def test_sensor_alert_modes(
     )
     config_entry.add_to_hass(hass)
     await hass.config_entries.async_setup(config_entry.entry_id)
-    await hass.async_block_till_done()
+    await allow_callbacks_to_complete(hass)
 
     entity_id = hass_get_entity_id_by_unique_id(hass, 'select', unique_id)
 
@@ -104,7 +106,7 @@ async def test_sensor_alert_modes_exception(
     )
     config_entry.add_to_hass(hass)
     await hass.config_entries.async_setup(config_entry.entry_id)
-    await hass.async_block_till_done()
+    await allow_callbacks_to_complete(hass)
 
     sensor = (await mock_g90alarm.return_value.get_sensors())[0]
     # Simulate an exception when setting the sensor alert mode
@@ -178,7 +180,7 @@ class TestNetConfigSelectEntities:
         )
         config_entry.add_to_hass(hass)
         await hass.config_entries.async_setup(config_entry.entry_id)
-        await hass.async_block_till_done()
+        await allow_callbacks_to_complete(hass)
 
         entity_id = hass_get_entity_id_by_unique_id(hass, 'select', unique_id)
 
@@ -189,7 +191,7 @@ class TestNetConfigSelectEntities:
             {ATTR_ENTITY_ID: entity_id, ATTR_OPTION: option},
             blocking=True,
         )
-        await hass.async_block_till_done()
+        await allow_callbacks_to_complete(hass)
 
         # Verify save was called
         (await mock_g90alarm.return_value.net_config()).save.assert_called()
@@ -215,7 +217,7 @@ class TestNetConfigSelectEntities:
         )
         config_entry.add_to_hass(hass)
         await hass.config_entries.async_setup(config_entry.entry_id)
-        await hass.async_block_till_done()
+        await allow_callbacks_to_complete(hass)
 
         # Simulate data update
         cfg = await mock_g90alarm.return_value.net_config()
@@ -224,7 +226,7 @@ class TestNetConfigSelectEntities:
         # Simulate some time has passed for HomeAssistant to invoke
         # update for coordinators and entities
         async_fire_time_changed(hass, dt.utcnow() + timedelta(hours=1))
-        await hass.async_block_till_done()
+        await allow_callbacks_to_complete(hass)
 
         # Verify the entity state was updated correctly
         entity_id = hass_get_entity_id_by_unique_id(hass, 'select', unique_id)
@@ -300,7 +302,7 @@ class TestHostConfigSelectEntities:
         )
         config_entry.add_to_hass(hass)
         await hass.config_entries.async_setup(config_entry.entry_id)
-        await hass.async_block_till_done()
+        await allow_callbacks_to_complete(hass)
 
         entity_id = hass_get_entity_id_by_unique_id(hass, 'select', unique_id)
 
@@ -311,7 +313,7 @@ class TestHostConfigSelectEntities:
             {ATTR_ENTITY_ID: entity_id, ATTR_OPTION: option},
             blocking=True,
         )
-        await hass.async_block_till_done()
+        await allow_callbacks_to_complete(hass)
 
         # Verify save was called
         (await mock_g90alarm.return_value.host_config()).save.assert_called()
@@ -338,7 +340,7 @@ class TestHostConfigSelectEntities:
         )
         config_entry.add_to_hass(hass)
         await hass.config_entries.async_setup(config_entry.entry_id)
-        await hass.async_block_till_done()
+        await allow_callbacks_to_complete(hass)
 
         # Simulate data update
         setattr(await mock_g90alarm.return_value.host_config(), field, value)
@@ -346,7 +348,7 @@ class TestHostConfigSelectEntities:
         # Simulate some time has passed for HomeAssistant to invoke
         # update for coordinators and entities
         async_fire_time_changed(hass, dt.utcnow() + timedelta(hours=1))
-        await hass.async_block_till_done()
+        await allow_callbacks_to_complete(hass)
 
         # Verify the entity state was updated correctly
         entity_id = hass_get_entity_id_by_unique_id(hass, 'select', unique_id)
