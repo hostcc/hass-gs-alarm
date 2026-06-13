@@ -19,7 +19,7 @@ from custom_components.gs_alarm.const import (
     CONF_OPT_NOTIFICATIONS_CLOUD,
     CONF_OPT_NOTIFICATIONS_CLOUD_UPSTREAM
 )
-from .conftest import AlarmMockT
+from .conftest import AlarmMockT, allow_callbacks_to_complete
 
 
 @pytest.mark.parametrize(
@@ -120,7 +120,7 @@ async def test_config_flow_options_notifications_protocol(
 
     # Verify it creates entry
     assert result['type'] == FlowResultType.CREATE_ENTRY
-    await hass.async_block_till_done()
+    await allow_callbacks_to_complete(hass)
 
     # Since the test simulates initial component setup with no options
     # persisted, the `use_local_notifications()` method will be called
