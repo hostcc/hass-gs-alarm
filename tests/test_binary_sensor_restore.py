@@ -69,6 +69,8 @@ async def test_binary_sensor_restore_state_on_startup(
     config_entry.add_to_hass(hass)
     await hass.config_entries.async_setup(config_entry.entry_id)
     await hass.async_block_till_done()
+    # Allow callbacks to complete
+    await asyncio.sleep(0)
 
     sensor_state = hass_get_state_by_unique_id(
         hass, 'binary_sensor', unique_id
@@ -94,6 +96,8 @@ async def test_binary_sensor_restore_state_disabled(
     config_entry.add_to_hass(hass)
     await hass.config_entries.async_setup(config_entry.entry_id)
     await hass.async_block_till_done()
+    # Allow callbacks to complete
+    await asyncio.sleep(0)
 
     sensor_state = hass_get_state_by_unique_id(
         hass, 'binary_sensor', MAIN_SENSOR_UNIQUE_ID
@@ -118,6 +122,8 @@ async def test_binary_sensor_restore_cleared_on_panel_update(
     config_entry.add_to_hass(hass)
     await hass.config_entries.async_setup(config_entry.entry_id)
     await hass.async_block_till_done()
+    # Allow callbacks to complete
+    await asyncio.sleep(0)
 
     sensor_state = hass_get_state_by_unique_id(
         hass, 'binary_sensor', MAIN_SENSOR_UNIQUE_ID
@@ -160,6 +166,8 @@ async def test_binary_sensor_restore_state_on_reload(
         0, 'Dummy sensor', True
     )
     await hass.async_block_till_done()
+    # Allow callbacks to complete
+    await asyncio.sleep(0)
 
     sensor_state = hass_get_state_by_unique_id(
         hass, 'binary_sensor', MAIN_SENSOR_UNIQUE_ID
@@ -198,6 +206,8 @@ async def test_binary_sensor_restore_state_independent_across_entities(
     config_entry.add_to_hass(hass)
     await hass.config_entries.async_setup(config_entry.entry_id)
     await hass.async_block_till_done()
+    # Allow callbacks to complete
+    await asyncio.sleep(0)
 
     assert hass_get_state_by_unique_id(
         hass, 'binary_sensor', MAIN_SENSOR_UNIQUE_ID
