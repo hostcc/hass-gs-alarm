@@ -404,13 +404,6 @@ class GsAlarmSensorRestoreGatedMixinBase(GsAlarmRestoreStateMixinBase[T]):
         self._use_restored_state: bool = False
         self._restored_state: T | None = None
 
-    @classmethod
-    def _parse_state(cls, state_str: str) -> T | None:
-        """
-        Parse a recorded Home Assistant state string into a concrete value.
-        """
-        return super()._parse_state(state_str)
-
     @staticmethod
     def _restore_state_at_startup_enabled(
         config_entry: Optional[ConfigEntry]
@@ -463,8 +456,8 @@ class GsAlarmRestoreBoolMixin(GsAlarmRestoreStateMixinBase[bool]):
     """
     Mixin for binary sensor entities with boolean state restoration.
     """
-    @staticmethod
-    def _parse_state(state_str: str) -> bool | None:
+    @classmethod
+    def _parse_state(cls, state_str: str) -> bool | None:
         """
         Parse a recorded Home Assistant state string into a boolean value.
         """
