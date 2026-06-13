@@ -3,8 +3,6 @@
 """
 Tests for binary sensor state restoration at startup.
 """
-import asyncio
-
 import pytest
 
 from pytest_homeassistant_custom_component.common import (
@@ -18,7 +16,9 @@ from custom_components.gs_alarm.const import (
     DOMAIN,
     CONF_RESTORE_STATE_AT_STARTUP,
 )
-from .conftest import AlarmMockT, hass_get_state_by_unique_id
+from .conftest import (
+    AlarmMockT, hass_get_state_by_unique_id, allow_callbacks_to_complete,
+)
 
 
 MAIN_SENSOR_ENTITY_ID = 'binary_sensor.dummy_guid_dummy_sensor'
@@ -68,9 +68,7 @@ async def test_binary_sensor_restore_state_on_startup(
     )
     config_entry.add_to_hass(hass)
     await hass.config_entries.async_setup(config_entry.entry_id)
-    await hass.async_block_till_done()
-    # Allow callbacks to complete
-    await asyncio.sleep(0)
+    await allow_callbacks_to_complete(hass)
 
     sensor_state = hass_get_state_by_unique_id(
         hass, 'binary_sensor', unique_id
@@ -95,9 +93,7 @@ async def test_binary_sensor_restore_state_disabled(
     )
     config_entry.add_to_hass(hass)
     await hass.config_entries.async_setup(config_entry.entry_id)
-    await hass.async_block_till_done()
-    # Allow callbacks to complete
-    await asyncio.sleep(0)
+    await allow_callbacks_to_complete(hass)
 
     sensor_state = hass_get_state_by_unique_id(
         hass, 'binary_sensor', MAIN_SENSOR_UNIQUE_ID
@@ -121,9 +117,7 @@ async def test_binary_sensor_restore_cleared_on_panel_update(
     )
     config_entry.add_to_hass(hass)
     await hass.config_entries.async_setup(config_entry.entry_id)
-    await hass.async_block_till_done()
-    # Allow callbacks to complete
-    await asyncio.sleep(0)
+    await allow_callbacks_to_complete(hass)
 
     sensor_state = hass_get_state_by_unique_id(
         hass, 'binary_sensor', MAIN_SENSOR_UNIQUE_ID
@@ -133,9 +127,7 @@ async def test_binary_sensor_restore_cleared_on_panel_update(
     await mock_g90alarm.return_value.on_sensor_activity(
         0, 'Dummy sensor', False
     )
-    await hass.async_block_till_done()
-    # Allow callbacks to complete
-    await asyncio.sleep(0)
+    await allow_callbacks_to_complete(hass)
 
     sensor_state = hass_get_state_by_unique_id(
         hass, 'binary_sensor', MAIN_SENSOR_UNIQUE_ID
@@ -160,14 +152,12 @@ async def test_binary_sensor_restore_state_on_reload(
 
     config_entry.add_to_hass(hass)
     await hass.config_entries.async_setup(config_entry.entry_id)
-    await hass.async_block_till_done()
+    await allow_callbacks_to_complete(hass)
 
     await mock_g90alarm.return_value.on_sensor_activity(
         0, 'Dummy sensor', True
     )
-    await hass.async_block_till_done()
-    # Allow callbacks to complete
-    await asyncio.sleep(0)
+    await allow_callbacks_to_complete(hass)
 
     sensor_state = hass_get_state_by_unique_id(
         hass, 'binary_sensor', MAIN_SENSOR_UNIQUE_ID
@@ -175,9 +165,7 @@ async def test_binary_sensor_restore_state_on_reload(
     assert sensor_state.state == 'on'
 
     await hass.config_entries.async_reload(config_entry.entry_id)
-    await hass.async_block_till_done()
-    # Allow callbacks to complete
-    await asyncio.sleep(0)
+    await allow_callbacks_to_complete(hass)
 
     sensor_state = hass_get_state_by_unique_id(
         hass, 'binary_sensor', MAIN_SENSOR_UNIQUE_ID
@@ -205,9 +193,7 @@ async def test_binary_sensor_restore_state_independent_across_entities(
     )
     config_entry.add_to_hass(hass)
     await hass.config_entries.async_setup(config_entry.entry_id)
-    await hass.async_block_till_done()
-    # Allow callbacks to complete
-    await asyncio.sleep(0)
+    await allow_callbacks_to_complete(hass)
 
     assert hass_get_state_by_unique_id(
         hass, 'binary_sensor', MAIN_SENSOR_UNIQUE_ID
@@ -222,9 +208,7 @@ async def test_binary_sensor_restore_state_independent_across_entities(
     await mock_g90alarm.return_value.on_sensor_activity(
         0, 'Dummy sensor', False
     )
-    await hass.async_block_till_done()
-    # Allow callbacks to complete
-    await asyncio.sleep(0)
+    await allow_callbacks_to_complete(hass)
 
     assert hass_get_state_by_unique_id(
         hass, 'binary_sensor', MAIN_SENSOR_UNIQUE_ID
