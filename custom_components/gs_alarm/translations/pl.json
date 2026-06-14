@@ -25,7 +25,8 @@
         "step": {
             "init": {
                 "data": {
-                    "notifications_protocol": "Protokół powiadomień"
+                    "notifications_protocol": "Protokół powiadomień",
+                    "restore_state_at_startup": "Przywracaj stan czujnika przy uruchomieniu"
                 },
                 "data_description": {
                     "notifications_protocol": "* **Chmura**: Home Assistant odbiera ruch chmurowy z panelu bez faktycznego udziału serwerów chmurowych\n* **Lokalny**: Panel ma adres IP `10.10.10.250`\n* **Połączona chmura**: Tak samo jak **Chmura**, ale ruch jest również wysyłany do serwerów chmury,\naby aplikacja mobilna działała"

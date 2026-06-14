@@ -25,7 +25,8 @@
         "step": {
             "init": {
                 "data": {
-                    "notifications_protocol": "Beskedprotokol"
+                    "notifications_protocol": "Beskedprotokol",
+                    "restore_state_at_startup": "Gendan sensorstatus ved opstart"
                 },
                 "data_description": {
                     "notifications_protocol": "* **Sky**: Home Assistant modtager sky-trafik fra panelet uden faktiske sky-servere involveret\n* **Lokalt**: Panelet har IP-adresse `10.10.10.250`\n* **Kædet sky**: Samme som **Sky**, men trafik sendes også til sky-servere\nfor at mobilapplikationen kan fungere"

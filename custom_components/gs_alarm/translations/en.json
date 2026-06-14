@@ -25,7 +25,8 @@
         "step": {
             "init": {
                 "data": {
-                    "notifications_protocol": "Notifications protocol"
+                    "notifications_protocol": "Notifications protocol",
+                    "restore_state_at_startup": "Restore sensor state at startup"
                 },
                 "data_description": {
                     "notifications_protocol": "* **Cloud**: Home Assistant receives cloud traffic from the panel with no actual cloud servers involved\n* **Local**: The panel has `10.10.10.250` IP address\n* **Chained cloud**: Same as **Cloud**, but traffic is also sent to cloud servers\nfor mobile application to work"

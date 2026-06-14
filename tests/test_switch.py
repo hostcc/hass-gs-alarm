@@ -6,7 +6,7 @@ Tests for switches from the custom component.
 from __future__ import annotations
 from typing import Optional
 from datetime import timedelta
-from unittest.mock import call
+from unittest.mock import call, patch
 from operator import attrgetter
 import pytest
 
@@ -524,7 +524,7 @@ async def test_device(
 
     device = next(
         iter(
-            dev for dev in await mock_g90alarm.get_devices()
+            dev for dev in await mock_g90alarm.return_value.get_devices()
             if dev.name == device_name
         )
     )
@@ -590,12 +590,6 @@ async def test_config_flags_restore_state(
     # Simulate restored state for the entity
     mock_restore_cache(hass, [State(entity_id, restored_state)])
 
-    if simulated_exception and expected_call:
-        # Setup the config flag to raise an exception when being restored
-        attrgetter(expected_call)(
-            mock_g90alarm.return_value
-        ).side_effect = simulated_exception
-
     config_entry = MockConfigEntry(
         domain=DOMAIN,
         data={'ip_addr': 'dummy-ip'},
@@ -603,7 +597,14 @@ async def test_config_flags_restore_state(
         entry_id="test_restore_state"
     )
     config_entry.add_to_hass(hass)
-    await hass.config_entries.async_setup(config_entry.entry_id)
+    if simulated_exception and expected_call:
+        with patch(
+            f'pyg90alarm.G90Alarm.{expected_call}',
+            side_effect=simulated_exception,
+        ):
+            await hass.config_entries.async_setup(config_entry.entry_id)
+    else:
+        await hass.config_entries.async_setup(config_entry.entry_id)
 
     # Verify the entity state was restored correctly
     switch_state = hass.states.get(entity_id)

@@ -42,6 +42,7 @@ from .const import (
     CONF_OPT_NOTIFICATIONS_LOCAL,
     CONF_OPT_NOTIFICATIONS_CLOUD,
     CONF_OPT_NOTIFICATIONS_CLOUD_UPSTREAM,
+    CONF_RESTORE_STATE_AT_STARTUP,
 )
 
 _LOGGER = logging.getLogger(__name__)
@@ -227,6 +228,12 @@ class OptionsFlowHandler(OptionsFlow):
                     translation_key=CONF_NOTIFICATIONS_PROTOCOL,
                 )
             ),
+            vol.Optional(
+                CONF_RESTORE_STATE_AT_STARTUP,
+                default=self.config_entry.options.get(
+                    CONF_RESTORE_STATE_AT_STARTUP, True
+                ),
+            ): BooleanSelector(),
         }
 
         # Present the form back if no user input

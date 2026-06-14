@@ -4,7 +4,7 @@
 Tests for exception handling by the custom component.
 """
 from datetime import timedelta
-from unittest.mock import AsyncMock
+from unittest.mock import AsyncMock, patch
 import pytest
 
 from pytest_homeassistant_custom_component.common import (
@@ -58,18 +58,14 @@ from .conftest import (
         ),
     ]
 )
+@pytest.mark.usefixtures('mock_g90alarm')
 async def test_setup_entry_exception(
-    hass: HomeAssistant, mock_g90alarm: AlarmMockT, failed_g90_method: str,
+    hass: HomeAssistant, failed_g90_method: str,
     simulated_error: Exception, expected_entry_state: ConfigEntryState
 ) -> None:
     """
     Tests the custom integration properly handles exceptions during the setup.
     """
-    # Simulate the error in specific `G90Alarm` method
-    getattr(
-       mock_g90alarm.return_value, failed_g90_method
-    ).side_effect = simulated_error
-
     config_entry = MockConfigEntry(
         domain=DOMAIN,
         data={'ip_addr': 'dummy-ip'},
@@ -81,7 +77,11 @@ async def test_setup_entry_exception(
         entry_id="test-exc"
     )
     config_entry.add_to_hass(hass)
-    await hass.config_entries.async_setup(config_entry.entry_id)
+    with patch(
+        f'pyg90alarm.G90Alarm.{failed_g90_method}',
+        side_effect=simulated_error,
+    ):
+        await hass.config_entries.async_setup(config_entry.entry_id)
     await allow_callbacks_to_complete(hass)
 
     # Verify the entity is in expected state
@@ -139,11 +139,6 @@ async def test_alarm_panel_service_exception(
     Tests the custom integration properly handles exceptions during service
     calls to alarm panel.
     """
-    # Simulate the error in specific `G90Alarm` method
-    getattr(
-        mock_g90alarm.return_value, failed_g90_method
-    ).side_effect = simulated_error
-
     config_entry = MockConfigEntry(
         domain=DOMAIN,
         data={'ip_addr': 'dummy-ip'},
@@ -153,6 +148,11 @@ async def test_alarm_panel_service_exception(
     config_entry.add_to_hass(hass)
     await hass.config_entries.async_setup(config_entry.entry_id)
     await allow_callbacks_to_complete(hass)
+
+    # Simulate the error in specific `G90Alarm` method
+    getattr(
+        mock_g90alarm.return_value, failed_g90_method
+    ).side_effect = simulated_error
 
     entity_id = hass_get_entity_id_by_unique_id(
         hass, 'alarm_control_panel', 'dummy_guid'

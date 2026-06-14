@@ -7,12 +7,10 @@ from __future__ import annotations
 from typing import Any, Optional
 import logging
 
-from homeassistant.const import STATE_ON
 from homeassistant.core import callback
 from homeassistant.helpers.update_coordinator import CoordinatorEntity
 from homeassistant.components.switch import SwitchEntity
 from homeassistant.components.switch.const import DOMAIN as SWITCH_DOMAIN
-from homeassistant.helpers.restore_state import RestoreEntity
 from homeassistant.components.select import SelectEntity
 from homeassistant.components.select.const import DOMAIN as SELECT_DOMAIN
 from homeassistant.components.number import NumberEntity, NumberMode
@@ -29,7 +27,7 @@ from pyg90alarm import (
 
 from pyg90alarm.dataclass.load_save import DataclassLoadSave
 
-from .mixin import GSAlarmGenerateIDsCommonMixin
+from .mixin import GSAlarmGenerateIDsCommonMixin, GsAlarmRestoreBoolMixin
 from .coordinator import GsAlarmCoordinator
 
 
@@ -58,7 +56,7 @@ class GSAlarmEntityBase(
 
 
 class GsAlarmSwitchRestoreEntityBase(
-    SwitchEntity, GSAlarmEntityBase, RestoreEntity
+    SwitchEntity, GSAlarmEntityBase, GsAlarmRestoreBoolMixin
 ):
     """
     Base class for switch entities of `gs-alarm` integration with state
@@ -83,8 +81,8 @@ class GsAlarmSwitchRestoreEntityBase(
         Restores the last state on startup.
         """
         await super().async_added_to_hass()
-        state = await self.async_get_last_state()
-        self._attr_is_on = state is not None and state.state == STATE_ON
+        restored = await self.restore_state(self.coordinator.config_entry)
+        self._attr_is_on = restored or False
 
     async def async_turn_on(self, **_kwargs: Any) -> None:
         """
