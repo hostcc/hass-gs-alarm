@@ -25,7 +25,8 @@
         "step": {
             "init": {
                 "data": {
-                    "notifications_protocol": "Protocolo de notificações"
+                    "notifications_protocol": "Protocolo de notificações",
+                    "restore_state_at_startup": "Restaurar estado do sensor na inicialização"
                 },
                 "data_description": {
                     "notifications_protocol": "* **Nuvem**: Home Assistant recebe tráfego de nuvem do painel sem servidores de nuvem reais envolvidos\n* **Local**: O painel tem o endereço IP `10.10.10.250`\n* **Nuvem encadeada**: Igual a **Nuvem**, mas o tráfego também é enviado para servidores na nuvem\npara que o aplicativo móvel funcione"

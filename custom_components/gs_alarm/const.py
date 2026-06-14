@@ -14,6 +14,7 @@ CONF_CLOUD_LOCAL_PORT = "cloud_local_port"
 CONF_CLOUD_UPSTREAM_HOST = "cloud_upstream_host"
 CONF_CLOUD_UPSTREAM_PORT = "cloud_upstream_port"
 CONF_NOTIFICATIONS_PROTOCOL = "notifications_protocol"
+CONF_RESTORE_STATE_AT_STARTUP = "restore_state_at_startup"
 
 # Options for CONF_NOTIFICATIONS_PROTOCOL
 CONF_OPT_NOTIFICATIONS_LOCAL = "local"

@@ -25,7 +25,8 @@
         "step": {
             "init": {
                 "data": {
-                    "notifications_protocol": "Protocolo de notificaciones"
+                    "notifications_protocol": "Protocolo de notificaciones",
+                    "restore_state_at_startup": "Restaurar el estado del sensor al iniciar"
                 },
                 "data_description": {
                     "notifications_protocol": "* **Nube**: Home Assistant recibe tráfico en la nube del panel sin servidores en la nube reales involucrados\n* **Local**: El panel tiene la dirección IP `10.10.10.250`\n* **Nube encadenada**: Igual que **Nube**, pero el tráfico también se envía a servidores en la nube\npara que funcione la aplicación móvil"

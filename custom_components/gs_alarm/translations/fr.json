@@ -25,7 +25,8 @@
         "step": {
             "init": {
                 "data": {
-                    "notifications_protocol": "Protocole de notifications"
+                    "notifications_protocol": "Protocole de notifications",
+                    "restore_state_at_startup": "Restaurer l'état du capteur au démarrage"
                 },
                 "data_description": {
                     "notifications_protocol": "* **Cloud**: Home Assistant reçoit le trafic cloud du panneau sans serveurs cloud réels impliqués\n* **Local**: Le panneau a l'adresse IP `10.10.10.250`\n* **Cloud chaîné**: Identique à **Cloud**, mais le trafic est également envoyé aux serveurs cloud\npour que l'application mobile fonctionne"

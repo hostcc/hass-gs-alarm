@@ -98,6 +98,25 @@ To rename a sensor or relay:
 3. Enter the new name and navigate away from the entity to save the changes
 4. The integration will update the panel and reload automatically
 
+## Sensor state restoration
+
+By default, the integration restores the last known Home Assistant state for
+panel binary sensors (the primary sensor entity and its diagnostic attribute
+sensors such as tampered, low battery, and active when arming) when the
+integration starts or is reloaded. This avoids sensors briefly showing `off` or
+`unknown` until the panel sends the next notification.
+
+The behaviour is controlled by the **Restore sensor state at startup** option
+in the integration settings (Settings → Devices & Services → Golden Security
+Alarm → Configure). It is enabled by default. When disabled, sensor states
+are taken only from live panel data as before.
+
+**Caveat:** restoration uses the state Home Assistant had recorded before the
+restart or reload, not a fresh reading from the panel. If a sensor changes on
+the panel while the integration is restarting or reloading, the restored state
+may be wrong until the panel sends the next update for that sensor. In that
+case you may briefly see an incorrect `on` or `off` state in Home Assistant.
+
 ## Notifications
 
 Notifications from the alarm panel are essential for the integration -

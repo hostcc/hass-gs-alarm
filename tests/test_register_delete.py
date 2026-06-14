@@ -110,7 +110,9 @@ async def test_delete(
 
     alarm_entity = next(
         iter(
-            x for x in await getattr(mock_g90alarm, alarm_all_entities_call)()
+            x for x in await getattr(
+                mock_g90alarm.return_value, alarm_all_entities_call
+            )()
             if x.name == alarm_entity_name
         )
     )

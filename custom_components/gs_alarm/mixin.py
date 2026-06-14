@@ -4,16 +4,24 @@
 Mixin classes for `gs-alarm` integration.
 """
 from __future__ import annotations
-from typing import Optional, Any, Dict
+from typing import Optional, Any, Dict, Generic, TypeVar
 from abc import ABC, abstractmethod
+import logging
 
 from homeassistant.util import slugify
 from homeassistant.helpers.device_registry import DeviceInfo
+from homeassistant.helpers.restore_state import RestoreEntity
+from homeassistant.const import STATE_ON, STATE_OFF
+from homeassistant.config_entries import ConfigEntry
 
 from pyg90alarm import G90Sensor, G90Device
 
-from .const import DOMAIN, MANUFACTURER
+from .const import DOMAIN, MANUFACTURER, CONF_RESTORE_STATE_AT_STARTUP
 from .coordinator import GsAlarmCoordinator
+
+
+_LOGGER = logging.getLogger(__name__)
+T = TypeVar('T')
 
 
 class GSAlarmGenerateIDsMixinBase(ABC):
@@ -317,3 +325,149 @@ class GSAlarmGenerateIDsDeviceMixin(GSAlarmGenerateIDsMixinBase):
                 DOMAIN, coordinator.data.host_info.host_guid
             ),
         )
+
+
+class GsAlarmRestoreStateMixinBase(RestoreEntity, Generic[T], ABC):
+    """
+    Base mixin for state restoration.
+    """
+    @classmethod
+    @abstractmethod
+    def _parse_state(cls, state_str: str) -> T | None:
+        """
+        Parse a recorded Home Assistant state string into a value of concrete
+        type. Subclasses must implement this method.
+
+        :param state_str: The state string from the recorder.
+        :return: Parsed value, or None if strict and state is not on/off.
+        """
+
+    @staticmethod
+    def _restore_state_at_startup_enabled(
+        config_entry: Optional[ConfigEntry]  # pylint: disable=unused-argument
+    ) -> bool:
+        """
+        Whether state restoration at startup is enabled for this entry.
+        """
+        return True
+
+    async def restore_state(
+        self, config_entry: Optional[ConfigEntry]
+    ) -> T | None:
+        """
+        Read and parse the last recorded state from Home Assistant.
+
+        :return: Parsed value of concrete type, or None if restore should not
+         apply.
+        """
+        if not self._restore_state_at_startup_enabled(config_entry):
+            _LOGGER.debug(
+                'Restore state at startup is disabled for %s',
+                self.unique_id
+            )
+            return None
+
+        state = await self.async_get_last_state()
+        # No state could be restored
+        if state is None:
+            return None
+
+        # Parse the state string into a value of concrete type
+        restored = self._parse_state(state.state)
+
+        if restored is not None:
+            _LOGGER.debug(
+                'Restored state for %s: %s',
+                self.unique_id, state.state
+            )
+
+        return restored
+
+
+class GsAlarmSensorRestoreGatedMixinBase(GsAlarmRestoreStateMixinBase[T]):
+    """
+    Base mixin for state restoration gated by the ``restore_state_at_startup``
+    config entry option.
+
+    Restored state is used until the panel reports a live update.
+    """
+    def _init_restore_state(self) -> None:
+        """
+        Initialize per-instance restore state attributes.
+        """
+        # Use the presence of the attribute to detect if the restore state
+        # has been initialized already - prevents multiple initialization
+        # clearing out the restored state.
+        if hasattr(self, '_use_restored_state'):
+            return
+
+        self._use_restored_state: bool = False
+        self._restored_state: T | None = None
+
+    @staticmethod
+    def _restore_state_at_startup_enabled(
+        config_entry: Optional[ConfigEntry]
+    ) -> bool:
+        """
+        Whether state restoration at startup is enabled for this entry.
+        """
+        if config_entry is None:
+            return False
+
+        # Use the option value to determine if state restoration is enabled
+        return bool(
+            config_entry.options.get(CONF_RESTORE_STATE_AT_STARTUP, True)
+        )
+
+    async def restore_state(
+        self, config_entry: Optional[ConfigEntry]
+    ) -> None:
+        """
+        Restore the last recorded state if the option is enabled.
+        """
+        self._init_restore_state()
+        restored = await super().restore_state(config_entry)
+        if restored is None:
+            return
+
+        # Store the restored state and mark it as used
+        self._restored_state = restored
+        self._use_restored_state = True
+
+    def state_with_restore(self, live_state: T | None) -> T | None:
+        """
+        Return restored state if active, otherwise the live panel value.
+        """
+        self._init_restore_state()
+        if self._use_restored_state:
+            return self._restored_state
+
+        return live_state
+
+    def clear_restored_state(self) -> None:
+        """
+        Clear restored state override so live panel values are used.
+        """
+        self._init_restore_state()
+        self._use_restored_state = False
+
+
+class GsAlarmRestoreBoolMixin(GsAlarmRestoreStateMixinBase[bool]):
+    """
+    Mixin for binary sensor entities with boolean state restoration.
+    """
+    @classmethod
+    def _parse_state(cls, state_str: str) -> bool | None:
+        """
+        Parse a recorded Home Assistant state string into a boolean value.
+        """
+        return {STATE_ON: True, STATE_OFF: False}.get(state_str, None)
+
+
+class GsAlarmRestoreBoolGatedMixin(
+    GsAlarmSensorRestoreGatedMixinBase[bool], GsAlarmRestoreBoolMixin
+):
+    """
+    Mixin for binary sensor entities with boolean state restoration gated by
+    the config entry option (see above).
+    """
