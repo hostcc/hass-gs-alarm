@@ -16,16 +16,14 @@ from pytest_homeassistant_custom_component.common import (
 from homeassistant.core import HomeAssistant
 from homeassistant.const import (
     ATTR_ENTITY_ID,
+    ATTR_OPTION,
+    SERVICE_SELECT_OPTION,
 )
 from homeassistant.components.button.const import (
     DOMAIN as BUTTON_DOMAIN,
     SERVICE_PRESS
 )
-from homeassistant.components.select.const import (
-    DOMAIN as SELECT_DOMAIN,
-    ATTR_OPTION,
-    SERVICE_SELECT_OPTION,
-)
+from homeassistant.components.select.const import DOMAIN as SELECT_DOMAIN
 from homeassistant.components.text.const import (
     DOMAIN as TEXT_DOMAIN,
     ATTR_VALUE,
