@@ -1,6 +1,6 @@
 flake8==7.3.0
 pylint==4.0.6
-pytest-homeassistant-custom-component==0.13.344
+pytest-homeassistant-custom-component==0.13.345
 mypy[reports]==2.1.0
 pyg90alarm==2.13.2
 # These are pinned by `pytest-homeassistant-custom-component` package
