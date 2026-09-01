@@ -52,7 +52,9 @@ class GSAlarmEntityBase(
         self._attr_unique_id = self.generate_unique_id(coordinator)
         self.entity_id = self.generate_entity_id(coordinator)
         # The entity is bound to the HASS device for the alarm panel itself
-        self._attr_device_info = self.generate_parent_device_info(coordinator)
+        self._attr_device_info, _ = self.generate_parent_device_info(
+            coordinator
+        )
 
 
 class GsAlarmSwitchRestoreEntityBase(
@@ -139,7 +141,9 @@ class G90ConfigFieldBase(
         self._field_name = field_name
 
         # The entity is bound to the HASS device for the alarm panel itself
-        self._attr_device_info = self.generate_parent_device_info(coordinator)
+        self._attr_device_info, _ = self.generate_parent_device_info(
+            coordinator
+        )
 
         # Generate unique ID and entity ID using field name
         self._attr_unique_id = self.generate_unique_id_with_placeholders(
