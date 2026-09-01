@@ -4,11 +4,14 @@
 Mixin classes for `gs-alarm` integration.
 """
 from __future__ import annotations
-from typing import Optional, Any, Dict, Generic, TypeVar
+from typing import (
+    Optional, Any, Dict, Generic, Tuple, TypeVar, TYPE_CHECKING
+)
 from abc import ABC, abstractmethod
 import logging
 
 from homeassistant.util import slugify
+from homeassistant.helpers import device_registry as dr
 from homeassistant.helpers.device_registry import DeviceInfo
 from homeassistant.helpers.restore_state import RestoreEntity
 from homeassistant.const import STATE_ON, STATE_OFF
@@ -17,7 +20,8 @@ from homeassistant.config_entries import ConfigEntry
 from pyg90alarm import G90Sensor, G90Device
 
 from .const import DOMAIN, MANUFACTURER, CONF_RESTORE_STATE_AT_STARTUP
-from .coordinator import GsAlarmCoordinator
+if TYPE_CHECKING:
+    from .coordinator import GsAlarmCoordinator
 
 
 _LOGGER = logging.getLogger(__name__)
@@ -121,18 +125,22 @@ class GSAlarmGenerateIDsMixinBase(ABC):
     @classmethod
     def generate_parent_device_info(
         cls, coordinator: GsAlarmCoordinator
-    ) -> DeviceInfo:
+    ) -> Tuple[DeviceInfo, str]:
         """
         Generate DeviceInfo for the parent HASS device, typically associated
-        with the alarm panel itself.
+        with the alarm panel itself, ensuring the device is registered so
+        child devices could link to it using `via_device_id`.
 
         :param coordinator: The coordinator to use.
-        :return: The generated DeviceInfo.
+        :return: The generated DeviceInfo and the parent device registry ID.
         """
         if not coordinator.data.host_info:
             raise ValueError("Coordinator host info is not set")
 
-        return DeviceInfo(
+        if coordinator.config_entry is None:
+            raise ValueError("Coordinator config entry is not set")
+
+        info = DeviceInfo(
             identifiers={
                 (DOMAIN, coordinator.data.host_info.host_guid)
             },
@@ -145,6 +153,16 @@ class GSAlarmGenerateIDsMixinBase(ABC):
                 f' WiFi: {coordinator.data.host_info.wifi_hw_version}'
             ),
         )
+
+        # Registering the device is idempotent - repeated calls with same
+        # `DeviceInfo` result in no registry writes, only the existing device
+        # is looked up
+        parent_device = dr.async_get(coordinator.hass).async_get_or_create(
+            config_entry_id=coordinator.config_entry.entry_id,
+            **info,
+        )
+
+        return info, parent_device.id
 
 
 class GSAlarmGenerateIDsCommonMixin(GSAlarmGenerateIDsMixinBase):
@@ -236,6 +254,8 @@ class GSAlarmGenerateIDsSensorMixin(GSAlarmGenerateIDsMixinBase):
         if not coordinator.data.host_info:
             raise ValueError("Coordinator host info is not set")
 
+        _, panel_device_id = cls.generate_parent_device_info(coordinator)
+
         return DeviceInfo(
             manufacturer=MANUFACTURER,
             model=obj.type_name or '',
@@ -244,9 +264,7 @@ class GSAlarmGenerateIDsSensorMixin(GSAlarmGenerateIDsMixinBase):
             identifiers={
                 (DOMAIN, cls.generate_unique_id(coordinator, obj))
             },
-            via_device=(
-                DOMAIN, coordinator.data.host_info.host_guid
-            ),
+            via_device_id=panel_device_id,
         )
 
 
@@ -307,6 +325,8 @@ class GSAlarmGenerateIDsDeviceMixin(GSAlarmGenerateIDsMixinBase):
         if not coordinator.data.host_info:
             raise ValueError("Coordinator host info is not set")
 
+        _, panel_device_id = cls.generate_parent_device_info(coordinator)
+
         return DeviceInfo(
             manufacturer=MANUFACTURER,
             model=obj.type_name or '',
@@ -321,9 +341,7 @@ class GSAlarmGenerateIDsDeviceMixin(GSAlarmGenerateIDsMixinBase):
                     }
                 ))
             },
-            via_device=(
-                DOMAIN, coordinator.data.host_info.host_guid
-            ),
+            via_device_id=panel_device_id,
         )
 
 
