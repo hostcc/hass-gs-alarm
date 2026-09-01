@@ -439,7 +439,9 @@ class G90AlertConfigFlag(GsAlarmSwitchPanelConfigEntity):
         self._flag = flag
         self._attr_has_entity_name = True
         # The switch is bound to the HASS device for the alarm panel itself
-        self._attr_device_info = self.generate_parent_device_info(coordinator)
+        self._attr_device_info, _ = self.generate_parent_device_info(
+            coordinator
+        )
         # Generate unique ID and entity ID using flag name
         self._attr_unique_id = self.generate_unique_id_with_placeholders(
             coordinator, {
@@ -532,7 +534,9 @@ class G90RebootSwitch(GsAlarmSwitchStandaloneEntity):
         self._attr_unique_id = self.generate_unique_id(coordinator)
         self.entity_id = self.generate_entity_id(coordinator)
         # The entity is bound to the HASS device for the alarm panel itself
-        self._attr_device_info = self.generate_parent_device_info(coordinator)
+        self._attr_device_info, _ = self.generate_parent_device_info(
+            coordinator
+        )
         self._attr_has_entity_name = True
         self._attr_entity_category = EntityCategory.DIAGNOSTIC
         self._attr_icon = 'mdi:restart'

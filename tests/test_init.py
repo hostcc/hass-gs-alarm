@@ -16,6 +16,7 @@ from pytest_homeassistant_custom_component.common import (
 )
 from homeassistant.core import HomeAssistant
 from homeassistant.util import dt
+import homeassistant.helpers.device_registry as dr
 
 from custom_components.gs_alarm.const import DOMAIN
 from .conftest import (
@@ -520,6 +521,16 @@ async def test_setup_unload_and_reload_entry_afresh(
             ])
         },
     ]
+
+    devices = dr.async_entries_for_config_entry(
+        dr.async_get(hass), config_entry.entry_id
+    )
+    panel = next(device for device in devices if device.name == 'Dummy GUID')
+    assert panel.via_device_id is None
+    child_devices = [device for device in devices if device.id != panel.id]
+    assert child_devices
+    for device in child_devices:
+        assert device.via_device_id == panel.id
 
     # Verify the switches and selects correspond to the binary sensor have
     # proper states
