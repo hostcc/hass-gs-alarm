@@ -1,5 +1,5 @@
 flake8==7.3.0
-pylint==4.0.7
+pylint==4.0.8
 pytest-homeassistant-custom-component==0.13.361
 mypy[reports]==2.3.1
 pyg90alarm==2.13.2
