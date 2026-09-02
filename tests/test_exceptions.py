@@ -103,6 +103,7 @@ async def test_alarm_panel_state_update_exception(
     )
     config_entry.add_to_hass(hass)
     await hass.config_entries.async_setup(config_entry.entry_id)
+    await allow_callbacks_to_complete(hass)
 
     # Simulate the error in `G90Alarm.get_host_info()` method that is used to
     # fetch panel's state. The simulated error is set after entry is loaded, so

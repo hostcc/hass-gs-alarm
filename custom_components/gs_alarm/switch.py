@@ -21,7 +21,7 @@ from pyg90alarm import (
 
 from .entity_base import (
     G90NetConfigSwitchField, G90SiaConfigSwitchField, G90CidConfigSwitchField,
-    GsAlarmSwitchRestoreEntityBase,
+    GsAlarmSwitchRestoreEntityBase, GsAlarmApplyCoordinatorDataMixin,
 )
 from .mixin import (
     GSAlarmGenerateIDsDeviceMixin, GSAlarmGenerateIDsSensorMixin,
@@ -185,8 +185,8 @@ class GsAlarmSwitchDeviceEntity(
 
 
 class GsAlarmSwitchSensorConfigEntity(
+    GsAlarmApplyCoordinatorDataMixin,
     SwitchEntity,
-    CoordinatorEntity[GsAlarmCoordinator],
     GSAlarmGenerateIDsSensorMixin,
 ):
     # pylint: disable=too-many-ancestors
@@ -195,8 +195,8 @@ class GsAlarmSwitchSensorConfigEntity(
 
 
 class GsAlarmSwitchPanelConfigEntity(
+    GsAlarmApplyCoordinatorDataMixin,
     SwitchEntity,
-    CoordinatorEntity[GsAlarmCoordinator],
     GSAlarmGenerateIDsCommonMixin,
 ):
     # pylint: disable=too-many-ancestors
