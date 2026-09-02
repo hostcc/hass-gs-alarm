@@ -34,8 +34,25 @@ from .coordinator import GsAlarmCoordinator
 _LOGGER = logging.getLogger(__name__)
 
 
+class GsAlarmApplyCoordinatorDataMixin(CoordinatorEntity[GsAlarmCoordinator]):
+    """
+    Replay coordinator data when the entity is added to Home Assistant.
+
+    CoordinatorEntity only registers a listener in `async_added_to_hass` and
+    does not apply the last coordinator update, so entities created during or
+    after a refresh would otherwise stay unknown until the next poll.
+    """
+
+    async def async_added_to_hass(self) -> None:
+        """
+        Register for coordinator updates and apply current data.
+        """
+        await super().async_added_to_hass()
+        self._handle_coordinator_update()
+
+
 class GSAlarmEntityBase(
-    CoordinatorEntity[GsAlarmCoordinator],
+    GsAlarmApplyCoordinatorDataMixin,
     GSAlarmGenerateIDsCommonMixin,
 ):
     """
@@ -102,7 +119,7 @@ class GsAlarmSwitchRestoreEntityBase(
 
 
 class G90ConfigFieldBase(
-    CoordinatorEntity[GsAlarmCoordinator],
+    GsAlarmApplyCoordinatorDataMixin,
     GSAlarmGenerateIDsCommonMixin
 ):
     """

@@ -143,6 +143,8 @@ async def test_sensor_flags_exception(
     )
     config_entry.add_to_hass(hass)
     await hass.config_entries.async_setup(config_entry.entry_id)
+    await allow_callbacks_to_complete(hass)
+
     # Simulate some time has passed for HomeAssistant to invoke
     # update for components
     async_fire_time_changed(hass, dt.utcnow() + timedelta(hours=1))
@@ -412,6 +414,7 @@ async def test_config_flags_exception(
     )
     config_entry.add_to_hass(hass)
     await hass.config_entries.async_setup(config_entry.entry_id)
+    await allow_callbacks_to_complete(hass)
 
     # Simulate some time has passed for HomeAssistant to invoke
     # update for components
@@ -505,6 +508,7 @@ async def test_device(
     )
     config_entry.add_to_hass(hass)
     await hass.config_entries.async_setup(config_entry.entry_id)
+    await allow_callbacks_to_complete(hass)
     # Simulate some time has passed for HomeAssistant to invoke
     # update for components
     async_fire_time_changed(hass, dt.utcnow() + timedelta(hours=1))
