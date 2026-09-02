@@ -91,6 +91,7 @@ async def test_setup_unload_and_reload_entry_afresh(
     )
     config_entry.add_to_hass(hass)
     await hass.config_entries.async_setup(config_entry.entry_id)
+    await allow_callbacks_to_complete(hass)
 
     # Simulate some time has passed for HomeAssistant to invoke
     # update for components
