@@ -19,6 +19,11 @@ from .conftest import (
     AlarmMockT, hass_get_state_by_unique_id, allow_callbacks_to_complete,
 )
 
+MAIN_SENSOR_UNIQUE_ID = 'dummy_guid_sensor_0'
+TAMPERED_SENSOR_UNIQUE_ID = 'dummy_guid_sensor_0_tampered'
+LOW_BATTERY_SENSOR_UNIQUE_ID = 'dummy_guid_sensor_0_low_battery'
+OPEN_WHEN_ARMED_SENSOR_UNIQUE_ID = 'dummy_guid_sensor_0_open_when_armed'
+
 
 @pytest.mark.g90host_status(
     result=G90ArmDisarmTypes.DISARM
@@ -144,19 +149,18 @@ async def test_low_battery_callback(
     hass: HomeAssistant, mock_g90alarm: AlarmMockT
 ) -> None:
     """
-    Tests the binary sensor changes its attributes upon low battery condition
-    is reported.
+    Tests the binary sensor and diagnostic entity go on when low battery is
+    reported, then off when sensor activity clears the flag.
     """
     config_entry = MockConfigEntry(
         domain=DOMAIN,
         data={'ip_addr': 'dummy-ip'},
         options={},
-        entry_id="test-disarm-callbacks"
+        entry_id="test-low-battery-callbacks"
     )
 
     config_entry.add_to_hass(hass)
     await hass.config_entries.async_setup(config_entry.entry_id)
-    # Allow Home Assistant to process the setup
     await allow_callbacks_to_complete(hass)
 
     await mock_g90alarm.return_value.on_low_battery(
@@ -164,32 +168,45 @@ async def test_low_battery_callback(
     )
     await allow_callbacks_to_complete(hass)
 
-    # Verify sensor state reflects the low battery status
     sensor_state = hass_get_state_by_unique_id(
-        hass, 'binary_sensor', 'dummy_guid_sensor_0'
+        hass, 'binary_sensor', MAIN_SENSOR_UNIQUE_ID
     )
-
     assert sensor_state.attributes != {}
     assert sensor_state.attributes.get('low_battery') is True
+    assert hass_get_state_by_unique_id(
+        hass, 'binary_sensor', LOW_BATTERY_SENSOR_UNIQUE_ID
+    ).state == 'on'
+
+    await mock_g90alarm.return_value.on_sensor_activity(
+        0, 'Dummy sensor', False
+    )
+    await allow_callbacks_to_complete(hass)
+
+    sensor_state = hass_get_state_by_unique_id(
+        hass, 'binary_sensor', MAIN_SENSOR_UNIQUE_ID
+    )
+    assert sensor_state.attributes.get('low_battery') is False
+    assert hass_get_state_by_unique_id(
+        hass, 'binary_sensor', LOW_BATTERY_SENSOR_UNIQUE_ID
+    ).state == 'off'
 
 
 async def test_tamper_callback(
     hass: HomeAssistant, mock_g90alarm: AlarmMockT
 ) -> None:
     """
-    Tests the binary sensor changes its attributes upon tamper condition
-    is reported.
+    Tests the binary sensor and diagnostic entity go on when tamper is
+    reported, then off when the panel is armed or disarmed.
     """
     config_entry = MockConfigEntry(
         domain=DOMAIN,
         data={'ip_addr': 'dummy-ip'},
         options={},
-        entry_id="test-disarm-callbacks"
+        entry_id="test-tamper-callbacks"
     )
 
     config_entry.add_to_hass(hass)
     await hass.config_entries.async_setup(config_entry.entry_id)
-    # Allow Home Assistant to process the setup
     await allow_callbacks_to_complete(hass)
 
     await mock_g90alarm.return_value.on_alarm(
@@ -197,32 +214,45 @@ async def test_tamper_callback(
     )
     await allow_callbacks_to_complete(hass)
 
-    # Verify sensor state reflects the low battery status
     sensor_state = hass_get_state_by_unique_id(
-        hass, 'binary_sensor', 'dummy_guid_sensor_0'
+        hass, 'binary_sensor', MAIN_SENSOR_UNIQUE_ID
     )
-
     assert sensor_state.attributes != {}
     assert sensor_state.attributes.get('tampered') is True
+    assert hass_get_state_by_unique_id(
+        hass, 'binary_sensor', TAMPERED_SENSOR_UNIQUE_ID
+    ).state == 'on'
+
+    await mock_g90alarm.return_value.on_armdisarm(
+        G90ArmDisarmTypes.DISARM
+    )
+    await allow_callbacks_to_complete(hass)
+
+    sensor_state = hass_get_state_by_unique_id(
+        hass, 'binary_sensor', MAIN_SENSOR_UNIQUE_ID
+    )
+    assert sensor_state.attributes.get('tampered') is False
+    assert hass_get_state_by_unique_id(
+        hass, 'binary_sensor', TAMPERED_SENSOR_UNIQUE_ID
+    ).state == 'off'
 
 
 async def test_door_open_when_arming_callback(
     hass: HomeAssistant, mock_g90alarm: AlarmMockT
 ) -> None:
     """
-    Tests the binary sensor changes its attributes upon door open when arming
-    condition is reported.
+    Tests the binary sensor and diagnostic entity go on when door open when
+    arming is reported, then off when the panel is armed or disarmed.
     """
     config_entry = MockConfigEntry(
         domain=DOMAIN,
         data={'ip_addr': 'dummy-ip'},
         options={},
-        entry_id="test-disarm-callbacks"
+        entry_id="test-door-open-when-arming-callbacks"
     )
 
     config_entry.add_to_hass(hass)
     await hass.config_entries.async_setup(config_entry.entry_id)
-    # Allow Home Assistant to process the setup
     await allow_callbacks_to_complete(hass)
 
     await mock_g90alarm.return_value.on_door_open_when_arming(
@@ -230,10 +260,24 @@ async def test_door_open_when_arming_callback(
     )
     await allow_callbacks_to_complete(hass)
 
-    # Verify sensor state reflects the low battery status
     sensor_state = hass_get_state_by_unique_id(
-        hass, 'binary_sensor', 'dummy_guid_sensor_0'
+        hass, 'binary_sensor', MAIN_SENSOR_UNIQUE_ID
     )
-
     assert sensor_state.attributes != {}
     assert sensor_state.attributes.get('door_open_when_arming') is True
+    assert hass_get_state_by_unique_id(
+        hass, 'binary_sensor', OPEN_WHEN_ARMED_SENSOR_UNIQUE_ID
+    ).state == 'on'
+
+    await mock_g90alarm.return_value.on_armdisarm(
+        G90ArmDisarmTypes.DISARM
+    )
+    await allow_callbacks_to_complete(hass)
+
+    sensor_state = hass_get_state_by_unique_id(
+        hass, 'binary_sensor', MAIN_SENSOR_UNIQUE_ID
+    )
+    assert sensor_state.attributes.get('door_open_when_arming') is False
+    assert hass_get_state_by_unique_id(
+        hass, 'binary_sensor', OPEN_WHEN_ARMED_SENSOR_UNIQUE_ID
+    ).state == 'off'
