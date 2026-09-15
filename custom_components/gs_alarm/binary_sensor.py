@@ -297,6 +297,8 @@ class G90SensorAttributeBase(
     # pylint: disable=too-many-ancestors
     # pylint: disable=too-many-positional-arguments
     ENTITY_DOMAIN = BINARY_SENSOR_DOMAIN
+    # Name of the `G90Sensor` callback list this entity should subscribe to
+    CALLBACK_ATTR: str
 
     def __init__(
         self, g90_sensor: G90Sensor, coordinator: GsAlarmCoordinator,
@@ -319,10 +321,9 @@ class G90SensorAttributeBase(
             coordinator, g90_sensor
         )
 
-        # Register callbacks to handle sensor attribute changes
-        g90_sensor.tamper_callback.add(self.attr_callback)
-        g90_sensor.low_battery_callback.add(self.attr_callback)
-        g90_sensor.door_open_when_arming_callback.add(self.attr_callback)
+        # Subscribe only to the callback that matches this attribute, so a
+        # synthesized clear of another flag does not drop restored state
+        getattr(g90_sensor, self.CALLBACK_ATTR).add(self.attr_callback)
 
     async def async_added_to_hass(self) -> None:
         """
@@ -374,6 +375,7 @@ class G90SensorAttributeTampered(G90SensorAttributeBase):
 
     UNIQUE_ID_FMT = "{guid}_sensor_{sensor.index}_tampered"
     ENTITY_ID_FMT = "{guid}_{sensor.name}_tampered"
+    CALLBACK_ATTR = 'tamper_callback'
 
     def __init__(
         self, sensor: G90Sensor, coordinator: GsAlarmCoordinator
@@ -395,6 +397,7 @@ class G90SensorAttributeLowBattery(G90SensorAttributeBase):
 
     UNIQUE_ID_FMT = "{guid}_sensor_{sensor.index}_low_battery"
     ENTITY_ID_FMT = "{guid}_{sensor.name}_low_battery"
+    CALLBACK_ATTR = 'low_battery_callback'
 
     def __init__(
         self, sensor: G90Sensor, coordinator: GsAlarmCoordinator
@@ -413,6 +416,7 @@ class G90SensorAttributeDoorOpenWhenArming(G90SensorAttributeBase):
 
     UNIQUE_ID_FMT = "{guid}_sensor_{sensor.index}_open_when_armed"
     ENTITY_ID_FMT = "{guid}_{sensor.name}_open_when_armed"
+    CALLBACK_ATTR = 'door_open_when_arming_callback'
 
     def __init__(
         self, sensor: G90Sensor, coordinator: GsAlarmCoordinator
