@@ -177,12 +177,13 @@ async def test_binary_sensor_restore_state_independent_across_entities(
     hass: HomeAssistant, mock_g90alarm: AlarmMockT,
 ) -> None:
     """
-    Verifies restored state on one sensor entity does not affect others.
+    Verifies occupancy and synthesized low-battery clear do not drop restored
+    tamper state on a different diagnostic entity.
     """
     mock_restore_cache(hass, [
         State(MAIN_SENSOR_ENTITY_ID, 'on'),
         State(TAMPERED_SENSOR_ENTITY_ID, 'on'),
-        State(LOW_BATTERY_SENSOR_ENTITY_ID, 'off'),
+        State(LOW_BATTERY_SENSOR_ENTITY_ID, 'on'),
     ])
 
     config_entry = MockConfigEntry(
@@ -203,7 +204,7 @@ async def test_binary_sensor_restore_state_independent_across_entities(
     ).state == 'on'
     assert hass_get_state_by_unique_id(
         hass, 'binary_sensor', LOW_BATTERY_SENSOR_UNIQUE_ID
-    ).state == 'off'
+    ).state == 'on'
 
     await mock_g90alarm.return_value.on_sensor_activity(
         0, 'Dummy sensor', False
@@ -219,3 +220,46 @@ async def test_binary_sensor_restore_state_independent_across_entities(
     assert hass_get_state_by_unique_id(
         hass, 'binary_sensor', LOW_BATTERY_SENSOR_UNIQUE_ID
     ).state == 'off'
+
+
+async def test_low_battery_restore_cleared_on_first_wireless_activity(
+    hass: HomeAssistant, mock_g90alarm: AlarmMockT,
+) -> None:
+    """
+    Verifies a restored low-battery diagnostic is cleared by the first wireless
+    activity, without a prior low-battery notification.
+    """
+    mock_restore_cache(hass, [
+        State(LOW_BATTERY_SENSOR_ENTITY_ID, 'on'),
+    ])
+
+    config_entry = MockConfigEntry(
+        domain=DOMAIN,
+        data={'ip_addr': 'dummy-ip'},
+        options={},
+        entry_id='test_low_battery_restore_first_activity',
+    )
+    config_entry.add_to_hass(hass)
+    await hass.config_entries.async_setup(config_entry.entry_id)
+    await allow_callbacks_to_complete(hass)
+
+    assert hass_get_state_by_unique_id(
+        hass, 'binary_sensor', LOW_BATTERY_SENSOR_UNIQUE_ID
+    ).state == 'on'
+    sensor_state = hass_get_state_by_unique_id(
+        hass, 'binary_sensor', MAIN_SENSOR_UNIQUE_ID
+    )
+    assert sensor_state.attributes.get('low_battery') is False
+
+    await mock_g90alarm.return_value.on_sensor_activity(
+        0, 'Dummy sensor', False
+    )
+    await allow_callbacks_to_complete(hass)
+
+    assert hass_get_state_by_unique_id(
+        hass, 'binary_sensor', LOW_BATTERY_SENSOR_UNIQUE_ID
+    ).state == 'off'
+    sensor_state = hass_get_state_by_unique_id(
+        hass, 'binary_sensor', MAIN_SENSOR_UNIQUE_ID
+    )
+    assert sensor_state.attributes.get('low_battery') is False

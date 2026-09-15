@@ -117,6 +117,10 @@ the panel while the integration is restarting or reloading, the restored state
 may be wrong until the panel sends the next update for that sensor. In that
 case you may briefly see an incorrect `on` or `off` state in Home Assistant.
 
+Restored low-battery state is also cleared on the first later wireless sensor
+activity. The panel never reports that a battery has been restored, so the
+integration treats later activity as proof the sensor has enough power.
+
 ## Notifications
 
 Notifications from the alarm panel are essential for the integration -
