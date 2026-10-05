@@ -40,7 +40,7 @@ class G90SelectSensorEntityBase(
     CoordinatorEntity[GsAlarmCoordinator],
     GSAlarmGenerateIDsSensorMixin,
 ):
-    # pylint: disable=too-many-ancestors
+    # pylint: disable=abstract-method,too-many-ancestors
     """Select entity tied to a panel sensor; platform domain for entity IDs."""
     ENTITY_DOMAIN = SELECT_DOMAIN
 

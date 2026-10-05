@@ -179,7 +179,7 @@ class GsAlarmSwitchDeviceEntity(
     CoordinatorEntity[GsAlarmCoordinator],
     GSAlarmGenerateIDsDeviceMixin,
 ):
-    # pylint: disable=too-many-ancestors
+    # pylint: disable=abstract-method,too-many-ancestors
     """Relay switch; ENTITY_DOMAIN for entity ID generation."""
     ENTITY_DOMAIN = SWITCH_DOMAIN
 
@@ -189,7 +189,7 @@ class GsAlarmSwitchSensorConfigEntity(
     SwitchEntity,
     GSAlarmGenerateIDsSensorMixin,
 ):
-    # pylint: disable=too-many-ancestors
+    # pylint: disable=abstract-method,too-many-ancestors
     """Sensor config switch; ENTITY_DOMAIN for entity IDs."""
     ENTITY_DOMAIN = SWITCH_DOMAIN
 
@@ -199,7 +199,7 @@ class GsAlarmSwitchPanelConfigEntity(
     SwitchEntity,
     GSAlarmGenerateIDsCommonMixin,
 ):
-    # pylint: disable=too-many-ancestors
+    # pylint: disable=abstract-method,too-many-ancestors
     """Panel-level switch; ENTITY_DOMAIN for entity IDs."""
     ENTITY_DOMAIN = SWITCH_DOMAIN
 
@@ -208,7 +208,7 @@ class GsAlarmSwitchStandaloneEntity(
     SwitchEntity,
     GSAlarmGenerateIDsCommonMixin,
 ):
-    # pylint: disable=too-many-ancestors
+    # pylint: disable=abstract-method,too-many-ancestors
     """
     Switch without coordinator participation (e.g. reboot); supplies platform
     domain for entity ID generation.
@@ -524,7 +524,8 @@ class G90RebootSwitch(GsAlarmSwitchStandaloneEntity):
     unavailable when data updates from panel would fail - primarily to survive
     coordinator timeouts.
     """
-    # pylint: disable=too-many-ancestors,too-many-instance-attributes
+    # pylint: disable=abstract-method,too-many-ancestors
+    # pylint: disable=too-many-instance-attributes
     UNIQUE_ID_FMT = "{guid}_reboot"
     ENTITY_ID_FMT = "{guid}_reboot"
 
@@ -569,7 +570,7 @@ class G90SimulateAlertsFromHistory(GsAlarmSwitchRestoreEntityBase):
     """
     Switch entity to configure simulating alerts from history.
     """
-    # pylint: disable=too-many-ancestors
+    # pylint: disable=abstract-method,too-many-ancestors
     UNIQUE_ID_FMT = "{guid}_simulate_alerts_from_history"
     ENTITY_ID_FMT = "{guid}_simulate_alerts_from_history"
 
@@ -653,7 +654,7 @@ class G90SmsAlertWhenArmed(GsAlarmSwitchRestoreEntityBase):
     """
     Switch entity to configure SMS alerts only when panel is armed.
     """
-    # pylint: disable=too-many-ancestors
+    # pylint: disable=abstract-method,too-many-ancestors
     UNIQUE_ID_FMT = "{guid}_sms_alert_when_armed"
     ENTITY_ID_FMT = "{guid}_sms_alert_when_armed"
 

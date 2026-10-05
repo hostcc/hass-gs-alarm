@@ -134,7 +134,7 @@ class G90SwitchDeleteButtonEntity(
     G90EntityDeleteButtonBase,
     GSAlarmGenerateIDsDeviceMixin,
 ):
-    # pylint: disable=too-many-ancestors
+    # pylint: disable=abstract-method,too-many-ancestors
     """Delete relay button base; ENTITY_DOMAIN for generated entity IDs."""
     ENTITY_DOMAIN = BUTTON_DOMAIN
 
@@ -143,7 +143,7 @@ class G90SensorDeleteButtonEntity(
     G90EntityDeleteButtonBase,
     GSAlarmGenerateIDsSensorMixin,
 ):
-    # pylint: disable=too-many-ancestors
+    # pylint: disable=abstract-method,too-many-ancestors
     """Delete sensor button base; ENTITY_DOMAIN for generated entity IDs."""
     ENTITY_DOMAIN = BUTTON_DOMAIN
 

@@ -86,7 +86,7 @@ class GsAlarmSwitchRestoreEntityBase(
 
     :param coordinator: The coordinator to use.
     """
-    # pylint: disable=too-many-ancestors
+    # pylint: disable=abstract-method,too-many-ancestors
     ENTITY_DOMAIN = SWITCH_DOMAIN
 
     def __init__(
@@ -355,14 +355,14 @@ class G90ConfigSelectFieldBase(G90ConfigFieldBase, SelectEntity):
 
 
 class G90HostConfigSelectField(G90HostConfigMixin, G90ConfigSelectFieldBase):
-    # pylint: disable=too-many-ancestors
+    # pylint: disable=abstract-method,too-many-ancestors
     """
     Panel configuration select entities bound to host config.
     """
 
 
 class G90NetConfigSelectField(G90NetConfigMixin, G90ConfigSelectFieldBase):
-    # pylint: disable=too-many-ancestors
+    # pylint: disable=abstract-method,too-many-ancestors
     """
     Panel configuration select entities bound to network config.
     """
@@ -379,7 +379,8 @@ class G90ConfigNumberFieldBase(G90ConfigFieldBase, NumberEntity):
     :param id_field_name: The field name to use for the entity ID.
      If not provided, the entity ID will be generated using the field name.
     """
-    # pylint:disable=too-many-ancestors,too-many-instance-attributes
+    # pylint: disable=abstract-method,too-many-instance-attributes
+    # pylint: disable=too-many-ancestors
     # pylint: disable=too-many-arguments,too-many-positional-arguments
     ENTITY_DOMAIN = NUMBER_DOMAIN
 
@@ -419,14 +420,14 @@ class G90ConfigNumberFieldBase(G90ConfigFieldBase, NumberEntity):
 
 
 class G90HostConfigNumberField(G90HostConfigMixin, G90ConfigNumberFieldBase):
-    # pylint: disable=too-many-ancestors
+    # pylint: disable=abstract-method,too-many-ancestors
     """
     Panel configuration number entities bound to host config.
     """
 
 
 class G90NetConfigNumberField(G90NetConfigMixin, G90ConfigNumberFieldBase):
-    # pylint: disable=too-many-ancestors
+    # pylint: disable=abstract-method,too-many-ancestors
     """
     Panel configuration number entities bound to network config.
     """
@@ -493,35 +494,35 @@ class G90ConfigTextFieldBase(G90ConfigFieldBase, TextEntity):
 
 
 class G90HostConfigTextField(G90HostConfigMixin, G90ConfigTextFieldBase):
-    # pylint: disable=too-many-ancestors
+    # pylint: disable=abstract-method,too-many-ancestors
     """
     Panel configuration text entities bound to host config.
     """
 
 
 class G90NetConfigTextField(G90NetConfigMixin, G90ConfigTextFieldBase):
-    # pylint: disable=too-many-ancestors
+    # pylint: disable=abstract-method,too-many-ancestors
     """
     Panel configuration text entities bound to network config.
     """
 
 
 class G90AlarmPhonesTextField(G90AlarmPhonesMixin, G90ConfigTextFieldBase):
-    # pylint: disable=too-many-ancestors
+    # pylint: disable=abstract-method,too-many-ancestors
     """
     Panel configuration text entities bound to alarm phones.
     """
 
 
 class G90SiaConfigTextField(G90SiaConfigMixin, G90ConfigTextFieldBase):
-    # pylint: disable=too-many-ancestors
+    # pylint: disable=abstract-method,too-many-ancestors
     """
     Panel configuration text entities bound to SIA config.
     """
 
 
 class G90CidConfigTextField(G90CidConfigMixin, G90ConfigTextFieldBase):
-    # pylint: disable=too-many-ancestors
+    # pylint: disable=abstract-method,too-many-ancestors
     """
     Panel configuration text entities bound to CID config.
     """
@@ -572,35 +573,35 @@ class G90ConfigSwitchFieldBase(G90ConfigFieldBase, SwitchEntity):
 
 
 class G90HostConfigSwitchField(G90HostConfigMixin, G90ConfigSwitchFieldBase):
-    # pylint: disable=too-many-ancestors
+    # pylint: disable=abstract-method,too-many-ancestors
     """
     Panel configuration switch entities bound to host config.
     """
 
 
 class G90NetConfigSwitchField(G90NetConfigMixin, G90ConfigSwitchFieldBase):
-    # pylint: disable=too-many-ancestors
+    # pylint: disable=abstract-method,too-many-ancestors
     """
     Panel configuration switch entities bound to network config.
     """
 
 
 class G90SiaConfigSwitchField(G90SiaConfigMixin, G90ConfigSwitchFieldBase):
-    # pylint: disable=too-many-ancestors
+    # pylint: disable=abstract-method,too-many-ancestors
     """
     Panel configuration switch entities bound to SIA config.
     """
 
 
 class G90CidConfigSwitchField(G90CidConfigMixin, G90ConfigSwitchFieldBase):
-    # pylint: disable=too-many-ancestors
+    # pylint: disable=abstract-method,too-many-ancestors
     """
     Panel configuration switch entities bound to CID config.
     """
 
 
 class G90SiaConfigNumberField(G90SiaConfigMixin, G90ConfigNumberFieldBase):
-    # pylint: disable=too-many-ancestors
+    # pylint: disable=abstract-method,too-many-ancestors
     """
     Panel configuration number entities bound to SIA config.
     """
