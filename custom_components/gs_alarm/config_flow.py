@@ -9,7 +9,7 @@ import logging
 
 from typing import Any, Self, Dict
 
-import voluptuous as vol
+import probatio as vol
 
 from homeassistant.config_entries import (
     ConfigEntry,
