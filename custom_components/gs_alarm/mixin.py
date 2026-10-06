@@ -402,7 +402,7 @@ class GsAlarmRestoreStateMixinBase(RestoreEntity, Generic[T], ABC):
         return restored
 
 
-class GsAlarmSensorRestoreGatedMixinBase(GsAlarmRestoreStateMixinBase[T]):
+class GsAlarmSensorRestoreGatedMixinBase(GsAlarmRestoreStateMixinBase[T], ABC):
     """
     Base mixin for state restoration gated by the ``restore_state_at_startup``
     config entry option.

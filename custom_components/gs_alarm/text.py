@@ -346,7 +346,7 @@ class G90SensorName(
     """
     Text entity to rename panel sensor.
     """
-    # pylint: disable=too-many-ancestors
+    # pylint: disable=abstract-method,too-many-ancestors
     UNIQUE_ID_FMT = "{guid}_sensor_{sensor.index}_panel_name"
     ENTITY_ID_FMT = "{guid}_{sensor.name}_panel_name"
 
@@ -384,7 +384,7 @@ class G90DeviceName(
     """
     Text entity to rename panel relay.
     """
-    # pylint: disable=too-many-ancestors
+    # pylint: disable=abstract-method,too-many-ancestors
     UNIQUE_ID_FMT = "{guid}_switch_{device.index}_panel_name"
     ENTITY_ID_FMT = "{guid}_{device.name}_panel_name"
 
