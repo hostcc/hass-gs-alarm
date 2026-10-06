@@ -11,11 +11,7 @@ from homeassistant.core import HomeAssistant, callback
 from homeassistant.const import EntityCategory
 from homeassistant.util import dt as dt_util
 from homeassistant.helpers.update_coordinator import CoordinatorEntity
-from homeassistant.components.binary_sensor import (
-    BinarySensorEntity,
-    BinarySensorDeviceClass,
-    DOMAIN as BINARY_SENSOR_DOMAIN,
-)
+from homeassistant.components.binary_sensor import BinarySensorEntity
 from homeassistant.helpers.entity_platform import AddEntitiesCallback
 
 from pyg90alarm import (
@@ -34,7 +30,20 @@ from .const import (
     NOTIFICATIONS_PROTOCOL_SENSOR_UNRECORDED_ATTRIBUTES,
 )
 if TYPE_CHECKING:
+    # Home Assistant 2026.10 defines these in const.py and re-imports them
+    # without an explicit export, which mypy --strict rejects.
+    from homeassistant.components.binary_sensor.const import (
+        DOMAIN as BINARY_SENSOR_DOMAIN,
+        BinarySensorDeviceClass,
+    )
     from . import GsAlarmConfigEntry
+else:
+    # const.py does not exist before 2026.10; the package import works on
+    # 2026.9 and 2026.10.
+    from homeassistant.components.binary_sensor import (
+        DOMAIN as BINARY_SENSOR_DOMAIN,
+        BinarySensorDeviceClass,
+    )
 
 HASS_SENSOR_TYPES_MAPPING = {
     G90PeripheralTypes.DOOR: BinarySensorDeviceClass.DOOR,
